@@ -3,157 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deflate Vulnerability: NPNCB & DBA Analysis - Jung-hoon Kim</title>
+    <title>Deflate Vulnerability Analysis | Jung-hoon Kim</title>
     <style>
         :root {
-            --primary: #003366;
-            --secondary: #c0392b;
-            --bg: #ffffff;
-            --code-bg: #2d2d2d;
-            --section-bg: #f9f9f9;
+            --bg-color: #f8f9fa;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --primary-accent: #0984e3;
+            --danger-accent: #d63031;
+            --card-bg: #ffffff;
+            --code-bg: #2d3436;
+            --code-text: #a29bfe;
+            --border-color: #dfe6e9;
         }
-        body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; line-height: 1.8; color: #333; margin: 0; padding: 0; background: var(--bg); }
-        header { background: var(--primary); color: white; padding: 5rem 1rem; text-align: center; border-bottom: 5px solid var(--secondary); }
-        .abstract { font-style: italic; background: #eee; padding: 2rem; border-left: 10px solid var(--primary); margin: 2rem auto; max-width: 800px; }
-        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
-        
-        /* Language Toggle Floating Button */
-        .lang-nav { position: fixed; bottom: 20px; right: 20px; z-index: 100; }
-        .lang-nav button { background: var(--secondary); color: white; border: none; padding: 12px 24px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.3s; }
-        .lang-nav button:hover { transform: scale(1.1); background: var(--primary); }
 
-        h2 { color: var(--primary); font-size: 2rem; border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-top: 4rem; }
-        h3 { color: var(--secondary); margin-top: 2.5rem; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text-main);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navigation & Toggle */
+        nav {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .logo { font-weight: 700; font-size: 1.2rem; color: var(--primary-accent); }
         
-        .diagram { text-align: center; margin: 3rem 0; background: var(--section-bg); padding: 2rem; border-radius: 12px; border: 1px solid #ddd; }
-        .diagram-caption { font-size: 0.9rem; color: #666; margin-top: 10px; font-weight: bold; }
+        .lang-toggle button {
+            background: transparent;
+            border: 2px solid var(--primary-accent);
+            color: var(--primary-accent);
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-toggle button:hover {
+            background: var(--primary-accent);
+            color: white;
+        }
+
+        /* Header */
+        header {
+            padding: 6rem 2rem 4rem;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f2f6 100%);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 { font-size: 2.5rem; line-height: 1.3; margin-bottom: 1rem; color: var(--text-main); }
+        .author { font-size: 1.2rem; font-weight: 500; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .affiliation { font-size: 1rem; color: var(--primary-accent); font-weight: 600; }
+        .journal-meta { font-size: 0.9rem; color: var(--text-muted); margin-top: 1.5rem; }
+
+        /* Main Content Container */
+        main { max-width: 900px; margin: 3rem auto; padding: 0 2rem; }
+
+        /* Abstract Section */
+        .abstract {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 6px solid var(--primary-accent);
+            margin-bottom: 3rem;
+            font-size: 1.05rem;
+        }
+
+        .abstract h2 { margin-top: 0; color: var(--primary-accent); font-size: 1.3rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Content Sections */
+        section { margin-bottom: 4rem; }
+        h2 { font-size: 1.8rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+        h3 { font-size: 1.4rem; color: var(--text-main); margin-top: 2rem; }
+        p { margin-bottom: 1.2rem; }
         
-        code.block { display: block; background: var(--code-bg); color: #f8f8f2; padding: 1.5rem; border-radius: 8px; font-family: 'Consolas', monospace; overflow-x: auto; margin: 1.5rem 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
-        .metadata { font-size: 0.9rem; color: #777; margin-bottom: 3rem; text-align: center; }
-        .hidden { display: none; }
-        
+        .highlight { color: var(--danger-accent); font-weight: 600; }
+
+        /* Code Blocks & Tech Specs */
+        .tech-box {
+            background-color: var(--code-bg);
+            color: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.95rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .tech-box .comment { color: #636e72; }
+        .tech-box .keyword { color: #00cec9; }
+        .tech-box .string { color: var(--code-text); }
+
         ul { padding-left: 1.5rem; }
-        li { margin-bottom: 10px; }
-        footer { background: #1a1a1a; color: white; padding: 4rem 2rem; text-align: center; margin-top: 5rem; }
+        li { margin-bottom: 0.8rem; }
+
+        /* Author Bio */
+        .author-bio {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-top: 4rem;
+        }
+
+        /* Footer */
+        footer { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.9rem; background: var(--card-bg); border-top: 1px solid var(--border-color); }
+
+        .hidden { display: none; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            header { padding: 4rem 1rem 2rem; }
+        }
     </style>
 </head>
 <body>
 
-<div class="lang-nav">
-    <button id="toggleBtn" onclick="toggleLang()">Switch to ENGLISH</button>
-</div>
-
-<header>
-    <h1 id="h-title">Deflate 압축 알고리즘에서 악성코드 주입 취약점 분석</h1>
-    <div id="h-meta" class="metadata">
-        Journal of The Korea Institute of Information Security & Cryptology, VOL.32, NO.5, Oct. 2022<br>
-        <strong>김정훈 (Jung-hoon Kim)</strong> - BinaryLab CEO / Researcher
+<nav>
+    <div class="logo">BinaryLab Research</div>
+    <div class="lang-toggle">
+        <button id="langBtn" onclick="toggleLanguage()">Switch to English</button>
     </div>
-</header>
+</nav>
 
-<div class="container">
-    <div id="ko-content">
+<div id="content-ko">
+    <header>
+        <h1>Deflate 압축 알고리즘에서<br>악성코드 주입 취약점 분석</h1>
+        <div class="author">김정훈 (Jung-hoon Kim)</div>
+        <div class="affiliation">바이너리랩 주식회사 (BinaryLab CEO)</div>
+        <div class="journal-meta">Journal of The Korea Institute of Information Security & Cryptology<br>VOL.32, NO.5, Oct. 2022 | ISSN 1598-3986</div>
+    </header>
+
+    <main>
         <div class="abstract">
-            <strong>요약:</strong> 본 연구는 매우 대중적인 Deflate 알고리즘의 비 압축 블록(NPNCB)과 바이트 정렬을 위한 DBA(Disposed Bit Area) 영역을 활용하여 악의적인 데이터나 코드를 은닉하는 취약점을 분석합니다. 실험을 통해 상용 압축 프로그램의 탐지 기법을 우회하고 임의의 코드를 실행할 수 있음을 입증하였습니다.
+            <h2>요약 (Abstract)</h2>
+            <p>본 연구를 통해 매우 대중적인 압축 알고리즘인 Deflate 알고리즘을 통해 생성되는 3가지 유형의 압축 데이터 블록 가운데 <span class="highlight">원본 데이터 없는 비 압축 블록(No-Payload Non-Compressed Block; NPNCB)</span> 유형을 임의로 생성하여 정상적인 압축 블록 사이에 미리 설계된 공격 시나리오에 따라 삽입하는 방법을 통해 악의적 코드 또는 임의의 데이터를 은닉하는 취약점을 발견하였습니다.</p>
+            <p>비 압축 블록의 헤더에는 바이트 정렬(Byte Align)을 위해서만 존재하는 데이터 영역이 존재하며, 본 연구에서는 이 영역을 <strong>DBA(Disposed Bit Area)</strong>라고 명명하였습니다. 이러한 DBA 영역에 다양한 악성 코드와 악의적 데이터를 숨길 수 있었으며, 기존 상용 프로그램에서 경고 없이 압축 해제되고 악의적 디코더로 해독하여 임의 코드를 실행할 수 있음을 입증했습니다.</p>
         </div>
 
         <section>
-            <h2>1. Deflate 알고리즘의 구조적 취약점</h2>
-            <p>Deflate 알고리즘(RFC 1951)은 데이터의 특성에 따라 세 가지 블록 유형을 생성합니다: <strong>Dynamic Huffman</strong>, <strong>Fixed Huffman</strong>, 그리고 <strong>Non-compressed(비 압축)</strong> 블록입니다[cite: 1, 4].</p>
-            
-            <h3>DBA (Disposed Bit Area) 개념</h3>
-            <p>비 압축 블록은 바이트 정렬(Byte Align)을 위해 헤더 내부에 무시되는 비트 영역을 포함합니다. 이를 본 연구에서 <strong>DBA</strong>라고 명명하였습니다[cite: 10, 11].</p>
-            
-            <div class="diagram">
-                
-                <div class="diagram-caption">Fig. 1. 비 압축 블록의 일반 구조와 DBA 영역</div>
+            <h2>1. Deflate 압축 블록과 DBA 개념</h2>
+            <p>Deflate 알고리즘(RFC 1951)은 압축 대상의 특성에 따라 세 가지 블록(Dynamic, Fixed, Non-compressed)을 생성합니다. 이 중 '비 압축 블록(Non-compressed block)'은 압축을 포기하고 원본 데이터를 그대로 저장할 때 사용됩니다.</p>
+            <h3>바이트 정렬과 여유 공간(DBA)</h3>
+            <p>비 압축 블록은 바이트 경계에서 시작해야 하므로, 이전 압축 블록이 끝나는 비트 위치에 따라 <span class="highlight">0~7비트의 가변적인 여유 공간</span>이 발생합니다.</p>
+            <div class="tech-box">
+                <span class="comment">// Non-compressed Block Header Structure</span><br>
+                [<span class="keyword">BFINAL</span>: 1bit] + [<span class="keyword">BTYPE</span>: 2bits (00)] + [<span class="string">DBA</span>: 0~7bits padding] + [<span class="keyword">LEN</span>: 16bits] + [<span class="keyword">NLEN</span>: 16bits]
             </div>
-            <p>RFC 1951 표준은 이 영역에 무엇을 채워야 하는지 명시하지 않으며, 일반 디코더는 이를 무시(ignored)하고 넘어갑니다[cite: 38].</p>
+            <p>RFC 1951 표준에 따르면 이 패딩 영역(DBA)의 데이터는 디코더에 의해 완전히 <strong>무시(ignored)</strong>됩니다. 상용 프로그램은 이 영역을 0으로 초기화하지만, 공격자는 이 공간에 악의적인 페이로드를 기록할 수 있습니다.</p>
         </section>
 
         <section>
             <h2>2. NPNCB (No-Payload Non-Compressed Block)</h2>
-            <p><strong>NPNCB</strong>는 원본 데이터(Literal Data)를 포함하지 않는 비 압축 블록으로, LEN(데이터 길이) 값이 0인 특수한 형태입니다[cite: 10, 101].</p>
-            <div class="diagram">
-                
-                <div class="diagram-caption">Fig. 2. 데이터가 없는 NPNCB의 구조</div>
-            </div>
+            <p>NPNCB는 <code>LEN = 0</code>인 특수한 형태의 비 압축 블록입니다. 원본 데이터를 전혀 포함하지 않기 때문에, 압축 해제 시 출력되는 데이터 스트림에 아무런 영향을 주지 않습니다.</p>
             <ul>
-                <li><strong>은닉 원리:</strong> NPNCB를 정상 블록 사이에 삽입하여 DBA 영역에 악성 비트 주입[cite: 12].</li>
-                <li><strong>탐지 우회:</strong> 압축 해제 후 생성되는 데이터가 없으므로 <strong>CRC(Cyclic Redundancy Check)</strong> 값에 영향을 주지 않아 상용 백신 및 압축 프로그램을 우회합니다[cite: 143, 266].</li>
+                <li><strong>CRC 우회 (CRC Evasion):</strong> 기존 보안/압축 소프트웨어는 '해제된 원본 데이터'를 기준으로 CRC 무결성을 검사합니다. NPNCB는 출력 데이터가 없으므로 파일이 변조되었음에도 CRC 오류를 발생시키지 않습니다.</li>
+                <li><strong>패킷/스트림 제어용 악용:</strong> TLS, SSH, PPP 등 연속적인 데이터 스트림을 패킷 단위로 분할할 때 사용되는 정상적인 강제 분할(Flush) 기법을 모방하여 의심을 피합니다.</li>
             </ul>
         </section>
 
         <section>
-            <h2>3. 공격 사례 및 실험 결과</h2>
-            <p>본 연구에서는 7,680바이트의 악성 윈도우 응용 프로그램을 분해하여 15,360개의 NPNCB 내 DBA에 나누어 주입하였습니다[cite: 299, 328].</p>
-            
-            <code class="block">
-                // Malignant Encoder Block Trace Result Example
-                DXDXDXDXDXDXDXDXDXDXDXDXDXDX...
-                (D: Dynamic Block, X: Injected NPNCB)
-            </code>
-            
-            <p>결과적으로 알집, 반디집 등 주요 상용 디코더에서는 어떠한 경고 없이 정상 압축 해제되었으며, 설계된 악의적 디코더를 통해서만 메모리상에서 악성 코드가 재조합되어 실행됨을 확인하였습니다[cite: 266, 336].</p>
+            <h2>3. 공격 사례 및 취약점 증명</h2>
+            <p>본 연구는 7,680 바이트 크기의 Windows 실행 파일(악성 코드)을 분할하여 Zip 압축 파일 내부에 주입하는 모의 공격을 수행했습니다.</p>
+            <div class="tech-box">
+                <span class="comment">// 1 바이트의 악성코드를 5비트 / 3비트로 분할하여 2개의 NPNCB DBA에 은닉</span><br>
+                Payload Size: 7,680 bytes<br>
+                Required NPNCBs: 15,360 blocks<br>
+                Total Injected Hidden Data: ~76,800 bytes
+            </div>
+            <p><strong>실험 결과:</strong></p>
+            <ul>
+                <li>알집(ALZip), 반디집(Bandizip), WinRAR 등 대중적인 상용 디코더는 삽입된 수만 개의 NPNCB를 모두 무시하고 원본 엑셀/오디오 파일을 <strong>경고 없이 정상적으로 압축 해제</strong>했습니다.</li>
+                <li>오염된 Zip 파일을 악의적인 디코더(설계된 공격 도구)로 읽어들일 경우, 숨겨진 DBA 비트들을 메모리에서 재조합하여 악성 코드를 즉각적으로 실행(Execute)하는 데 성공했습니다.</li>
+            </ul>
         </section>
-    </div>
 
-    <div id="en-content" class="hidden">
+        <div class="author-bio">
+            <h3>저자 소개 (About the Author)</h3>
+            <p><strong>김정훈 (Jung-hoon Kim)</strong><br>
+            바이너리랩 주식회사 대표이사. 의료정보, 정보이론, 정보보안 및 Windows 기반 고성능 데스크톱 애플리케이션 아키텍처 전문가로 활동하고 있습니다.</p>
+            <ul>
+                <li>서울대학교 약학과 졸업 / 보건대학원 석사 및 박사 수료</li>
+                <li>경희대학교 컴퓨터공학과 SW융합학 석사 졸업</li>
+            </ul>
+        </div>
+    </main>
+</div>
+
+<div id="content-en" class="hidden">
+    <header>
+        <h1>Malicious Code Injection Vulnerability Analysis<br>in the Deflate Algorithm</h1>
+        <div class="author">Jung-hoon Kim</div>
+        <div class="affiliation">BinaryLab (CEO)</div>
+        <div class="journal-meta">Journal of The Korea Institute of Information Security & Cryptology<br>VOL.32, NO.5, Oct. 2022 | ISSN 1598-3986</div>
+    </header>
+
+    <main>
         <div class="abstract">
-            <strong>ABSTRACT:</strong> This research analyzes a vulnerability that hides malicious code using No-Payload Non-Compressed Blocks (NPNCB) and Disposed Bit Areas (DBA) in the popular Deflate algorithm. Experiments demonstrate that contaminated files can bypass commercial security programs and execute arbitrary code via a malicious decoder.
+            <h2>Abstract</h2>
+            <p>Through this study, we discovered that among the three types of compressed data blocks generated by the Deflate algorithm, a specific type called the <span class="highlight">No-Payload Non-Compressed Block (NPNCB)</span> can be arbitrarily generated and inserted between normal compressed blocks to hide malicious code or arbitrary data.</p>
+            <p>In the header of a non-compressed block, there is a data area that exists solely for byte alignment. We named this area the <strong>DBA (Disposed Bit Area)</strong>. We successfully demonstrated that an attacker can hide various malicious codes within the DBA. Even when contaminated NPNCB blocks are inserted, commercial programs decode the zip file normally without any warnings, and a malicious decoder can extract and execute the hidden code.</p>
         </div>
 
         <section>
-            <h2>1. Structural Vulnerability of Deflate</h2>
-            <p>The Deflate algorithm (RFC 1951) categorizes compressed data into three types: Dynamic Huffman, Fixed Huffman, and Non-compressed blocks[cite: 27, 31].</p>
-            
-            <h3>The Concept of DBA (Disposed Bit Area)</h3>
-            <p>Non-compressed blocks include a bit area utilized solely for byte alignment, which this study defines as the <strong>DBA</strong>[cite: 11, 15].</p>
-            
-            <div class="diagram">
-                
-                <div class="diagram-caption">Fig. 1. Structure of Non-compressed block and DBA</div>
+            <h2>1. Deflate Compression Blocks & The DBA Concept</h2>
+            <p>The Deflate algorithm (RFC 1951) generates three types of blocks: Dynamic, Fixed, and Non-compressed. Non-compressed blocks are utilized when compression is inefficient, storing literal data as-is.</p>
+            <h3>Byte Alignment and the DBA</h3>
+            <p>Because non-compressed blocks must start on a byte boundary, a <span class="highlight">variable padding of 0 to 7 bits</span> is appended to the end of the previous block's data.</p>
+            <div class="tech-box">
+                <span class="comment">// Non-compressed Block Header Structure</span><br>
+                [<span class="keyword">BFINAL</span>: 1bit] + [<span class="keyword">BTYPE</span>: 2bits (00)] + [<span class="string">DBA</span>: 0~7bits padding] + [<span class="keyword">LEN</span>: 16bits] + [<span class="keyword">NLEN</span>: 16bits]
             </div>
-            <p>Standard decoders ignore the data in the DBA per RFC 1951, providing a blind spot for security inspection[cite: 38].</p>
+            <p>According to the RFC 1951 specification, decoders strictly <strong>ignore</strong> the data inside this padding (DBA). While standard encoders initialize this area with zeros, attackers can inject malicious payloads into this blind spot.</p>
         </section>
 
         <section>
-            <h2>2. Mechanism of NPNCB Injection</h2>
-            <p>An <strong>NPNCB</strong> is a block variant with zero literal data length (LEN = 0)[cite: 14, 101].</p>
+            <h2>2. The NPNCB (No-Payload Non-Compressed Block)</h2>
+            <p>An NPNCB is a specialized block where <code>LEN = 0</code>. Because it contains zero literal data, it outputs absolutely nothing during the decompression stream.</p>
             <ul>
-                <li><strong>Steganography:</strong> Malicious code is fragmented and embedded into the DBAs of multiple NPNCBs inserted between legitimate blocks[cite: 14, 18].</li>
-                <li><strong>CRC Bypass:</strong> Since NPNCBs yield no output upon decompression, they do not alter the <strong>CRC (Cyclic Redundancy Check)</strong> value, evading modification detection[cite: 17, 143].</li>
+                <li><strong>CRC Evasion:</strong> Traditional security and archiving tools verify file integrity by checking the CRC of the <em>decompressed output</em>. Since NPNCBs produce no output, the CRC remains completely unaffected, evading detection.</li>
+                <li><strong>Exploiting Stream Flush Mechanics:</strong> NPNCBs are legitimately used in protocols like TLS, SSH, and PPP to force byte-aligned flushes. Injecting them mimics benign network behavior, making forensic analysis difficult.</li>
             </ul>
         </section>
 
         <section>
-            <h2>3. Experimental Proof of Concept</h2>
-            <p>A 7,680-byte test malware was successfully hidden within 15,360 NPNCBs[cite: 299, 328]. Major commercial tools like Bandizip and ALZip failed to detect the injection, while a dedicated malicious decoder reassembled and executed the payload flawlessly[cite: 266, 336, 388].</p>
+            <h2>3. Attack Scenario & Proof of Concept</h2>
+            <p>In our experiment, a 7,680-byte Windows executable malware was fragmented and injected into a standard Zip archive.</p>
+            <div class="tech-box">
+                <span class="comment">// Splitting 1 byte of malware into 5-bit & 3-bit chunks across 2 NPNCBs</span><br>
+                Payload Size: 7,680 bytes<br>
+                Required NPNCBs: 15,360 blocks<br>
+                Total Injected Hidden Data: ~76,800 bytes
+            </div>
+            <p><strong>Results:</strong></p>
+            <ul>
+                <li>Major commercial archivers (ALZip, Bandizip, WinRAR) completely ignored the thousands of injected NPNCBs, extracting the original benign files <strong>with zero integrity warnings</strong>.</li>
+                <li>When the contaminated Zip file was processed by a custom malicious decoder, it successfully reassembled the hidden DBA bits in memory and executed the payload immediately.</li>
+            </ul>
         </section>
-    </div>
+
+        <div class="author-bio">
+            <h3>About the Author</h3>
+            <p><strong>Jung-hoon Kim</strong><br>
+            CEO of BinaryLab. Specializes in medical informatics, information theory, cybersecurity, and high-performance Windows desktop application architecture.</p>
+            <ul>
+                <li>B.S. Pharmacy / Ph.D. Candidate in Public Health, Seoul National University</li>
+                <li>M.S. Software Convergence, Kyung Hee University</li>
+            </ul>
+        </div>
+    </main>
 </div>
 
 <footer>
-    <p><strong>Research by Jung-hoon Kim</strong><br>
-    BinaryLab CEO | Pharmaceutical Programmer<br>
-    PhD Candidate (SNU GSPH) | MS in SW Convergence (Kyung Hee Univ.)</p>
-    <p style="font-size: 0.8rem; opacity: 0.7;">This project is presented for information security awareness and research purposes.</p>
+    <p>&copy; 2026 BinaryLab Research & Jung-hoon Kim. All rights reserved.<br>Published for Information Security Awareness.</p>
 </footer>
 
 <script>
-    let isKo = true;
-    function toggleLang() {
-        isKo = !isKo;
-        document.getElementById('ko-content').classList.toggle('hidden');
-        document.getElementById('en-content').classList.toggle('hidden');
-        document.getElementById('toggleBtn').innerText = isKo ? "Switch to ENGLISH" : "Switch to 한국어";
-        
-        const title = document.getElementById('h-title');
-        if(isKo) {
-            title.innerText = "Deflate 압축 알고리즘에서 악성코드 주입 취약점 분석";
+    let isKorean = true;
+    function toggleLanguage() {
+        const btn = document.getElementById('langBtn');
+        const koContent = document.getElementById('content-ko');
+        const enContent = document.getElementById('content-en');
+
+        if (isKorean) {
+            koContent.classList.add('hidden');
+            enContent.classList.remove('hidden');
+            btn.textContent = '한국어로 보기';
         } else {
-            title.innerText = "Malignant Code Injection Vulnerability in the Deflate Algorithm";
+            koContent.classList.remove('hidden');
+            enContent.classList.add('hidden');
+            btn.textContent = 'Switch to English';
         }
+        isKorean = !isKorean;
     }
 </script>
 
