@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NPNCB Vulnerability - Malicious Code Injection in Deflate</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --bg-light: #f4f7f6;
+            --text-dark: #333;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: var(--text-dark); margin: 0; padding: 0; background: var(--bg-light); }
+        header { background: var(--primary-color); color: white; padding: 3rem 1rem; text-align: center; }
+        .container { max-width: 900px; margin: 2rem auto; padding: 0 2rem; }
+        .lang-switch { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px; }
+        button { padding: 8px 16px; cursor: pointer; border: none; border-radius: 4px; background: var(--primary-color); color: white; transition: 0.3s; }
+        button:hover { opacity: 0.8; }
+        section { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+        h2 { color: var(--primary-color); border-left: 5px solid var(--accent-color); padding-left: 10px; }
+        .highlight { color: var(--accent-color); font-weight: bold; }
+        code { background: #eee; padding: 2px 5px; border-radius: 3px; }
+        footer { text-align: center; padding: 2rem; font-size: 0.9rem; color: #666; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1 id="main-title">NPNCB Vulnerability Analysis</h1>
+    <p id="sub-title">Malicious Code Injection in Deflate Compression Algorithm</p>
+</header>
+
+<div class="container">
+    <div class="lang-switch">
+        <button onclick="switchLang('en')">English</button>
+        <button onclick="switchLang('ko')">한국어</button>
+    </div>
+
+    <div id="en-content">
+        <section>
+            <h2>Research Overview</h2>
+            <p>This research by <strong>Jung-hoon Kim (BinaryLab CEO)</strong> identifies a critical vulnerability in the <strong>Deflate algorithm</strong> (used in ZIP, APK, PDF). It focuses on the <strong>NPNCB (No-Payload Non-Compressed Block)</strong>, which can be used to hide malicious code without affecting the file's integrity[cite: 4, 10].</p>
+        </section>
+
+        <section>
+            <h2>The Core Mechanism: DBA</h2>
+            <p>The vulnerability resides in the <strong>DBA (Disposed Bit Area)</strong> within the header of a non-compressed block. This area exists solely for byte alignment[cite: 11].</p>
+            <ul>
+                <li><strong>Stealth:</strong> Data in DBA is ignored by standard decoders[cite: 38].</li>
+                <li><strong>Bypass:</strong> Since NPNCB has no literal data, it does not change the <strong>CRC</strong> value after decompression, making it invisible to security software[cite: 143, 266].</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Attack Scenario</h2>
+            <p>An attacker can inject thousands of NPNCBs. While a normal program extracts the original data perfectly, a <strong>malicious decoder</strong> can extract and recombine bits from the DBA to execute arbitrary code in memory[cite: 150, 290].</p>
+        </section>
+    </div>
+
+    <div id="ko-content" class="hidden">
+        <section>
+            <h2>연구 개요</h2>
+            <p><strong>김정훈(바이너리랩 대표이사)</strong> 저자의 연구에 따르면, ZIP, APK, PDF 등에 널리 쓰이는 <strong>Deflate 알고리즘</strong>에서 심각한 취약점이 발견되었습니다. 핵심은 <strong>원본 데이터가 없는 비 압축 블록(NPNCB)</strong>을 활용하여 정상 데이터 사이에 악성 코드를 은닉하는 기술입니다[cite: 4, 10].</p>
+        </section>
+
+        <section>
+            <h2>핵심 원리: DBA (Disposed Bit Area)</h2>
+            <p>비 압축 블록의 헤더에는 바이트 정렬(Byte Align)을 위해 존재하는 <strong>DBA 영역</strong>이 있습니다[cite: 11].</p>
+            <ul>
+                <li><strong>은닉성:</strong> 일반적인 디코더는 DBA 영역의 데이터를 무시하고 건너뜁니다[cite: 38].</li>
+                <li><strong>우회성:</strong> NPNCB는 압축 해제 시 생성되는 데이터가 없으므로, 해제된 데이터 기반의 <strong>CRC 체크를 완벽하게 우회</strong>합니다[cite: 143, 266].</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>공격 시나리오</h2>
+            <p>공격자는 수만 개의 NPNCB를 주입할 수 있습니다. 상용 프로그램은 경고 없이 정상 파일을 보여주지만, <strong>악의적 디코더</strong>는 이 DBA 조각들을 재조합하여 메모리 상에서 악성 코드를 실행합니다[cite: 150, 290].</p>
+        </section>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 Based on the research by Jung-hoon Kim. Analyzed for Academic Purposes.</p>
+</footer>
+
+<script>
+    function switchLang(lang) {
+        const en = document.getElementById('en-content');
+        const ko = document.getElementById('ko-content');
+        const title = document.getElementById('main-title');
+        const sub = document.getElementById('sub-title');
+
+        if (lang === 'en') {
+            en.classList.remove('hidden');
+            ko.classList.add('hidden');
+            title.innerText = "NPNCB Vulnerability Analysis";
+            sub.innerText = "Malicious Code Injection in Deflate Compression Algorithm";
+        } else {
+            en.classList.add('hidden');
+            ko.classList.remove('hidden');
+            title.innerText = "NPNCB 취약점 분석";
+            sub.innerText = "Deflate 압축 알고리즘에서의 악성코드 주입 및 은닉";
+        }
+    }
+</script>
+
+</body>
+</html>
