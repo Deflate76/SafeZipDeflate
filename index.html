@@ -13,7 +13,6 @@
             --secondary: #e74c3c;
             --card-bg: #ffffff;
             --border: #e1e8ed;
-            --code-bg: #1e1e1e;
         }
 
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; line-height: 1.8; color: var(--text-main); background: var(--bg-color); margin: 0; padding: 0; }
@@ -41,7 +40,7 @@
         
         /* Figures & Tables */
         .figure { background: var(--card-bg); padding: 1.5rem; text-align: center; border: 1px solid var(--border); border-radius: 8px; margin: 2rem 0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .figure-placeholder { background: #eef2f5; border: 2px dashed #bdc3c7; padding: 3rem 1rem; color: #7f8c8d; font-weight: bold; border-radius: 4px; margin-bottom: 1rem; word-break: break-all; }
+        .figure img { max-width: 100%; height: auto; border-radius: 4px; border: 1px solid #ddd; margin-bottom: 15px; }
         .caption { font-size: 0.9rem; color: var(--text-light); font-weight: 600; }
         
         table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; background: var(--card-bg); }
@@ -86,17 +85,17 @@
             <p>비 압축 블록은 헤더에 BFINAL(1bit)과 BTYPE(2bit)을 포함하며, 이후 바이트 경계에 맞추기 위해 무시되는 패딩 영역이 존재한다. 본 연구는 이 영역을 DBA라고 명명한다. 디코더가 이 데이터를 무시하므로 악성 코드를 숨길 수 있는 공간이 된다.</p>
             
             <div class="figure">
-                <div class="figure-placeholder"></div>
+                <img src="images/fig1.png" alt="General structure of non-compressed block">
                 <div class="caption">Fig. 1. General structure of non-compressed block in the Deflate algorithm</div>
             </div>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
+                <img src="images/fig2.png" alt="Variation of DBA size">
                 <div class="caption">Fig. 2. Variation of DBA size in the non-compressed block (0~7비트 가변성)</div>
             </div>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
+                <img src="images/fig3.png" alt="The case where DBA does not exist">
                 <div class="caption">Fig. 3. The case where the DBA does not exist</div>
             </div>
 
@@ -104,13 +103,13 @@
             <p>NPNCB는 Literal data가 없는 특수한 형태(LEN=0)이다. 압축 스트림을 바이트 경계에서 강제 종료(Flush)하기 위해 네트워크 통신(PPP, TLS, SSH) 등에서 합법적으로 사용되기도 한다.</p>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
+                <img src="images/fig4.png" alt="Structure of NPNCB">
                 <div class="caption">Fig. 4. The structure of No-Payload Non-Compressed Block (NPNCB)</div>
             </div>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Fig. 5. Consecutive compressed data blocks dividing with NPNCB</div>
+                <img src="images/fig5.png" alt="Consecutive compressed data blocks dividing with NPNCB">
+                <div class="caption">Fig. 5. Consecutive compressed data blocks dividing with NPNCB in the PPP, TLS, SSH</div>
             </div>
 
             <h3>1.4 보안 취약점</h3>
@@ -123,13 +122,13 @@
             <p>정상적으로 생성된 모든 유형의 압축 블록 사이에 악의적 인코더를 이용해 임의의 NPNCB를 무한정 삽입할 수 있다.</p>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
+                <img src="images/fig6.png" alt="The variability of NPNCB injection attack scenario design">
                 <div class="caption">Fig. 6. The variability of NPNCB injection attack scenario design</div>
             </div>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Fig. 7. NPNCB injection while initially encoding</div>
+                <img src="images/fig7.png" alt="The process of injecting malignant NPNCBs while initially encoding">
+                <div class="caption">Fig. 7. The process of injecting malignant NPNCBs while initially encoding by malignant encoder</div>
             </div>
 
             <h3>2.2 NPNCB 삽입 수행 및 압축 해제</h3>
@@ -142,8 +141,12 @@
             </table>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Fig. 8 & 9. Injection and successful normal decompression of .m4a file</div>
+                <img src="images/fig8.png" alt="Process of injecting NPNCBs to M4A file">
+                <div class="caption">Fig. 8. The process of injecting NPNCBs to normal compressed blocks while the M4A file being encoded</div>
+            </div>
+            <div class="figure">
+                <img src="images/fig9.png" alt="M4A file normally decompressed">
+                <div class="caption">Fig. 9. NPNCBs inserted compressed file (.m4a) is normally decompressed by commercial encoder without any alerts</div>
             </div>
 
             <table>
@@ -153,26 +156,30 @@
             </table>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Fig. 10 & 11. Injection and normal decompression of .xlsx file</div>
+                <img src="images/fig10.png" alt="Process of injecting NPNCBs to XLSX file">
+                <div class="caption">Fig. 10. The process of injecting NPNCBs to xlsx file compressed blocks</div>
+            </div>
+            <div class="figure">
+                <img src="images/fig11.png" alt="XLSX file normally decompressed">
+                <div class="caption">Fig. 11. NPNCBs inserted compressed file (.xlsx) is normally decompressed by commercial encoder without any alerts</div>
             </div>
 
             <h3>2.3 ~ 2.5 압축 데이터 디코딩 및 코드 실행</h3>
             <p>시중의 상용 압축 프로그램(반디집, 알집 등)은 NPNCB를 무시하고 정상 데이터만 해독한다. 반면, 악의적 디코더는 압축 해제와 동시에 각 DBA의 비트 조각들을 추출하여 악성 코드로 재조합(Reassemble)하고 메모리 상에서 즉각 실행한다.</p>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Fig. 12. Decoding by normal compression program</div>
+                <img src="images/fig12.png" alt="Decoding by normal compression program">
+                <div class="caption">Fig. 12. Decoding the malignant NPNCB block injected compressed data by normal compression program</div>
             </div>
             
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Fig. 13. Decoding by malignant decoder</div>
+                <img src="images/fig13.png" alt="Decoding by malignant decoder">
+                <div class="caption">Fig. 13. Decoding the malignant NPNCB block injected compressed data by malignant decoder</div>
             </div>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Fig. 14. Malignant NPNCB block inserted by a specific scenario</div>
+                <img src="images/fig14.png" alt="Malignant NPNCB block inserted by attack scenario">
+                <div class="caption">Fig. 14. Malignant NPNCB block can be inserted between normal compressed blocks by designed attack scenario</div>
             </div>
         </section>
 
@@ -182,25 +189,29 @@
             <p>7,680 바이트의 테스트용 악성 응용 프로그램을 준비했다. 1바이트를 5비트와 3비트로 쪼개어 총 15,360개의 NPNCB DBA에 분산 탑재(Steganography)하였다.</p>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Fig. 15. The running result of test malignant code</div>
+                <img src="images/fig15.png" alt="Running result of test malignant code">
+                <div class="caption">Fig. 15. The running result of test malignant code (TEST_SECURE.exe) which will be fragmented into NPNCBs' each DBA</div>
             </div>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Fig. 16. NPNCB injection attack test case</div>
+                <img src="images/fig16.png" alt="NPNCB injection attack test case">
+                <div class="caption">Fig. 16. NPNCB injection attack test case by malignant decoder compared with normal encoder</div>
             </div>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Fig. 17. 1바이트 악성코드를 5비트/3비트로 쪼개어 DBA에 은닉하는 과정</div>
+                <img src="images/fig17.png" alt="Summary of malignant code dividing">
+                <div class="caption">Fig. 17. The summary of malignant code dividing into each NPNCB DBA in the test attack case</div>
             </div>
 
             <p>결과적으로 이 거대한 변조에도 불구하고 알집 등 상용 툴에서는 정상 해제되었으며, 연구용 악의적 디코더 사용 시 숨겨진 팝업 프로그램이 완벽하게 재구성되어 실행되었다.</p>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Fig. 18 & 19. Normal decompression success vs Malignant payload execution</div>
+                <img src="images/fig18.png" alt="Malignant zip file decompression by normal decoder">
+                <div class="caption">Fig. 18. Malignant zip file decompression success by normal decoder</div>
+            </div>
+            <div class="figure">
+                <img src="images/fig19.png" alt="Malignant zip file decompression by malignant decoder">
+                <div class="caption">Fig. 19. Malignant zip file decompression success by malignant decoder</div>
             </div>
         </section>
 
@@ -240,8 +251,18 @@
             <p>NPNCBs (LEN=0) contain no payload. By injecting NPNCBs infected with malware in their DBAs, the CRC of the decompressed output remains identical to the original, completely bypassing commercial integrity checks.</p>
             
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Figures 1-5. Structural overview of Deflate blocks and NPNCBs</div>
+                <img src="images/fig1.png" alt="General structure of non-compressed block">
+                <div class="caption">Fig. 1. General structure of non-compressed block in the Deflate algorithm</div>
+            </div>
+
+            <div class="figure">
+                <img src="images/fig2.png" alt="Variation of DBA size">
+                <div class="caption">Fig. 2. Variation of DBA size in the non-compressed block</div>
+            </div>
+
+            <div class="figure">
+                <img src="images/fig4.png" alt="Structure of NPNCB">
+                <div class="caption">Fig. 4. The structure of No-Payload Non-Compressed Block (NPNCB)</div>
             </div>
         </section>
 
@@ -250,20 +271,20 @@
             <p>NPNCBs can be freely injected between normal blocks. In testing with .m4a and .xlsx files, thousands of malicious NPNCBs were injected.</p>
             
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Figures 6-7. Attack Scenario Mechanisms</div>
-            </div>
-            
-            <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Tables 1-4 & Fig. 8-11. Proof of normal decompression despite heavy block injection</div>
+                <img src="images/fig6.png" alt="The variability of NPNCB injection attack scenario design">
+                <div class="caption">Fig. 6. The variability of NPNCB injection attack scenario design</div>
             </div>
             
             <p>Standard decoders simply ignore the DBA bits. A specially crafted malignant decoder, however, actively extracts these bits from the DBA space during decompression and combines them to execute the payload in memory.</p>
             
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Figures 12-14. Normal vs Malignant decoding process</div>
+                <img src="images/fig12.png" alt="Decoding by normal compression program">
+                <div class="caption">Fig. 12. Decoding the malignant NPNCB block injected compressed data by normal compression program</div>
+            </div>
+            
+            <div class="figure">
+                <img src="images/fig13.png" alt="Decoding by malignant decoder">
+                <div class="caption">Fig. 13. Decoding the malignant NPNCB block injected compressed data by malignant decoder</div>
             </div>
         </section>
 
@@ -272,15 +293,15 @@
             <p>We fragmented a 7,680-byte Windows malware into 5-bit and 3-bit pieces, hiding them across the DBAs of 15,360 NPNCBs.</p>
             
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Figures 15-17. Fragmentation of malware across thousands of DBAs</div>
+                <img src="images/fig17.png" alt="Summary of malignant code dividing">
+                <div class="caption">Fig. 17. The summary of malignant code dividing into each NPNCB DBA in the test attack case</div>
             </div>
             
             <p>The resulting archive passed all commercial archiver checks (ALZip, Bandizip) silently. Only the malignant decoder reassembled and executed the hidden popup application successfully.</p>
 
             <div class="figure">
-                <div class="figure-placeholder"></div>
-                <div class="caption">Figures 18-19. Final Payload Execution</div>
+                <img src="images/fig19.png" alt="Malignant zip file decompression by malignant decoder">
+                <div class="caption">Fig. 19. Malignant zip file decompression success by malignant decoder</div>
             </div>
         </section>
 
