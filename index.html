@@ -3,105 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NPNCB Vulnerability - Malicious Code Injection in Deflate</title>
+    <title>NPNCB Vulnerability Technical Analysis - Jung-hoon Kim</title>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #e74c3c;
-            --bg-light: #f4f7f6;
-            --text-dark: #333;
+            --primary: #1a2a6c;
+            --accent: #f24e1e;
+            --code-bg: #1e1e1e;
+            --text: #333;
+            --light-gray: #f8f9fa;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: var(--text-dark); margin: 0; padding: 0; background: var(--bg-light); }
-        header { background: var(--primary-color); color: white; padding: 3rem 1rem; text-align: center; }
-        .container { max-width: 900px; margin: 2rem auto; padding: 0 2rem; }
-        .lang-switch { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px; }
-        button { padding: 8px 16px; cursor: pointer; border: none; border-radius: 4px; background: var(--primary-color); color: white; transition: 0.3s; }
-        button:hover { opacity: 0.8; }
-        section { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 2rem; }
-        h2 { color: var(--primary-color); border-left: 5px solid var(--accent-color); padding-left: 10px; }
-        .highlight { color: var(--accent-color); font-weight: bold; }
-        code { background: #eee; padding: 2px 5px; border-radius: 3px; }
-        footer { text-align: center; padding: 2rem; font-size: 0.9rem; color: #666; }
+        body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; line-height: 1.7; color: var(--text); margin: 0; background: #fff; }
+        header { background: linear-gradient(135deg, #1a2a6c, #b21f1f); color: white; padding: 4rem 1rem; text-align: center; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        .lang-switch { position: sticky; top: 10px; display: flex; justify-content: center; gap: 10px; z-index: 1000; }
+        button { padding: 10px 20px; cursor: pointer; border: 1px solid white; border-radius: 25px; background: var(--primary); color: white; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        button:hover { background: var(--accent); }
+        
+        section { margin-bottom: 4rem; border-bottom: 1px solid #eee; padding-bottom: 2rem; }
+        h2 { color: var(--primary); font-size: 1.8rem; border-left: 6px solid var(--accent); padding-left: 15px; margin-bottom: 1.5rem; }
+        h3 { color: #555; margin-top: 2rem; }
+        
+        .tech-box { background: var(--light-gray); border-radius: 8px; padding: 1.5rem; border: 1px solid #ddd; margin: 1rem 0; }
+        .diagram-placeholder { background: #eef2f3; border: 2px dashed #999; padding: 2rem; text-align: center; font-style: italic; margin: 1.5rem 0; border-radius: 8px; }
+        
+        code.block { display: block; background: var(--code-bg); color: #dcdcdc; padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace; overflow-x: auto; margin: 1rem 0; }
+        .important { color: var(--accent); font-weight: bold; }
+        footer { background: #333; color: #ccc; text-align: center; padding: 3rem; margin-top: 4rem; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
+<div class="lang-switch">
+    <button onclick="switchLang('ko')">KOREAN (국문)</button>
+    <button onclick="switchLang('en')">ENGLISH (영문)</button>
+</div>
+
 <header>
-    <h1 id="main-title">NPNCB Vulnerability Analysis</h1>
-    <p id="sub-title">Malicious Code Injection in Deflate Compression Algorithm</p>
+    <h1 id="title">Deflate 알고리즘의 NPNCB 주입 취약점 분석</h1>
+    <p id="subtitle">Analysis of Malicious Code Injection Vulnerability in the Deflate Algorithm</p>
+    <p style="opacity: 0.8;">Author: Jung-hoon Kim (CEO of BinaryLab)</p>
 </header>
 
 <div class="container">
-    <div class="lang-switch">
-        <button onclick="switchLang('en')">English</button>
-        <button onclick="switchLang('ko')">한국어</button>
-    </div>
-
-    <div id="en-content">
+    <div id="ko-section">
         <section>
-            <h2>Research Overview</h2>
-            <p>This research by <strong>Jung-hoon Kim (BinaryLab CEO)</strong> identifies a critical vulnerability in the <strong>Deflate algorithm</strong> (used in ZIP, APK, PDF). It focuses on the <strong>NPNCB (No-Payload Non-Compressed Block)</strong>, which can be used to hide malicious code without affecting the file's integrity[cite: 4, 10].</p>
+            <h2>1. 취약점 핵심 요약</h2>
+            <p>본 연구는 전 세계적으로 가장 널리 사용되는 압축 알고리즘인 <span class="important">Deflate(RFC 1951)</span>에서 비 압축 블록의 구조적 특징을 이용한 데이터 은닉 및 악성코드 실행 기법을 다룹니다[cite: 10, 21]. 공격자는 정상적인 압축 데이터 블록 사이에 <span class="important">NPNCB(No-Payload Non-Compressed Block)</span>를 삽입하여 보안 솔루션을 우회할 수 있습니다[cite: 10].</p>
         </section>
 
         <section>
-            <h2>The Core Mechanism: DBA</h2>
-            <p>The vulnerability resides in the <strong>DBA (Disposed Bit Area)</strong> within the header of a non-compressed block. This area exists solely for byte alignment[cite: 11].</p>
-            <ul>
-                <li><strong>Stealth:</strong> Data in DBA is ignored by standard decoders[cite: 38].</li>
-                <li><strong>Bypass:</strong> Since NPNCB has no literal data, it does not change the <strong>CRC</strong> value after decompression, making it invisible to security software[cite: 143, 266].</li>
-            </ul>
+            <h2>2. 기술적 원리 (Mechanism)</h2>
+            <h3>A. DBA (Disposed Bit Area)의 정의</h3>
+            <p>Deflate 알고리즘은 비 압축 블록을 생성할 때, 헤더 이후의 데이터가 바이트 경계(Byte Boundary)에서 시작하도록 설계되었습니다[cite: 11, 37]. 이때 이전 블록의 끝 지점에 따라 0~7비트의 여유 공간이 발생하는데, 이를 본 연구에서 <span class="important">DBA</span>라고 명명하였습니다[cite: 11, 39].</p>
+            <div class="tech-box">
+                <strong>비 압축 블록 헤더 구조:</strong>
+                <code class="block">
+                [BFINAL(1bit)] + [BTYPE(2bit: 00)] + [DBA(0-7bit)] + [LEN(16bit)] + [NLEN(16bit)]
+                </code>
+                <p>RFC 1951 표준에 따르면 DBA 영역의 값은 무시되므로(ignored), 공격자는 여기에 임의의 데이터를 채워 넣을 수 있습니다[cite: 38].</p>
+            </div>
+
+            <h3>B. NPNCB (No-Payload Non-Compressed Block)</h3>
+            <p>NPNCB는 실제 저장할 원본 데이터가 없어 <span class="important">LEN 값이 0</span>인 특수한 비 압축 블록입니다[cite: 101, 125]. 이 블록은 압축 결과물에 어떠한 출력 데이터도 남기지 않으면서 오직 DBA 영역만을 확보하는 용도로 사용됩니다.</p>
         </section>
 
         <section>
-            <h2>Attack Scenario</h2>
-            <p>An attacker can inject thousands of NPNCBs. While a normal program extracts the original data perfectly, a <strong>malicious decoder</strong> can extract and recombine bits from the DBA to execute arbitrary code in memory[cite: 150, 290].</p>
-        </section>
-    </div>
-
-    <div id="ko-content" class="hidden">
-        <section>
-            <h2>연구 개요</h2>
-            <p><strong>김정훈(바이너리랩 대표이사)</strong> 저자의 연구에 따르면, ZIP, APK, PDF 등에 널리 쓰이는 <strong>Deflate 알고리즘</strong>에서 심각한 취약점이 발견되었습니다. 핵심은 <strong>원본 데이터가 없는 비 압축 블록(NPNCB)</strong>을 활용하여 정상 데이터 사이에 악성 코드를 은닉하는 기술입니다[cite: 4, 10].</p>
+            <h2>3. 공격 시나리오 (Attack Scenario)</h2>
+            <div class="diagram-placeholder">
+                
+            </div>
+            <p>1. <strong>은닉 (Hiding):</strong> 악성 코드를 비트 단위로 쪼개어 수만 개의 NPNCB 내 DBA 영역에 분산 저장합니다[cite: 301, 328].<br>
+            2. <strong>우회 (Bypassing):</strong> NPNCB는 해제된 데이터가 없으므로 파일의 전체 <strong>CRC(Cyclic Redundancy Check)</strong> 값에 영향을 주지 않습니다. 따라서 일반 백신이나 압축 프로그램은 변조를 감지하지 못합니다[cite: 143, 266].<br>
+            3. <strong>실행 (Execution):</strong> 특수하게 설계된 악의적 디코더가 압축을 풀면서 DBA의 비트들을 다시 조합하여 메모리 상에서 악성 코드를 복원 및 실행합니다[cite: 290, 336].</p>
         </section>
 
         <section>
-            <h2>핵심 원리: DBA (Disposed Bit Area)</h2>
-            <p>비 압축 블록의 헤더에는 바이트 정렬(Byte Align)을 위해 존재하는 <strong>DBA 영역</strong>이 있습니다[cite: 11].</p>
-            <ul>
-                <li><strong>은닉성:</strong> 일반적인 디코더는 DBA 영역의 데이터를 무시하고 건너뜁니다[cite: 38].</li>
-                <li><strong>우회성:</strong> NPNCB는 압축 해제 시 생성되는 데이터가 없으므로, 해제된 데이터 기반의 <strong>CRC 체크를 완벽하게 우회</strong>합니다[cite: 143, 266].</li>
-            </ul>
-        </section>
-
-        <section>
-            <h2>공격 시나리오</h2>
-            <p>공격자는 수만 개의 NPNCB를 주입할 수 있습니다. 상용 프로그램은 경고 없이 정상 파일을 보여주지만, <strong>악의적 디코더</strong>는 이 DBA 조각들을 재조합하여 메모리 상에서 악성 코드를 실행합니다[cite: 150, 290].</p>
+            <h2>4. 결론 및 시사점</h2>
+            <p>이 취약점은 ZIP뿐만 아니라 APK, PDF, XLSB 등 Deflate를 사용하는 수많은 파일 포맷에 적용될 수 있습니다[cite: 294, 295]. 단순한 데이터 은닉을 넘어 스테가노그래피 기술로 활용될 수 있으며, 이를 차단하기 위한 새로운 보안 검증 알고리즘이 필요합니다[cite: 390, 395].</p>
         </section>
     </div>
+
+    <div id="en-section" class="hidden">
+        <section>
+            <h2>1. Research Summary</h2>
+            <p>This study analyzes a vulnerability in the <span class="important">Deflate algorithm (RFC 1951)</span>, the world's most popular compression method[cite: 2, 21]. It demonstrates how <span class="important">NPNCB (No-Payload Non-Compressed Block)</span> can be used to hide and execute malicious code between normal data blocks[cite: 10, 16].</p>
+        </section>
+
+        <section>
+            <h2>2. Technical Mechanism</h2>
+            <h3>A. DBA (Disposed Bit Area)</h3>
+            <p>When generating non-compressed blocks, Deflate ensures data starts at a byte boundary[cite: 37, 39]. This creates a gap of 0-7 bits, defined as <span class="important">DBA</span> in this research[cite: 11, 47].</p>
+            <div class="tech-box">
+                <strong>Non-compressed Block Header:</strong>
+                <code class="block">
+                [BFINAL(1bit)] + [BTYPE(2bit: 00)] + [DBA(0-7bit)] + [LEN(16bit)] + [NLEN(16bit)]
+                </code>
+                <p>Standard decoders ignore data in the DBA area per RFC 1951 specifications[cite: 38].</p>
+            </div>
+
+            <h3>B. NPNCB Characteristics</h3>
+            <p>NPNCB is a special block where <span class="important">LEN = 0</span>[cite: 10, 125]. It produces no output during decompression but serves as a carrier for hidden data in the DBA[cite: 14, 143].</p>
+        </section>
+        
+        </div>
 </div>
 
 <footer>
-    <p>© 2026 Based on the research by Jung-hoon Kim. Analyzed for Academic Purposes.</p>
+    <p>© 2022-2026 Jung-hoon Kim. All Rights Reserved.<br>
+    Published in Journal of The Korea Institute of Information Security & Cryptology, Vol.32, No.5 [cite: 2]</p>
 </footer>
 
 <script>
     function switchLang(lang) {
-        const en = document.getElementById('en-content');
-        const ko = document.getElementById('ko-content');
-        const title = document.getElementById('main-title');
-        const sub = document.getElementById('sub-title');
+        const ko = document.getElementById('ko-section');
+        const en = document.getElementById('en-section');
+        const title = document.getElementById('title');
+        const subtitle = document.getElementById('subtitle');
 
-        if (lang === 'en') {
-            en.classList.remove('hidden');
-            ko.classList.add('hidden');
-            title.innerText = "NPNCB Vulnerability Analysis";
-            sub.innerText = "Malicious Code Injection in Deflate Compression Algorithm";
-        } else {
-            en.classList.add('hidden');
+        if (lang === 'ko') {
             ko.classList.remove('hidden');
-            title.innerText = "NPNCB 취약점 분석";
-            sub.innerText = "Deflate 압축 알고리즘에서의 악성코드 주입 및 은닉";
+            en.classList.add('hidden');
+            title.innerText = "Deflate 알고리즘의 NPNCB 주입 취약점 분석";
+            subtitle.innerText = "Analysis of Malicious Code Injection Vulnerability in the Deflate Algorithm";
+        } else {
+            ko.classList.add('hidden');
+            en.classList.remove('hidden');
+            title.innerText = "Technical Analysis of NPNCB Vulnerability";
+            subtitle.innerText = "Malicious Code Injection in Deflate (RFC 1951)";
         }
     }
 </script>
