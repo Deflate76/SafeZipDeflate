@@ -19,6 +19,8 @@
       </a>
       <div class="nav-links">
         <a href="#overview" data-ko="개요" data-en="Overview">개요</a>
+        <a href="#why-matters" data-ko="왜 중요한가" data-en="Why It Matters">왜 중요한가</a>
+        <a href="#concepts" data-ko="핵심 개념" data-en="Core Concepts">핵심 개념</a>
         <a href="#dba" data-ko="DBA 개념" data-en="DBA Concept">DBA 개념</a>
         <a href="#experiments" data-ko="실험" data-en="Experiments">실험</a>
         <a href="#defense" data-ko="방어" data-en="Defense">방어</a>
@@ -131,6 +133,198 @@
           <div class="lang-block ko active"><h3>구조 기반 탐지</h3><p>비정상적인 NPNCB 빈도, 0이 아닌 DBA, 과도한 zero-length block 패턴을 함께 확인해야 합니다.</p></div>
           <div class="lang-block en"><h3>Structure-aware detection</h3><p>Detection should inspect abnormal NPNCB frequency, non-zero DBA bits, and suspicious zero-length block patterns.</p></div>
         </article>
+      </div>
+    </section>
+
+
+    <section class="split section-shell" id="why-matters" aria-labelledby="impact-title">
+      <div>
+        <p class="eyebrow">Why It Matters</p>
+        <div class="lang-block ko active">
+          <h2 id="impact-title">왜 중요한가?</h2>
+          <p>
+            Deflate는 ZIP을 비롯한 여러 파일 형식과 프로토콜에서 사용되는 대표적인 압축 알고리즘입니다.
+            논문은 Deflate 표준이 허용하는 비압축 블록의 구조적 특성을 이용하면, 압축 해제 결과를 바꾸지 않으면서도 압축 데이터 내부에 별도의 데이터를 숨길 수 있음을 설명합니다.
+          </p>
+          <p>
+            이 취약점은 단순한 압축률 문제나 파일 헤더 오류가 아니라, “해제된 원본 데이터는 정상인데 압축 스트림 내부는 오염될 수 있다”는 검증 관점의 차이를 보여줍니다.
+            따라서 압축 파일 무결성 검사를 해제 결과에만 의존하는 도구는 은닉 데이터를 놓칠 수 있습니다.
+          </p>
+        </div>
+        <div class="lang-block en">
+          <h2 id="impact-title-en">Why does it matter?</h2>
+          <p>
+            Deflate is a widely used compression algorithm employed by ZIP and many other file formats and protocols.
+            The paper explains that the structural properties of Deflate's non-compressed blocks can be used to hide additional data inside the compressed stream without changing the decompressed output.
+          </p>
+          <p>
+            This is not merely a compression-ratio issue or a file-header error. It highlights a validation gap: the decompressed data may remain normal while the compressed stream itself can still be contaminated.
+            As a result, tools that rely only on decompressed-output integrity checks may miss hidden data.
+          </p>
+        </div>
+      </div>
+      <aside class="key-box" aria-labelledby="thesis-title">
+        <div class="lang-block ko active">
+          <h3 id="thesis-title">논문의 주장</h3>
+          <p>
+            NPNCB의 DBA 영역을 오염시킨 뒤 정상 압축 블록 사이에 삽입해도 일반 압축 프로그램은 원본 파일을 정상 해제할 수 있으며,
+            별도의 악의적 디코더는 DBA 조각을 재조합해 숨겨진 데이터를 복원할 수 있습니다.
+          </p>
+        </div>
+        <div class="lang-block en">
+          <h3 id="thesis-title-en">Main claim of the paper</h3>
+          <p>
+            Even if the DBA region of NPNCBs is polluted and the NPNCBs are inserted between normal compressed blocks, ordinary decompressors can still recover the original file normally,
+            while a separate malicious decoder can reconstruct the hidden data by reassembling DBA fragments.
+          </p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section-shell" id="concepts" aria-labelledby="concepts-title">
+      <div class="section-heading narrow">
+        <p class="eyebrow">Core Concepts</p>
+        <div class="lang-block ko active">
+          <h2 id="concepts-title">핵심 개념</h2>
+          <p>논문 이해에 필요한 세 가지 개념은 Deflate 블록 유형, DBA, NPNCB입니다.</p>
+        </div>
+        <div class="lang-block en">
+          <h2 id="concepts-title-en">Core concepts</h2>
+          <p>The three key ideas needed to understand the paper are the Deflate block types, the DBA, and the NPNCB.</p>
+        </div>
+      </div>
+
+      <div class="concept-layout">
+        <div class="concept-list">
+          <article class="concept-item">
+            <div class="lang-block ko active">
+              <h3>1. Deflate의 세 가지 블록</h3>
+              <p>Deflate는 동적 허프만 블록, 고정 허프만 블록, 비압축 블록을 생성합니다. 비압축 블록은 압축 이득이 없을 때 원본 데이터를 그대로 담는 블록입니다.</p>
+            </div>
+            <div class="lang-block en">
+              <h3>1. Three block types in Deflate</h3>
+              <p>Deflate produces dynamic Huffman blocks, fixed Huffman blocks, and non-compressed blocks. A non-compressed block stores the original data directly when compression gain is not expected.</p>
+            </div>
+          </article>
+          <article class="concept-item">
+            <div class="lang-block ko active">
+              <h3>2. DBA: Disposed Bit Area</h3>
+              <p>비압축 블록의 LEN 필드를 byte boundary에서 시작시키기 위해 삽입되는 align 비트 영역입니다. 논문은 이 영역을 DBA라고 명명했습니다.</p>
+            </div>
+            <div class="lang-block en">
+              <h3>2. DBA: Disposed Bit Area</h3>
+              <p>This is the alignment-bit region inserted so that the LEN field of a non-compressed block starts at a byte boundary. The paper names this region the DBA.</p>
+            </div>
+          </article>
+          <article class="concept-item">
+            <div class="lang-block ko active">
+              <h3>3. NPNCB: No-Payload Non-Compressed Block</h3>
+              <p>LEN이 0이어서 literal data가 없는 특수한 비압축 블록입니다. 원본 데이터를 만들지 않기 때문에 삽입되어도 해제 결과가 변하지 않을 수 있습니다.</p>
+            </div>
+            <div class="lang-block en">
+              <h3>3. NPNCB: No-Payload Non-Compressed Block</h3>
+              <p>This is a special non-compressed block with LEN=0 and no literal data. Because it does not generate output data, inserting it may leave the decompressed result unchanged.</p>
+            </div>
+          </article>
+        </div>
+
+        <figure class="diagram-card">
+          <figcaption>
+            <span class="lang-text" data-ko="비압축 블록과 NPNCB의 단순화 구조" data-en="Simplified structure of a non-compressed block and an NPNCB">비압축 블록과 NPNCB의 단순화 구조</span>
+          </figcaption>
+          <svg viewBox="0 0 980 500" role="img" aria-labelledby="svg-title svg-desc">
+            <title id="svg-title">Deflate non-compressed block structure</title>
+            <desc id="svg-desc">Diagram showing the order Prefix, DBA, LEN, NLEN, and literal data, and an NPNCB without literal data.</desc>
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#38bdf8" />
+                <stop offset="1" stop-color="#818cf8" />
+              </linearGradient>
+              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="10" stdDeviation="12" flood-opacity="0.18" />
+              </filter>
+            </defs>
+            <text x="34" y="52" class="svg-title">Non-compressed block</text>
+            <g filter="url(#shadow)">
+              <rect x="34" y="92" width="130" height="84" rx="16" class="svg-block dark" />
+              <rect x="176" y="92" width="140" height="84" rx="16" fill="url(#g1)" />
+              <rect x="328" y="92" width="150" height="84" rx="16" class="svg-block yellow" />
+              <rect x="490" y="92" width="150" height="84" rx="16" class="svg-block pink" />
+              <rect x="652" y="92" width="270" height="84" rx="16" class="svg-block light" />
+            </g>
+            <text x="69" y="140" class="svg-label inverse">Prefix</text>
+            <text x="212" y="140" class="svg-label inverse">DBA</text>
+            <text x="378" y="140" class="svg-label">LEN</text>
+            <text x="535" y="140" class="svg-label">NLEN</text>
+            <text x="724" y="140" class="svg-label">literal data</text>
+            <text x="34" y="214" class="svg-note">BFINAL + BTYPE 뒤에 byte align용 DBA가 위치합니다.</text>
+
+            <text x="34" y="292" class="svg-title">NPNCB</text>
+            <g filter="url(#shadow)">
+              <rect x="34" y="332" width="130" height="84" rx="16" class="svg-block dark" />
+              <rect x="176" y="332" width="140" height="84" rx="16" fill="url(#g1)" />
+              <rect x="328" y="332" width="150" height="84" rx="16" class="svg-block yellow" />
+              <rect x="490" y="332" width="150" height="84" rx="16" class="svg-block pink" />
+              <rect x="652" y="332" width="270" height="84" rx="16" class="svg-block empty" />
+            </g>
+            <text x="69" y="380" class="svg-label inverse">Prefix</text>
+            <text x="207" y="380" class="svg-label inverse">DBA bits</text>
+            <text x="366" y="380" class="svg-label">LEN=0</text>
+            <text x="512" y="380" class="svg-label">NLEN=FFFF</text>
+            <text x="706" y="380" class="svg-label muted">no payload</text>
+            <text x="34" y="454" class="svg-note">원본 데이터가 없으므로 정상 디코더는 해제 결과를 생성하지 않고 다음 블록으로 진행할 수 있습니다.</text>
+          </svg>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section-shell" id="attack-idea" aria-labelledby="flow-title">
+      <div class="section-heading narrow">
+        <p class="eyebrow">Attack Idea at a High Level</p>
+        <div class="lang-block ko active">
+          <h2 id="flow-title">공격 아이디어: 압축 결과는 그대로, 스트림 내부는 다르게</h2>
+          <p>아래 흐름은 방어 관점의 개념도입니다. 실제 악성 삽입 절차나 구현 코드는 제공하지 않습니다.</p>
+        </div>
+        <div class="lang-block en">
+          <h2 id="flow-title-en">High-level attack idea: same output, different internal stream</h2>
+          <p>The diagram below is a conceptual illustration for defensive understanding. It does not provide weaponized insertion steps or implementation code.</p>
+        </div>
+      </div>
+
+      <div class="flow-panel">
+        <svg viewBox="0 0 1120 430" role="img" aria-labelledby="flow-svg-title flow-svg-desc">
+          <title id="flow-svg-title">Conceptual flow of NPNCB insertion</title>
+          <desc id="flow-svg-desc">A flow showing NPNCBs inserted between normal Deflate blocks and the different outcomes for a normal decoder and a malicious decoder.</desc>
+          <defs>
+            <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+              <path d="M2,2 L10,6 L2,10 Z" fill="#64748b" />
+            </marker>
+          </defs>
+          <text x="36" y="58" class="svg-title">Compressed stream</text>
+          <rect x="36" y="90" width="180" height="72" rx="16" class="svg-flow-block normal" />
+          <rect x="238" y="90" width="150" height="72" rx="16" class="svg-flow-block npncb" />
+          <rect x="410" y="90" width="180" height="72" rx="16" class="svg-flow-block normal" />
+          <rect x="612" y="90" width="150" height="72" rx="16" class="svg-flow-block npncb" />
+          <rect x="784" y="90" width="180" height="72" rx="16" class="svg-flow-block normal" />
+          <text x="70" y="134" class="svg-label">Block A</text>
+          <text x="267" y="134" class="svg-label inverse">NPNCB</text>
+          <text x="444" y="134" class="svg-label">Block B</text>
+          <text x="641" y="134" class="svg-label inverse">NPNCB</text>
+          <text x="819" y="134" class="svg-label">Block C</text>
+
+          <line x1="500" y1="190" x2="315" y2="255" class="svg-arrow" />
+          <line x1="500" y1="190" x2="770" y2="255" class="svg-arrow" />
+
+          <rect x="96" y="260" width="390" height="112" rx="22" class="svg-decoder" />
+          <text x="128" y="304" class="svg-title small">Normal decoder</text>
+          <text x="128" y="338" class="svg-note">DBA를 해제 결과로 내보내지 않음</text>
+          <text x="128" y="362" class="svg-note">원본 데이터는 정상적으로 복원</text>
+
+          <rect x="620" y="260" width="420" height="112" rx="22" class="svg-decoder warning" />
+          <text x="652" y="304" class="svg-title small">Malicious decoder</text>
+          <text x="652" y="338" class="svg-note">DBA 조각을 별도로 추출</text>
+          <text x="652" y="362" class="svg-note">사전 시나리오에 따라 숨겨진 데이터 복원</text>
+        </svg>
       </div>
     </section>
 
