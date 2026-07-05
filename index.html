@@ -1,348 +1,365 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deflate Vulnerability Analysis | Jung-hoon Kim</title>
-    <style>
-        :root {
-            --bg-color: #f4f6f9;
-            --text-main: #2c3e50;
-            --text-light: #596a7b;
-            --primary: #1f3c88;
-            --secondary: #e74c3c;
-            --card-bg: #ffffff;
-            --border: #e1e8ed;
-        }
-
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; line-height: 1.8; color: var(--text-main); background: var(--bg-color); margin: 0; padding: 0; }
-        
-        /* Navigation */
-        nav { background: var(--card-bg); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .logo { font-weight: bold; font-size: 1.2rem; color: var(--primary); }
-        .btn-lang { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-lang:hover { background: var(--secondary); }
-
-        /* Header */
-        header { background: linear-gradient(135deg, #1f3c88, #07194f); color: white; padding: 4rem 2rem; text-align: center; }
-        h1 { font-size: 2.2rem; margin-bottom: 10px; line-height: 1.4; }
-        .meta { font-size: 1rem; opacity: 0.9; margin-bottom: 20px; }
-        .author { font-size: 1.2rem; font-weight: 600; color: #f1c40f; }
-
-        /* Container */
-        .container { max-width: 900px; margin: 3rem auto; padding: 0 2rem; }
-
-        /* Sections & Typography */
-        .abstract-box { background: var(--card-bg); padding: 2rem; border-left: 5px solid var(--secondary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 3rem; }
-        h2 { color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-top: 3rem; }
-        h3 { color: var(--secondary); margin-top: 2rem; font-size: 1.3rem; }
-        p { text-align: justify; margin-bottom: 1.5rem; }
-        
-        /* Figures & Tables */
-        .figure { background: var(--card-bg); padding: 1.5rem; text-align: center; border: 1px solid var(--border); border-radius: 8px; margin: 2rem 0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .figure img { max-width: 100%; height: auto; border-radius: 4px; border: 1px solid #ddd; margin-bottom: 15px; }
-        .caption { font-size: 0.9rem; color: var(--text-light); font-weight: 600; }
-        
-        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; background: var(--card-bg); }
-        th, td { border: 1px solid var(--border); padding: 10px; text-align: left; word-break: break-all; }
-        th { background: #f8f9fa; color: var(--primary); }
-
-        /* Author Bio */
-        .bio-section { background: var(--card-bg); padding: 2rem; border-radius: 8px; border: 1px solid var(--border); margin-top: 4rem; display: flex; gap: 20px; align-items: center; }
-        
-        footer { text-align: center; padding: 3rem; margin-top: 3rem; background: #2c3e50; color: white; font-size: 0.9rem; }
-        .hidden { display: none !important; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NPNCB 취약점 | Deflate 악성코드 주입 취약점 논문 소개</title>
+  <meta name="description" content="Deflate 압축 알고리즘의 NPNCB(No-Payload Non-Compressed Block)와 DBA(Disposed Bit Area)를 이용한 데이터 은닉 및 악성코드 주입 취약점 논문 소개 페이지" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta property="og:title" content="NPNCB 취약점 논문 소개" />
+  <meta property="og:description" content="Deflate 비압축 블록의 DBA 영역을 이용한 은닉 공격과 방어 관점을 정리한 GitHub Pages용 소개 페이지" />
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
+  <a class="skip-link" href="#main">본문으로 바로가기</a>
 
-<nav>
-    <div class="logo">BinaryLab Research</div>
-    <button class="btn-lang" id="toggleBtn" onclick="toggleLanguage()">Read in English</button>
-</nav>
+  <header class="site-header" id="top">
+    <nav class="nav" aria-label="주요 메뉴">
+      <a class="brand" href="#top" aria-label="NPNCB 소개 페이지 홈">
+        <span class="brand-mark" aria-hidden="true">N</span>
+        <span>NPNCB Vulnerability</span>
+      </a>
+      <div class="nav-links">
+        <a href="#overview">개요</a>
+        <a href="#concepts">핵심 개념</a>
+        <a href="#experiments">실험</a>
+        <a href="#defense">방어</a>
+        <a href="#references">참고</a>
+      </div>
+    </nav>
+  </header>
 
-<div id="content-ko">
-    <header>
-        <h1>Deflate 압축 알고리즘에서<br>악성코드 주입 취약점 분석</h1>
-        <div class="meta">Journal of The Korea Institute of Information Security & Cryptology<br>VOL.32, NO.5, Oct. 2022 | ISSN 1598-3986</div>
-        <div class="author">김정훈</div>
-    </header>
+  <main id="main">
+    <section class="hero section-shell" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Paper Brief · Deflate · ZIP Security · Steganography</p>
+        <h1 id="hero-title">Deflate 압축 알고리즘에서 발견된<br />NPNCB 기반 은닉 취약점</h1>
+        <p class="hero-lead">
+          비압축 블록의 byte align을 위해 존재하지만 일반 디코더가 무시하는 비트 영역(DBA)에
+          데이터를 숨기고, 원본 데이터 없는 비압축 블록(NPNCB)을 정상 압축 블록 사이에 삽입할 수 있음을 분석한 연구를 소개합니다.
+        </p>
+        <div class="hero-actions" aria-label="관련 링크">
+          <a class="button primary" href="https://doi.org/10.13089/JKIISC.2022.32.5.869" target="_blank" rel="noreferrer">논문 DOI 보기</a>
+          <a class="button ghost" href="#summary">핵심 요약</a>
+        </div>
+      </div>
 
-    <div class="container">
-        <div class="abstract-box">
-            <h3>요 약</h3>
-            <p>본 연구를 통해 매우 대중적인 압축 알고리즘인 Deflate 알고리즘을 통해 생성되는 3가지 유형의 압축 데이터 블록 가운데 원본 데이터 없는 비 압축 블록(No-Payload Non-Compressed Block; NPNCB) 유형을 임의로 생성하여 정상적인 압축 블록 사이에 미리 설계된 공격 시나리오에 따라 삽입하는 방법을 통해 악의적 코드 또는 임의의 데이터를 은닉하는 취약점을 발견하였다.</p>
-            <p>비 압축 블록의 헤더에는 byte align을 위해서만 존재하는 데이터 영역이 존재하며, 본 연구에서는 이 영역을 <strong>DBA(Disposed Bit Area)</strong>라고 명명하였다. 이러한 DBA 영역에 다양한 악성 코드와 악의적 데이터를 숨길 수 있었으며, 실험을 통해 정상적인 압축 블록들 사이에 오염된 블록을 삽입했음에도 기존 상용 프로그램에서 정상적으로 경고 없이 압축 해제 되었고, 악의적 디코더로 해독하여 악성 코드를 실행할 수 있음을 보였다.</p>
-            <p><strong>Keywords:</strong> Deflate, Zip, Non-compressed block, Steganography, Malware</p>
+      <div class="hero-card" aria-label="논문 정보">
+        <div class="card-glow" aria-hidden="true"></div>
+        <p class="mini-label">Original Paper</p>
+        <h2>Deflate 압축 알고리즘에서 악성코드 주입 취약점 분석</h2>
+        <dl class="paper-meta">
+          <div><dt>저자</dt><dd>김정훈</dd></div>
+          <div><dt>학술지</dt><dd>정보보호학회논문지 Vol.32, No.5</dd></div>
+          <div><dt>발행</dt><dd>2022년 10월</dd></div>
+          <div><dt>키워드</dt><dd>Deflate, Zip, NPNCB, DBA, Steganography</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="notice section-shell" aria-label="안전 고지">
+      <strong>방어 목적 소개 페이지</strong>
+      <span>이 페이지는 연구 내용을 이해하기 쉽게 소개하기 위한 정적 페이지입니다. 악성코드 제작·삽입 절차나 공격용 구현 코드는 포함하지 않습니다.</span>
+    </section>
+
+    <section class="section-shell" id="summary" aria-labelledby="summary-title">
+      <div class="section-heading">
+        <p class="eyebrow">Executive Summary</p>
+        <h2 id="summary-title">핵심 요약</h2>
+        <p>
+          논문은 Deflate 스트림 안에 원본 데이터를 만들지 않는 NPNCB를 삽입해도 압축 해제 결과가 변하지 않는다는 점에 주목합니다.
+          특히 DBA 영역에 숨긴 데이터가 일반 압축 프로그램의 CRC 검사나 정상 해제 흐름에서 드러나지 않을 수 있음을 실험으로 보였습니다.
+        </p>
+      </div>
+
+      <div class="summary-grid">
+        <article class="summary-card">
+          <span class="card-number">01</span>
+          <h3>NPNCB 삽입</h3>
+          <p>Deflate의 정상 압축 블록 사이에 원본 데이터가 없는 비압축 블록을 추가할 수 있습니다.</p>
+        </article>
+        <article class="summary-card">
+          <span class="card-number">02</span>
+          <h3>DBA 은닉</h3>
+          <p>byte align을 위한 DBA는 일반적으로 무시되므로 작은 비트 조각을 숨기는 공간으로 악용될 수 있습니다.</p>
+        </article>
+        <article class="summary-card">
+          <span class="card-number">03</span>
+          <h3>정상 해제</h3>
+          <p>NPNCB는 원본 데이터를 생성하지 않아 압축 해제 결과와 CRC 값에 영향을 주지 않을 수 있습니다.</p>
+        </article>
+        <article class="summary-card">
+          <span class="card-number">04</span>
+          <h3>탐지 필요</h3>
+          <p>비정상적으로 삽입된 NPNCB, 0이 아닌 DBA, 과도한 zero-length block 패턴을 점검해야 합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="split section-shell" id="overview" aria-labelledby="overview-title">
+      <div>
+        <p class="eyebrow">Why It Matters</p>
+        <h2 id="overview-title">왜 중요한가?</h2>
+        <p>
+          Deflate는 ZIP을 비롯한 여러 파일 형식과 프로토콜에서 사용되는 대표적인 압축 알고리즘입니다.
+          논문은 Deflate 표준이 허용하는 비압축 블록의 구조적 특성을 이용하면, 압축 해제 결과를 바꾸지 않으면서도
+          압축 데이터 내부에 별도의 데이터를 숨길 수 있음을 설명합니다.
+        </p>
+        <p>
+          이 취약점은 단순한 압축률 문제나 파일 헤더 오류가 아니라, “해제된 원본 데이터는 정상인데 압축 스트림 내부는 오염될 수 있다”는
+          검증 관점의 차이를 보여줍니다. 따라서 압축 파일 무결성 검사를 해제 결과에만 의존하는 도구는 은닉 데이터를 놓칠 수 있습니다.
+        </p>
+      </div>
+      <aside class="key-box" aria-labelledby="thesis-title">
+        <h3 id="thesis-title">논문의 주장</h3>
+        <p>
+          NPNCB의 DBA 영역을 오염시킨 뒤 정상 압축 블록 사이에 삽입해도 일반 압축 프로그램은 원본 파일을 정상 해제할 수 있으며,
+          별도의 악의적 디코더는 DBA 조각을 재조합해 숨겨진 데이터를 복원할 수 있습니다.
+        </p>
+      </aside>
+    </section>
+
+    <section class="section-shell" id="concepts" aria-labelledby="concepts-title">
+      <div class="section-heading narrow">
+        <p class="eyebrow">Core Concepts</p>
+        <h2 id="concepts-title">핵심 개념</h2>
+        <p>논문 이해에 필요한 세 가지 개념은 Deflate 블록 유형, DBA, NPNCB입니다.</p>
+      </div>
+
+      <div class="concept-layout">
+        <div class="concept-list">
+          <article class="concept-item">
+            <h3>1. Deflate의 세 가지 블록</h3>
+            <p>Deflate는 동적 허프만 블록, 고정 허프만 블록, 비압축 블록을 생성합니다. 비압축 블록은 압축 이득이 없을 때 원본 데이터를 그대로 담는 블록입니다.</p>
+          </article>
+          <article class="concept-item">
+            <h3>2. DBA: Disposed Bit Area</h3>
+            <p>비압축 블록의 LEN 필드를 byte boundary에서 시작시키기 위해 삽입되는 align 비트 영역입니다. 논문은 이 영역을 DBA라고 명명했습니다.</p>
+          </article>
+          <article class="concept-item">
+            <h3>3. NPNCB: No-Payload Non-Compressed Block</h3>
+            <p>LEN이 0이어서 literal data가 없는 특수한 비압축 블록입니다. 원본 데이터를 만들지 않기 때문에 삽입되어도 해제 결과가 변하지 않을 수 있습니다.</p>
+          </article>
         </div>
 
-        <section>
-            <h2>I. 서 론</h2>
-            <h3>1.1 Deflate 압축 알고리즘의 압축 블록</h3>
-            <p>Deflate 압축 알고리즘은 전 세계에서 가장 많이 사용되는 압축 포맷인 Zip 형식에서 채택한 핵심 압축 알고리즘이며, .apk, .gzip, .zlib, .pdf, .xlsb 등 수많은 파일 포맷에 적용되어 있다. 압축 대상의 특성에 따라 Dynamic 블록, Fixed 블록, 그리고 비 압축 블록(Non-compressed block) 3가지를 생성한다.</p>
+        <figure class="diagram-card">
+          <figcaption>비압축 블록과 NPNCB의 단순화 구조</figcaption>
+          <svg viewBox="0 0 980 500" role="img" aria-labelledby="svg-title svg-desc">
+            <title id="svg-title">Deflate 비압축 블록 구조 다이어그램</title>
+            <desc id="svg-desc">Prefix, DBA, LEN, NLEN, literal data 순서와 NPNCB에서 literal data가 없는 상태를 나타낸 그림</desc>
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#38bdf8" />
+                <stop offset="1" stop-color="#818cf8" />
+              </linearGradient>
+              <linearGradient id="g2" x1="0" x2="1">
+                <stop offset="0" stop-color="#facc15" />
+                <stop offset="1" stop-color="#fb7185" />
+              </linearGradient>
+              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="10" stdDeviation="12" flood-opacity="0.18" />
+              </filter>
+            </defs>
+            <text x="34" y="52" class="svg-title">Non-compressed block</text>
+            <g filter="url(#shadow)">
+              <rect x="34" y="92" width="130" height="84" rx="16" class="svg-block dark" />
+              <rect x="176" y="92" width="140" height="84" rx="16" fill="url(#g1)" />
+              <rect x="328" y="92" width="150" height="84" rx="16" class="svg-block yellow" />
+              <rect x="490" y="92" width="150" height="84" rx="16" class="svg-block pink" />
+              <rect x="652" y="92" width="270" height="84" rx="16" class="svg-block light" />
+            </g>
+            <text x="69" y="140" class="svg-label inverse">Prefix</text>
+            <text x="212" y="140" class="svg-label inverse">DBA</text>
+            <text x="378" y="140" class="svg-label">LEN</text>
+            <text x="535" y="140" class="svg-label">NLEN</text>
+            <text x="724" y="140" class="svg-label">literal data</text>
+            <text x="34" y="214" class="svg-note">BFINAL + BTYPE 뒤에 byte align용 DBA가 위치합니다.</text>
 
-            <h3>1.2 비 압축 블록의 구조와 DBA 개념</h3>
-            <p>비 압축 블록은 헤더에 BFINAL(1bit)과 BTYPE(2bit)을 포함하며, 이후 바이트 경계에 맞추기 위해 무시되는 패딩 영역이 존재한다. 본 연구는 이 영역을 DBA라고 명명한다. 디코더가 이 데이터를 무시하므로 악성 코드를 숨길 수 있는 공간이 된다.</p>
-            
-            <div class="figure">
-                <img src="images/fig1.png" alt="General structure of non-compressed block">
-                <div class="caption">Fig. 1. General structure of non-compressed block in the Deflate algorithm</div>
-            </div>
+            <text x="34" y="292" class="svg-title">NPNCB</text>
+            <g filter="url(#shadow)">
+              <rect x="34" y="332" width="130" height="84" rx="16" class="svg-block dark" />
+              <rect x="176" y="332" width="140" height="84" rx="16" fill="url(#g1)" />
+              <rect x="328" y="332" width="150" height="84" rx="16" class="svg-block yellow" />
+              <rect x="490" y="332" width="150" height="84" rx="16" class="svg-block pink" />
+              <rect x="652" y="332" width="270" height="84" rx="16" class="svg-block empty" />
+            </g>
+            <text x="69" y="380" class="svg-label inverse">Prefix</text>
+            <text x="207" y="380" class="svg-label inverse">DBA bits</text>
+            <text x="366" y="380" class="svg-label">LEN=0</text>
+            <text x="512" y="380" class="svg-label">NLEN=FFFF</text>
+            <text x="706" y="380" class="svg-label muted">no payload</text>
+            <text x="34" y="454" class="svg-note">원본 데이터가 없으므로 정상 디코더는 해제 결과를 생성하지 않고 다음 블록으로 진행할 수 있습니다.</text>
+          </svg>
+        </figure>
+      </div>
+    </section>
 
-            <div class="figure">
-                <img src="images/fig2.png" alt="Variation of DBA size">
-                <div class="caption">Fig. 2. Variation of DBA size in the non-compressed block (0~7비트 가변성)</div>
-            </div>
+    <section class="section-shell" aria-labelledby="flow-title">
+      <div class="section-heading narrow">
+        <p class="eyebrow">Attack Idea at a High Level</p>
+        <h2 id="flow-title">공격 아이디어: 압축 결과는 그대로, 스트림 내부는 다르게</h2>
+        <p>아래 흐름은 방어 관점의 개념도입니다. 실제 악성 삽입 절차나 구현 코드는 제공하지 않습니다.</p>
+      </div>
 
-            <div class="figure">
-                <img src="images/fig3.png" alt="The case where DBA does not exist">
-                <div class="caption">Fig. 3. The case where the DBA does not exist</div>
-            </div>
+      <div class="flow-panel">
+        <svg viewBox="0 0 1120 430" role="img" aria-labelledby="flow-svg-title flow-svg-desc">
+          <title id="flow-svg-title">NPNCB 삽입 개념 흐름</title>
+          <desc id="flow-svg-desc">정상 Deflate 블록 사이에 NPNCB가 삽입되고 일반 디코더와 악의적 디코더가 서로 다른 결과를 보이는 흐름</desc>
+          <defs>
+            <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+              <path d="M2,2 L10,6 L2,10 Z" fill="#64748b" />
+            </marker>
+          </defs>
+          <text x="36" y="58" class="svg-title">Compressed stream</text>
+          <rect x="36" y="90" width="180" height="72" rx="16" class="svg-flow-block normal" />
+          <rect x="238" y="90" width="150" height="72" rx="16" class="svg-flow-block npncb" />
+          <rect x="410" y="90" width="180" height="72" rx="16" class="svg-flow-block normal" />
+          <rect x="612" y="90" width="150" height="72" rx="16" class="svg-flow-block npncb" />
+          <rect x="784" y="90" width="180" height="72" rx="16" class="svg-flow-block normal" />
+          <text x="70" y="134" class="svg-label">Block A</text>
+          <text x="267" y="134" class="svg-label inverse">NPNCB</text>
+          <text x="444" y="134" class="svg-label">Block B</text>
+          <text x="641" y="134" class="svg-label inverse">NPNCB</text>
+          <text x="819" y="134" class="svg-label">Block C</text>
 
-            <h3>1.3 원본 데이터 없는 비 압축 블록(NPNCB)</h3>
-            <p>NPNCB는 Literal data가 없는 특수한 형태(LEN=0)이다. 압축 스트림을 바이트 경계에서 강제 종료(Flush)하기 위해 네트워크 통신(PPP, TLS, SSH) 등에서 합법적으로 사용되기도 한다.</p>
+          <line x1="500" y1="190" x2="315" y2="255" class="svg-arrow" />
+          <line x1="500" y1="190" x2="770" y2="255" class="svg-arrow" />
 
-            <div class="figure">
-                <img src="images/fig4.png" alt="Structure of NPNCB">
-                <div class="caption">Fig. 4. The structure of No-Payload Non-Compressed Block (NPNCB)</div>
-            </div>
+          <rect x="96" y="260" width="390" height="112" rx="22" class="svg-decoder" />
+          <text x="128" y="304" class="svg-title small">Normal decoder</text>
+          <text x="128" y="338" class="svg-note">DBA를 해제 결과로 내보내지 않음</text>
+          <text x="128" y="362" class="svg-note">원본 데이터는 정상적으로 복원</text>
 
-            <div class="figure">
-                <img src="images/fig5.png" alt="Consecutive compressed data blocks dividing with NPNCB">
-                <div class="caption">Fig. 5. Consecutive compressed data blocks dividing with NPNCB in the PPP, TLS, SSH</div>
-            </div>
+          <rect x="620" y="260" width="420" height="112" rx="22" class="svg-decoder warning" />
+          <text x="652" y="304" class="svg-title small">Malicious decoder</text>
+          <text x="652" y="338" class="svg-note">DBA 조각을 별도로 추출</text>
+          <text x="652" y="362" class="svg-note">사전 시나리오에 따라 숨겨진 데이터 복원</text>
+        </svg>
+      </div>
+    </section>
 
-            <h3>1.4 보안 취약점</h3>
-            <p>NPNCB는 압축 해제 시 생성되는 원본 데이터가 '0바이트'이므로 전체 파일의 CRC 검사 값에 영향을 주지 않는다. 따라서 일반 백신과 압축 프로그램의 탐지를 완벽히 우회한다.</p>
-        </section>
+    <section class="section-shell" id="experiments" aria-labelledby="experiments-title">
+      <div class="section-heading">
+        <p class="eyebrow">Paper Experiments</p>
+        <h2 id="experiments-title">논문에서 제시한 실험 결과</h2>
+        <p>
+          논문은 테스트용 인코더와 디코더를 이용해 NPNCB 삽입이 해제 결과에 영향을 주지 않는지, 그리고 DBA에 숨긴 데이터가 별도 디코더로 복원될 수 있는지 확인했습니다.
+        </p>
+      </div>
 
-        <section>
-            <h2>II. 본 론</h2>
-            <h3>2.1 NPNCB 삽입 공격 개요</h3>
-            <p>정상적으로 생성된 모든 유형의 압축 블록 사이에 악의적 인코더를 이용해 임의의 NPNCB를 무한정 삽입할 수 있다.</p>
+      <div class="experiment-grid">
+        <article class="metric-card">
+          <span class="metric">174 → 348</span>
+          <h3>M4A 테스트</h3>
+          <p>정상 압축 시 174개 블록이 생성된 사례에서 NPNCB 삽입 후 348개 블록으로 증가했지만 일반 압축 프로그램에서 정상 해제되었습니다.</p>
+        </article>
+        <article class="metric-card">
+          <span class="metric">135 → 270</span>
+          <h3>XLSX 테스트</h3>
+          <p>엑셀 파일 압축 사례에서도 정상 블록 사이에 NPNCB를 삽입했으나, 해제 결과는 정상적으로 생성되었습니다.</p>
+        </article>
+        <article class="metric-card">
+          <span class="metric">7,680B</span>
+          <h3>모의 코드 복원</h3>
+          <p>실험에서는 테스트용 Windows 프로그램을 DBA 조각으로 분할해 삽입하고, 악의적 디코더로 재조합해 실행 가능성을 보였습니다.</p>
+        </article>
+      </div>
 
-            <div class="figure">
-                <img src="images/fig6.png" alt="The variability of NPNCB injection attack scenario design">
-                <div class="caption">Fig. 6. The variability of NPNCB injection attack scenario design</div>
-            </div>
-
-            <div class="figure">
-                <img src="images/fig7.png" alt="The process of injecting malignant NPNCBs while initially encoding">
-                <div class="caption">Fig. 7. The process of injecting malignant NPNCBs while initially encoding by malignant encoder</div>
-            </div>
-
-            <h3>2.2 NPNCB 삽입 수행 및 압축 해제</h3>
-            <p>m4a 파일과 xlsx 파일을 대상으로 실제 테스트를 진행하였다. 각 블록 사이에 수많은 NPNCB('X' 블록)를 삽입하였음에도 압축이 정상 해제되었다.</p>
-
-            <table>
-                <caption>Table 1 & 2. m4a 파일 정상 압축(174블록) vs 악의적 NPNCB 삽입(348블록)</caption>
-                <tr><th>Normal Encoder (Table 1)</th><td>DDDD...DDND... (총 174개)</td></tr>
-                <tr><th>Malignant Encoder (Table 2)</th><td>DXDXDX...DXNX... (총 348개)</td></tr>
-            </table>
-
-            <div class="figure">
-                <img src="images/fig8.png" alt="Process of injecting NPNCBs to M4A file">
-                <div class="caption">Fig. 8. The process of injecting NPNCBs to normal compressed blocks while the M4A file being encoded</div>
-            </div>
-            <div class="figure">
-                <img src="images/fig9.png" alt="M4A file normally decompressed">
-                <div class="caption">Fig. 9. NPNCBs inserted compressed file (.m4a) is normally decompressed by commercial encoder without any alerts</div>
-            </div>
-
-            <table>
-                <caption>Table 3 & 4. xlsx 파일 정상 압축 vs 악의적 NPNCB 삽입</caption>
-                <tr><th>Normal Encoder (Table 3)</th><td>DNNN...DDD... (총 135개)</td></tr>
-                <tr><th>Malignant Encoder (Table 4)</th><td>DXNX...DXDX... (총 270개)</td></tr>
-            </table>
-
-            <div class="figure">
-                <img src="images/fig10.png" alt="Process of injecting NPNCBs to XLSX file">
-                <div class="caption">Fig. 10. The process of injecting NPNCBs to xlsx file compressed blocks</div>
-            </div>
-            <div class="figure">
-                <img src="images/fig11.png" alt="XLSX file normally decompressed">
-                <div class="caption">Fig. 11. NPNCBs inserted compressed file (.xlsx) is normally decompressed by commercial encoder without any alerts</div>
-            </div>
-
-            <h3>2.3 ~ 2.5 압축 데이터 디코딩 및 코드 실행</h3>
-            <p>시중의 상용 압축 프로그램(반디집, 알집 등)은 NPNCB를 무시하고 정상 데이터만 해독한다. 반면, 악의적 디코더는 압축 해제와 동시에 각 DBA의 비트 조각들을 추출하여 악성 코드로 재조합(Reassemble)하고 메모리 상에서 즉각 실행한다.</p>
-
-            <div class="figure">
-                <img src="images/fig12.png" alt="Decoding by normal compression program">
-                <div class="caption">Fig. 12. Decoding the malignant NPNCB block injected compressed data by normal compression program</div>
-            </div>
-            
-            <div class="figure">
-                <img src="images/fig13.png" alt="Decoding by malignant decoder">
-                <div class="caption">Fig. 13. Decoding the malignant NPNCB block injected compressed data by malignant decoder</div>
-            </div>
-
-            <div class="figure">
-                <img src="images/fig14.png" alt="Malignant NPNCB block inserted by attack scenario">
-                <div class="caption">Fig. 14. Malignant NPNCB block can be inserted between normal compressed blocks by designed attack scenario</div>
-            </div>
-        </section>
-
-        <section>
-            <h2>III. 공격 사례 구현</h2>
-            <h3>3.1 악의적 실행 코드 삽입 개요</h3>
-            <p>7,680 바이트의 테스트용 악성 응용 프로그램을 준비했다. 1바이트를 5비트와 3비트로 쪼개어 총 15,360개의 NPNCB DBA에 분산 탑재(Steganography)하였다.</p>
-
-            <div class="figure">
-                <img src="images/fig15.png" alt="Running result of test malignant code">
-                <div class="caption">Fig. 15. The running result of test malignant code (TEST_SECURE.exe) which will be fragmented into NPNCBs' each DBA</div>
-            </div>
-
-            <div class="figure">
-                <img src="images/fig16.png" alt="NPNCB injection attack test case">
-                <div class="caption">Fig. 16. NPNCB injection attack test case by malignant decoder compared with normal encoder</div>
-            </div>
-
-            <div class="figure">
-                <img src="images/fig17.png" alt="Summary of malignant code dividing">
-                <div class="caption">Fig. 17. The summary of malignant code dividing into each NPNCB DBA in the test attack case</div>
-            </div>
-
-            <p>결과적으로 이 거대한 변조에도 불구하고 알집 등 상용 툴에서는 정상 해제되었으며, 연구용 악의적 디코더 사용 시 숨겨진 팝업 프로그램이 완벽하게 재구성되어 실행되었다.</p>
-
-            <div class="figure">
-                <img src="images/fig18.png" alt="Malignant zip file decompression by normal decoder">
-                <div class="caption">Fig. 18. Malignant zip file decompression success by normal decoder</div>
-            </div>
-            <div class="figure">
-                <img src="images/fig19.png" alt="Malignant zip file decompression by malignant decoder">
-                <div class="caption">Fig. 19. Malignant zip file decompression success by malignant decoder</div>
-            </div>
-        </section>
-
-        <section>
-            <h2>IV. 결 론</h2>
-            <p>Deflate 알고리즘의 구조적 허점을 이용하면 CRC 검사 우회 및 백신 탐지를 완벽히 피하면서 방대한 악성 코드를 은닉할 수 있다. 동일한 코드라도 원본 데이터의 특성에 따라 가변적으로 바이너리가 변경되어 탐지를 더욱 어렵게 만든다. 본 논문은 이 광범위한 취약점을 명확히 증명하고 조속한 보안 패치의 필요성을 제기한다.</p>
-        </section>
-
-        <div class="bio-section">
-            <div>
-                <h3>저자 소개 | 김정훈 (Jung-hoon Kim)</h3>
-                <p><strong>약사 프로그래머</strong><br>
-                서울대학교 약학과를 졸업하고 동 대학원 보건학 박사를 수료하였으며, 경희대학교 컴퓨터공학과 SW융합학 석사를 졸업했습니다. 의료정보, 정보이론, 정보보호 및 고성능 데스크톱 애플리케이션 아키텍처 분야에 관심이 많음</p>
-            </div>
+      <div class="timeline" aria-label="실험 흐름 요약">
+        <div class="timeline-item">
+          <span>1</span>
+          <p>정상 파일을 Deflate 기반으로 압축하거나 기존 압축 스트림의 블록 경계를 식별</p>
         </div>
+        <div class="timeline-item">
+          <span>2</span>
+          <p>정상 압축 블록 사이에 원본 데이터가 없는 NPNCB를 삽입</p>
+        </div>
+        <div class="timeline-item">
+          <span>3</span>
+          <p>일반 압축 프로그램은 원본 데이터를 정상 해제하고 별도 경고를 내지 않음</p>
+        </div>
+        <div class="timeline-item">
+          <span>4</span>
+          <p>악의적 디코더는 DBA에서 숨겨진 비트 조각을 추출해 별도 데이터로 재조합</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="split section-shell" id="impact" aria-labelledby="impact-title">
+      <div>
+        <p class="eyebrow">Security Impact</p>
+        <h2 id="impact-title">보안적 의미</h2>
+        <p>
+          이 취약점의 핵심은 “정상 해제 가능성”과 “압축 스트림 내부 오염 가능성”이 동시에 존재한다는 점입니다.
+          해제된 원본 데이터만 비교하면 차이가 보이지 않지만, 압축된 바이너리에는 추가 블록과 은닉 비트가 남을 수 있습니다.
+        </p>
+        <p>
+          직접 실행형 공격에는 악의적 디코더라는 전제가 필요하지만, 데이터 은닉·우회·스테가노그래피 관점에서는
+          압축 파일 내부에 눈에 띄지 않는 저장 공간을 제공한다는 점이 중요합니다.
+        </p>
+      </div>
+      <div class="impact-list" role="list">
+        <div role="listitem"><strong>CRC 우회 가능성</strong><span>해제 결과 기반 CRC만으로는 NPNCB 삽입을 감지하기 어렵습니다.</span></div>
+        <div role="listitem"><strong>형태 변형</strong><span>DBA 위치와 길이가 스트림 위치에 따라 달라져 바이너리 패턴이 고정되지 않습니다.</span></div>
+        <div role="listitem"><strong>은닉 채널</strong><span>작은 비트 조각을 여러 NPNCB에 분산 저장하는 은닉 채널로 사용될 수 있습니다.</span></div>
+      </div>
+    </section>
+
+    <section class="section-shell defense" id="defense" aria-labelledby="defense-title">
+      <div class="section-heading narrow">
+        <p class="eyebrow">Defensive Checklist</p>
+        <h2 id="defense-title">방어 및 탐지 아이디어</h2>
+        <p>압축 해제 결과만 보지 말고 Deflate 스트림 자체의 구조적 이상 여부를 함께 검사해야 합니다.</p>
+      </div>
+
+      <div class="check-grid">
+        <article>
+          <h3>DBA 검증</h3>
+          <p>비압축 블록의 align 영역이 0으로 채워져 있는지 확인하고, 0이 아닌 DBA를 경고 대상으로 삼습니다.</p>
+        </article>
+        <article>
+          <h3>NPNCB 빈도 분석</h3>
+          <p>zero-length 비압축 블록이 과도하게 반복되거나 정상적인 flush 맥락 없이 삽입된 패턴을 탐지합니다.</p>
+        </article>
+        <article>
+          <h3>스트림 정규화</h3>
+          <p>배포 전 압축 파일을 신뢰 가능한 도구로 재압축하거나 canonical form으로 재생성해 은닉 블록을 제거합니다.</p>
+        </article>
+        <article>
+          <h3>압축 바이너리 무결성</h3>
+          <p>해제 데이터의 CRC뿐 아니라 압축 스트림 자체의 해시·서명·정책 검사를 함께 적용합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-shell" id="references" aria-labelledby="references-title">
+      <div class="section-heading">
+        <p class="eyebrow">References</p>
+        <h2 id="references-title">원문 및 참고 자료</h2>
+      </div>
+      <div class="reference-card">
+        <h3>원문 논문</h3>
+        <p>
+          김정훈, “Deflate 압축 알고리즘에서 악성코드 주입 취약점 분석,” 정보보호학회논문지, 32(5), 869-879, 2022.
+        </p>
+        <a href="https://doi.org/10.13089/JKIISC.2022.32.5.869" target="_blank" rel="noreferrer">DOI: 10.13089/JKIISC.2022.32.5.869</a>
+      </div>
+      <ul class="reference-list">
+        <li>RFC 1951: DEFLATE Compressed Data Format Specification version 1.3</li>
+        <li>RFC 1979: PPP Deflate Protocol</li>
+        <li>RFC 3749: Transport Layer Security Protocol Compression Methods</li>
+        <li>RFC 4253: The Secure Shell (SSH) Transport Layer Protocol</li>
+        <li>zlib manual 및 ZIP File Format Specification</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="section-shell footer-inner">
+      <p>© NPNCB Vulnerability Brief. Built as a static GitHub Pages site.</p>
+      <a href="#top">맨 위로</a>
     </div>
-</div>
-
-<div id="content-en" class="hidden">
-    <header>
-        <h1>Malicious Code Injection Vulnerability Analysis<br>in the Deflate Algorithm</h1>
-        <div class="meta">Journal of The Korea Institute of Information Security & Cryptology<br>VOL.32, NO.5, Oct. 2022 | ISSN 1598-3986</div>
-        <div class="author">Jung-hoon Kim (CEO, BinaryLab)</div>
-    </header>
-
-    <div class="container">
-        <div class="abstract-box">
-            <h3>ABSTRACT</h3>
-            <p>Through this study, we discovered that among three types of compressed data blocks generated through the Deflate algorithm, No-Payload Non-Compressed Block type (NPNCB) which has no literal data can be randomly generated and inserted between normal compressed blocks.</p>
-            <p>In the header of the non-compressed block, there is a data area that exists only for byte alignment, and we called this area as <strong>DBA (Disposed Bit Area)</strong>, where an attacker can hide various malicious codes and data. Finally, we found the vulnerability that hides malicious codes or arbitrary data through inserting NPNCBs with infected DBA. Experiments show that commercial programs decoded the contaminated zip file normally without any warning, and malicious code could be executed by the malicious decoder.</p>
-            <p><strong>Keywords:</strong> Deflate, Zip, Non-compressed block, Steganography, Malware</p>
-        </div>
-
-        <section>
-            <h2>I. Introduction</h2>
-            <p>The Deflate algorithm, widely used in Zip, apk, pdf, etc., creates three types of blocks. The non-compressed block contains a padding area for byte alignment called the DBA. Since this area is ignored by decoders per RFC 1951, it can be exploited.</p>
-            <p>NPNCBs (LEN=0) contain no payload. By injecting NPNCBs infected with malware in their DBAs, the CRC of the decompressed output remains identical to the original, completely bypassing commercial integrity checks.</p>
-            
-            <div class="figure">
-                <img src="images/fig1.png" alt="General structure of non-compressed block">
-                <div class="caption">Fig. 1. General structure of non-compressed block in the Deflate algorithm</div>
-            </div>
-
-            <div class="figure">
-                <img src="images/fig2.png" alt="Variation of DBA size">
-                <div class="caption">Fig. 2. Variation of DBA size in the non-compressed block</div>
-            </div>
-
-            <div class="figure">
-                <img src="images/fig4.png" alt="Structure of NPNCB">
-                <div class="caption">Fig. 4. The structure of No-Payload Non-Compressed Block (NPNCB)</div>
-            </div>
-        </section>
-
-        <section>
-            <h2>II. Main Body</h2>
-            <p>NPNCBs can be freely injected between normal blocks. In testing with .m4a and .xlsx files, thousands of malicious NPNCBs were injected.</p>
-            
-            <div class="figure">
-                <img src="images/fig6.png" alt="The variability of NPNCB injection attack scenario design">
-                <div class="caption">Fig. 6. The variability of NPNCB injection attack scenario design</div>
-            </div>
-            
-            <p>Standard decoders simply ignore the DBA bits. A specially crafted malignant decoder, however, actively extracts these bits from the DBA space during decompression and combines them to execute the payload in memory.</p>
-            
-            <div class="figure">
-                <img src="images/fig12.png" alt="Decoding by normal compression program">
-                <div class="caption">Fig. 12. Decoding the malignant NPNCB block injected compressed data by normal compression program</div>
-            </div>
-            
-            <div class="figure">
-                <img src="images/fig13.png" alt="Decoding by malignant decoder">
-                <div class="caption">Fig. 13. Decoding the malignant NPNCB block injected compressed data by malignant decoder</div>
-            </div>
-        </section>
-
-        <section>
-            <h2>III. Attack Case Implementation</h2>
-            <p>We fragmented a 7,680-byte Windows malware into 5-bit and 3-bit pieces, hiding them across the DBAs of 15,360 NPNCBs.</p>
-            
-            <div class="figure">
-                <img src="images/fig17.png" alt="Summary of malignant code dividing">
-                <div class="caption">Fig. 17. The summary of malignant code dividing into each NPNCB DBA in the test attack case</div>
-            </div>
-            
-            <p>The resulting archive passed all commercial archiver checks (ALZip, Bandizip) silently. Only the malignant decoder reassembled and executed the hidden popup application successfully.</p>
-
-            <div class="figure">
-                <img src="images/fig19.png" alt="Malignant zip file decompression by malignant decoder">
-                <div class="caption">Fig. 19. Malignant zip file decompression success by malignant decoder</div>
-            </div>
-        </section>
-
-        <section>
-            <h2>IV. Conclusion</h2>
-            <p>The Deflate structural gap allows binary steganography that evades modern CRC and signature checks due to the variable nature of DBA size. This paper highlights the critical need for new validation algorithms to prevent silent data infection inside standard archives.</p>
-        </section>
-
-        <div class="bio-section">
-            <div>
-                <h3>About the Author | Jung-hoon Kim</h3>
-                <p><strong>Pharmacist Programmer</strong><br>
-                B.S. Pharmacy, Ph.D. Candidate in Public Health (Seoul National University) / M.S. SW Convergence (Kyung Hee University). Specializes in Medical Informatics, Information Theory, and Cybersecurity.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<footer>
-    <p>&copy; 2022-2026 Jung-hoon Kim. All rights reserved. <br> Reproduced for Academic & Portfolio Purposes.</p>
-</footer>
-
-<script>
-    let isKorean = true;
-    function toggleLanguage() {
-        const btn = document.getElementById('toggleBtn');
-        const ko = document.getElementById('content-ko');
-        const en = document.getElementById('content-en');
-
-        if (isKorean) {
-            ko.classList.add('hidden');
-            en.classList.remove('hidden');
-            btn.textContent = '한국어로 보기';
-        } else {
-            ko.classList.remove('hidden');
-            en.classList.add('hidden');
-            btn.textContent = 'Read in English';
-        }
-        isKorean = !isKorean;
-    }
-</script>
-
+  </footer>
 </body>
 </html>
