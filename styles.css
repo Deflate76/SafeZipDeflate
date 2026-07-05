@@ -164,7 +164,7 @@ a {
 }
 
 .hero h1 {
-  font-size: clamp(2.55rem, 7vw, 5.9rem);
+  font-size: clamp(2.1rem, 5.4vw, 4.2rem);
   max-width: 980px;
 }
 
@@ -723,5 +723,113 @@ section:not(.hero) {
 
   .button {
     transition: none;
+  }
+}
+
+
+.lang-switch {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.lang-btn {
+  min-width: 3rem;
+  min-height: 2.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(15, 23, 42, 0.65);
+  color: var(--muted);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.lang-btn.active {
+  color: #04111f;
+  background: linear-gradient(135deg, var(--primary), #a5b4fc);
+}
+
+.lang-block { display: none; }
+.lang-block.active { display: block; }
+
+.concept-callout,
+.text-panel,
+.figure-card {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.78), rgba(15, 23, 42, 0.52));
+  box-shadow: var(--shadow);
+}
+
+.concept-callout,
+.text-panel {
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.4rem;
+  color: var(--text);
+}
+
+.concept-callout {
+  margin-bottom: 1rem;
+}
+
+.concept-callout p,
+.text-panel p,
+.text-panel li {
+  color: var(--muted);
+}
+
+.highlight-list {
+  margin: 0.6rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.highlight-list li + li { margin-top: 0.55rem; }
+
+.figure-gallery {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.figure-card {
+  margin: 0;
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+}
+
+.figure-card figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: baseline;
+  margin-bottom: 0.9rem;
+  color: #bfdbfe;
+  font-weight: 850;
+}
+
+.figure-card figcaption span:first-child {
+  color: #7dd3fc;
+  min-width: 4.6rem;
+}
+
+.image-frame {
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(255,255,255,0.92);
+}
+
+.image-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.text-panel h3 {
+  margin-top: 0;
+}
+
+@media (max-width: 940px) {
+  .lang-switch {
+    align-self: flex-start;
   }
 }
