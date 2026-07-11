@@ -21,10 +21,13 @@ Validation date: 2026-07-11
 
 ## Browser behavior
 
-Tested with headless Chromium at widths 1440, 1240, 1100, 1024, 900, 840, 768, 640 and 390 pixels.
+Tested with headless Chromium at widths 1440, 1121, 1120, 1024, 768, 640, 390 and 320 pixels.
 
 - no horizontal overflow at any tested width
-- no header navigation overlap
+- root font size is 17px on desktop/tablet and 16.5px on small screens
+- the smallest visible textual label measured 12.92px on desktop and 12.54px at 390/320px widths
+- dark-theme secondary and faint text colors were raised in contrast (`#c2cfe1` and `#94a6bf`)
+- no header navigation overlap; the compact mobile header remains within the viewport down to 320 pixels
 - integrated hero switches to one column below 1060 pixels
 - dark theme is selected for a first-time visitor
 - Korean and English switching works
