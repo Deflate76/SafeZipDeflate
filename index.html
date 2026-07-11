@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#050b14">
+  <meta id="meta-description" name="description" content="Deflate의 NPNCB 은닉 취약점과 DBA 비트 채널, 적응형 C# PoC, 탐지·정규화 방안을 한글과 영어로 설명하는 다크 테마 정적 사이트입니다.">
+  <meta name="keywords" content="DEFLATE, NPNCB, DBA, ZIP, covert channel, security research, C#, proof of concept">
+  <meta name="author" content="NPNCB Vulnerability Lab">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="NPNCB Vulnerability Lab — Hidden Bits in DEFLATE">
+  <meta property="og:description" content="A bilingual dark-mode guide to NPNCB, DBA, the adaptive C# proof of concept, and structure-aware defenses.">
+  <meta property="og:image" content="assets/og-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="alternate" hreflang="ko" href="./index.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="./index.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="./index.html">
+  <link rel="stylesheet" href="assets/styles.css">
+  <title>NPNCB Vulnerability Lab — Deflate 은닉 취약점</title>
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content"><span class="lang-ko">본문으로 바로가기</span><span class="lang-en">Skip to content</span></a>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <header class="site-header" id="top">
+    <div class="header-inner">
+      <a class="brand" href="#top" aria-label="NPNCB Vulnerability Lab home">
+        <svg class="brand-mark" viewBox="0 0 42 42" aria-hidden="true">
+          <rect x="1" y="1" width="40" height="40" rx="12" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M9 13h5v16H9zm9 0h5v7h-5zm0 11h5v5h-5zm9-11h6v4h-6zm0 8h6v8h-6z" fill="currentColor"/>
+          <circle cx="30" cy="19" r="2" fill="var(--accent-2)"/>
+        </svg>
+        <span class="brand-copy"><strong>NPNCB VULNERABILITY</strong><small>DEFLATE FORMAT SECURITY LAB</small></span>
+      </a>
+
+      <nav class="desktop-nav integrated-nav" aria-label="Primary navigation">
+        <a href="#overview"><span class="lang-ko">개요</span><span class="lang-en">Overview</span></a>
+        <a href="#why"><span class="lang-ko">중요성</span><span class="lang-en">Why</span></a>
+        <a href="#core-concepts"><span class="lang-ko">핵심 개념</span><span class="lang-en">Concepts</span></a>
+        <a href="#anatomy"><span class="lang-ko">DBA</span><span class="lang-en">DBA</span></a>
+        <a href="#flow"><span class="lang-ko">흐름</span><span class="lang-en">Flow</span></a>
+        <a href="#poc">PoC</a>
+        <a href="#defense"><span class="lang-ko">방어</span><span class="lang-en">Defense</span></a>
+      </nav>
+
+      <div class="header-controls">
+        <div class="language-switch" role="group" aria-label="Language">
+          <button type="button" data-set-lang="ko" aria-pressed="true">KO</button>
+          <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.3A8.5 8.5 0 0 1 8.7 3.8 8.5 8.5 0 1 0 20.2 15.3Z"/></svg>
+        </button>
+        <button class="mobile-menu-button" id="mobile-menu-button" type="button" aria-expanded="false" aria-controls="mobile-nav">
+          <span></span><span></span><span></span>
+          <span class="sr-only"><span class="lang-ko">메뉴</span><span class="lang-en">Menu</span></span>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation" hidden>
+      <a href="#overview"><span class="lang-ko">개요</span><span class="lang-en">Overview</span></a>
+      <a href="#why"><span class="lang-ko">왜 중요한가</span><span class="lang-en">Why it matters</span></a>
+      <a href="#core-concepts"><span class="lang-ko">핵심 개념</span><span class="lang-en">Core concepts</span></a>
+      <a href="#anatomy"><span class="lang-ko">DBA 구조</span><span class="lang-en">DBA anatomy</span></a>
+      <a href="#flow"><span class="lang-ko">삽입·복원 흐름</span><span class="lang-en">Embedding & recovery</span></a>
+      <a href="#poc"><span class="lang-ko">PoC 프로그램</span><span class="lang-en">PoC programs</span></a>
+      <a href="#defense"><span class="lang-ko">탐지·대응</span><span class="lang-en">Detection & mitigation</span></a>
+      <a href="#faq">FAQ</a>
+      <a href="#references"><span class="lang-ko">근거 자료</span><span class="lang-en">References</span></a>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <section class="hero section-shell integrated-hero" aria-labelledby="hero-title">
+      <div class="hero-copy reveal">
+        <div class="eyebrow-row">
+          <span class="eyebrow"><span class="status-dot"></span><span class="lang-ko">논문 브리프 · 방어적 연구</span><span class="lang-en">PAPER BRIEF · DEFENSIVE RESEARCH</span></span>
+          <span class="eyebrow muted">DEFLATE · ZIP · NPNCB · DBA</span>
+        </div>
+        <h1 id="hero-title">
+          <span class="lang-ko">Deflate 압축 스트림의<br><em>NPNCB 은닉 취약점</em></span>
+          <span class="lang-en">The NPNCB hiding<br><em>vulnerability in DEFLATE</em></span>
+        </h1>
+        <p class="hero-lead">
+          <span class="lang-ko">원본 데이터를 만들지 않는 0길이 비압축 블록을 정상 블록 사이에 삽입하고, 그 블록의 바이트 정렬 비트에 조각난 데이터를 기록해도 일반 압축 해제 결과는 달라지지 않을 수 있습니다. 이 사이트는 그 구조와 방어적 PoC를 시각적으로 설명합니다.</span>
+          <span class="lang-en">Zero-length stored blocks can be placed between ordinary DEFLATE blocks, while fragmented data is carried in their byte-alignment bits. A normal inflater may still produce exactly the same output. This site explains the structure and a defensive proof of concept.</span>
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#overview"><span class="lang-ko">핵심 개요 보기</span><span class="lang-en">Read the overview</span><span aria-hidden="true">↘</span></a>
+          <a class="button secondary" href="https://doi.org/10.13089/JKIISC.2022.32.5.869" target="_blank" rel="noopener noreferrer"><span class="lang-ko">논문 DOI</span><span class="lang-en">Open the paper DOI</span></a>
+        </div>
+        <ul class="hero-facts" aria-label="Key facts">
+          <li><strong>2022</strong><span class="lang-ko">원 논문 발표</span><span class="lang-en">paper published</span></li>
+          <li><strong>0–7 bits</strong><span class="lang-ko">NPNCB당 DBA</span><span class="lang-en">DBA per NPNCB</span></li>
+          <li><strong>0 bytes</strong><span class="lang-ko">NPNCB 출력 데이터</span><span class="lang-en">NPNCB output</span></li>
+        </ul>
+      </div>
+
+      <div class="hero-visual reveal delay-1">
+        <article class="paper-spotlight" aria-label="Original paper metadata">
+          <div class="paper-topline"><span>ORIGINAL PAPER</span><span class="paper-year">JKIISC · 32(5)</span></div>
+          <h2><span class="lang-ko">Deflate 압축 알고리즘에서 악성코드 주입 취약점 분석</span><span class="lang-en">Malicious Code Injection Vulnerability Analysis in the Deflate Algorithm</span></h2>
+          <div class="paper-meta">
+            <div><span><span class="lang-ko">저자</span><span class="lang-en">Author</span></span><b><span class="lang-ko">김정훈</span><span class="lang-en">Jung-hoon Kim</span></b></div>
+            <div><span><span class="lang-ko">학술지</span><span class="lang-en">Journal</span></span><b>JKIISC Vol.32, No.5</b></div>
+            <div><span><span class="lang-ko">발행</span><span class="lang-en">Published</span></span><b><span class="lang-ko">2022년 10월</span><span class="lang-en">October 2022</span></b></div>
+            <div><span>DOI</span><b>10.13089/JKIISC.2022.32.5.869</b></div>
+          </div>
+          <div class="paper-keywords"><span>Deflate</span><span>ZIP</span><span>NPNCB</span><span>DBA</span><span>Steganography</span></div>
+          <div class="paper-stream" aria-label="Conceptual DEFLATE stream">
+            <div class="paper-block dyn"><b>DYNAMIC</b><small>data</small></div>
+            <div class="paper-block hidden"><b>N</b><small>DBA</small></div>
+            <div class="paper-block fix"><b>FIXED</b><small>data</small></div>
+            <div class="paper-block hidden"><b>N</b><small>DBA</small></div>
+            <div class="paper-block sto"><b>STORED</b><small>data</small></div>
+          </div>
+          <div class="paper-outcomes">
+            <div><span><span class="lang-ko">표준 디코더</span><span class="lang-en">standard decoder</span></span><b><span class="lang-ko">원본 복원</span><span class="lang-en">original restored</span></b></div>
+            <div><span><span class="lang-ko">DBA 판독기</span><span class="lang-en">DBA-aware reader</span></span><b><span class="lang-ko">숨은 비트 복원</span><span class="lang-en">hidden bits recovered</span></b></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="research-notice section-shell reveal" aria-label="Responsible research notice">
+      <div class="notice-icon" aria-hidden="true">!</div>
+      <div>
+        <h2><span class="lang-ko">방어적 연구와 검증을 위한 자료</span><span class="lang-en">For defensive research and validation</span></h2>
+        <p><span class="lang-ko">이 통합 페이지와 포함된 C# PoC는 파일 포맷 연구, 상호운용성 시험, 탐지 규칙 개발을 위한 것입니다. 여기서 다루는 문제는 메모리 손상이나 암호 해독이 아니라, 정상 디코더가 무시하는 표현 영역을 별도 판독기가 다시 해석할 수 있다는 포맷 수준의 은닉 채널입니다.</span><span class="lang-en">This integrated page and the included C# PoC are intended for format research, interoperability testing, and defensive detection engineering. The issue is not memory corruption or a cryptographic break; it is a format-level covert channel created when a separate reader reinterprets representation bits that compliant inflaters ignore.</span></p>
+      </div>
+    </section>
+
+    <section class="content-section section-shell" id="overview" aria-labelledby="overview-title">
+      <div class="section-heading reveal">
+        <span class="section-kicker">01 · OVERVIEW</span>
+        <h2 id="overview-title"><span class="lang-ko">핵심 개요</span><span class="lang-en">Executive summary</span></h2>
+        <p><span class="lang-ko">NPNCB는 압축 해제 출력에 바이트를 추가하지 않는 0길이 Stored block입니다. 이 블록의 3비트 헤더 뒤에는 다음 바이트 경계까지 정렬 비트가 생길 수 있으며, 연구에서는 이를 DBA라고 부릅니다. 여러 DBA 조각을 연결하면 낮은 용량의 별도 데이터 채널이 됩니다.</span><span class="lang-en">An NPNCB is a zero-length stored block that adds no bytes to decompressed output. After its 3-bit header, alignment bits may appear before the next byte boundary; the cited research calls them the DBA. Chaining many DBA fragments creates a low-capacity auxiliary data channel.</span></p>
+      </div>
+      <div class="overview-grid">
+        <article class="overview-card reveal"><span class="overview-index">01</span><h3><span class="lang-ko">NPNCB 삽입</span><span class="lang-en">NPNCB insertion</span></h3><p><span class="lang-ko">출력 데이터가 없는 zero-length Stored block을 정상 데이터 블록 사이에 배치할 수 있습니다.</span><span class="lang-en">Zero-length stored blocks that emit no payload can be placed between ordinary data blocks.</span></p><code>BTYPE=00 · LEN=0</code></article>
+        <article class="overview-card reveal delay-1"><span class="overview-index">02</span><h3><span class="lang-ko">DBA 은닉</span><span class="lang-en">DBA hiding</span></h3><p><span class="lang-ko">바이트 정렬을 위해 소비되지만 디코더가 출력으로 사용하지 않는 비트에 작은 데이터 조각을 기록할 수 있습니다.</span><span class="lang-en">Small fragments can be written into alignment bits that are consumed structurally but never emitted as output.</span></p><code>0…7 bits / block</code></article>
+        <article class="overview-card reveal delay-2"><span class="overview-index">03</span><h3><span class="lang-ko">정상 해제</span><span class="lang-en">Normal extraction</span></h3><p><span class="lang-ko">해제된 파일 바이트가 같다면 그 데이터에 대한 CRC도 유지되므로 결과 비교만으로는 이상을 놓칠 수 있습니다.</span><span class="lang-en">When extracted file bytes remain unchanged, their CRC also remains valid, so output-only checks can miss the difference.</span></p><code>same output · same CRC</code></article>
+        <article class="overview-card reveal delay-3"><span class="overview-index">04</span><h3><span class="lang-ko">구조 기반 탐지</span><span class="lang-en">Structure-aware detection</span></h3><p><span class="lang-ko">비영 DBA, NPNCB 밀도, 반복 오버헤드와 정상 flush 가능성을 함께 평가해야 합니다.</span><span class="lang-en">Detection should correlate non-zero DBA values, NPNCB density, repeated overhead, and legitimate flushing context.</span></p><code>parse · correlate · normalize</code></article>
+      </div>
+    </section>
+
+    <section class="content-section section-shell" id="why" aria-labelledby="why-title">
+      <div class="section-heading reveal">
+        <span class="section-kicker">02 · WHY IT MATTERS</span>
+        <h2 id="why-title"><span class="lang-ko">왜 중요한가?</span><span class="lang-en">Why does it matter?</span></h2>
+        <p><span class="lang-ko">문제의 핵심은 “해제된 콘텐츠”와 “그 콘텐츠를 표현한 압축 스트림”이 서로 다른 검증 대상을 가진다는 점입니다.</span><span class="lang-en">The central issue is that “decompressed content” and “the compressed representation of that content” are different validation targets.</span></p>
+      </div>
+      <div class="why-layout">
+        <div class="why-copy reveal">
+          <p><span class="lang-ko">Deflate는 ZIP뿐 아니라 다양한 형식과 통신 계층에서 사용됩니다. 압축 해제 후 얻은 파일만 검사하는 파이프라인은 보통 원본 바이트, 파일 형식, CRC에는 집중하지만, raw DEFLATE 안에서 디코더가 버린 비트까지는 보존하거나 분석하지 않습니다.</span><span class="lang-en">DEFLATE is used by ZIP and many other formats and protocol layers. Pipelines that inspect only extracted files usually focus on content, file type, and CRC, while discarding or ignoring the exact raw DEFLATE representation.</span></p>
+          <p><span class="lang-ko">따라서 같은 파일을 복원하는 두 압축 스트림이 보안상 동일하다고 가정하면 blind spot이 생깁니다. 하나는 일반적인 인코더가 만든 스트림일 수 있고, 다른 하나는 출력에 영향을 주지 않는 블록과 정렬 비트에 별도 정보를 담을 수 있습니다.</span><span class="lang-en">Treating every compressed stream that reconstructs the same file as security-equivalent creates a blind spot. One stream may be ordinary; another may carry auxiliary information in blocks and alignment bits that do not affect output.</span></p>
+          <div class="claim-card"><span class="claim-label"><span class="lang-ko">핵심 주장</span><span class="lang-en">MAIN CLAIM</span></span><p><span class="lang-ko">정상 압축 해제기는 원본 파일을 그대로 복원하는 반면, 별도의 DBA 인식 판독기는 NPNCB에 흩어진 비트 조각을 다시 연결해 추가 메시지를 복원할 수 있습니다.</span><span class="lang-en">An ordinary inflater can reproduce the original file unchanged, while a DBA-aware reader separately reconnects bit fragments distributed across NPNCBs and recovers an additional message.</span></p></div>
+        </div>
+        <div class="integrity-gap reveal delay-1" aria-label="Validation gap diagram">
+          <div class="gap-source"><span>RAW ZIP ENTRY</span><b>DEFLATE BITSTREAM</b></div>
+          <div class="gap-fork"><span></span><i></i><span></span></div>
+          <div class="gap-lanes">
+            <div class="gap-lane content-lane"><span class="gap-icon">✓</span><div><b><span class="lang-ko">콘텐츠 검증 경로</span><span class="lang-en">Content-validation path</span></b><small><span class="lang-ko">inflate → 파일 → CRC/스캔</span><span class="lang-en">inflate → file → CRC/scan</span></small></div><strong><span class="lang-ko">정상</span><span class="lang-en">CLEAN</span></strong></div>
+            <div class="gap-lane stream-lane"><span class="gap-icon">≠</span><div><b><span class="lang-ko">표현 검증 경로</span><span class="lang-en">Representation-validation path</span></b><small><span class="lang-ko">BTYPE → DBA → NPNCB 밀도</span><span class="lang-en">BTYPE → DBA → NPNCB density</span></small></div><strong><span class="lang-ko">별도 신호</span><span class="lang-en">EXTRA SIGNAL</span></strong></div>
+          </div>
+          <p><span class="lang-ko">두 경로를 함께 봐야 “출력은 정상, 스트림은 비정상”인 경우를 구분할 수 있습니다.</span><span class="lang-en">Both paths are needed to distinguish “normal output” from “anomalous representation.”</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section section-shell" id="core-concepts" aria-labelledby="core-title">
+      <div class="section-heading reveal">
+        <span class="section-kicker">03 · CORE CONCEPTS</span>
+        <h2 id="core-title"><span class="lang-ko">핵심 개념 세 가지</span><span class="lang-en">Three core concepts</span></h2>
+        <p><span class="lang-ko">세 가지 유효 DEFLATE 블록 유형, 정렬 비트 영역 DBA, 그리고 payload가 없는 Stored block인 NPNCB를 구분하면 이후 구조를 쉽게 읽을 수 있습니다.</span><span class="lang-en">Once the three valid DEFLATE block types, the DBA alignment region, and the zero-payload stored block called NPNCB are distinguished, the rest of the structure becomes straightforward.</span></p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card reveal"><span class="card-index">A</span><div class="card-icon block-icon" aria-hidden="true"><span></span><span></span><span></span></div><h3><span class="lang-ko">Deflate의 블록 유형</span><span class="lang-en">DEFLATE block types</span></h3><p><span class="lang-ko">Stored, Fixed Huffman, Dynamic Huffman 세 형식이 유효합니다. 블록은 1비트 BFINAL과 2비트 BTYPE으로 시작합니다.</span><span class="lang-en">Stored, fixed Huffman, and dynamic Huffman are the three valid forms. Every block begins with one BFINAL bit and two BTYPE bits.</span></p></article>
+        <article class="concept-card reveal delay-1"><span class="card-index">B</span><div class="card-icon dba-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><h3>DBA · Disposed Bit Area</h3><p><span class="lang-ko">Stored block의 LEN 필드를 다음 바이트 경계에서 시작시키기 위해 헤더 뒤에 생기는 0–7비트 정렬 영역을 원 논문이 DBA라고 명명했습니다.</span><span class="lang-en">The paper names the 0–7 alignment bits after a stored-block header—the bits used to make LEN begin on the next byte boundary—the DBA.</span></p></article>
+        <article class="concept-card reveal delay-2"><span class="card-index">C</span><div class="card-icon channel-icon" aria-hidden="true"><span>0</span><span>0</span><span>Ø</span></div><h3>NPNCB</h3><p><span class="lang-ko"><strong>No-Payload Non-Compressed Block.</strong> `BTYPE=00`, `LEN=0`, `NLEN=0xFFFF`이므로 literal data가 없고 출력도 생성하지 않는 Stored block입니다.</span><span class="lang-en"><strong>No-Payload Non-Compressed Block.</strong> A stored block with `BTYPE=00`, `LEN=0`, and `NLEN=0xFFFF`, so it carries no literal bytes and emits no output.</span></p></article>
+      </div>
+<div class="block-types-panel reveal">
+<div class="panel-heading">
+<div>
+<span class="mini-label">DEFLATE BTYPE</span>
+<h3><span class="lang-ko">네 가지 2비트 값, 세 가지 유효 블록</span><span class="lang-en">Four 2-bit values, three valid block types</span></h3>
+</div>
+<span class="panel-note"><span class="lang-ko">NPNCB는 Stored의 특수 사례</span><span class="lang-en">NPNCB is a special stored block</span></span>
+</div>
+<div aria-label="DEFLATE block types" class="block-type-table" role="table">
+<div class="type-row type-head" role="row">
+<span role="columnheader">BTYPE</span>
+<span role="columnheader"><span class="lang-ko">블록</span><span class="lang-en">Block</span></span>
+<span role="columnheader"><span class="lang-ko">구성</span><span class="lang-en">Encoding</span></span>
+<span role="columnheader"><span class="lang-ko">PoC에서의 역할</span><span class="lang-en">PoC role</span></span>
+</div>
+<div class="type-row" role="row">
+<code role="cell">00</code><strong role="cell">Stored</strong><span role="cell">LEN · NLEN · literal bytes</span><span role="cell"><span class="lang-ko">0길이일 때 NPNCB</span><span class="lang-en">NPNCB when length is zero</span></span>
+</div>
+<div class="type-row" role="row">
+<code role="cell">01</code><strong role="cell">Fixed Huffman</strong><span role="cell"><span class="lang-ko">표준 고정 트리</span><span class="lang-en">predefined trees</span></span><span role="cell"><span class="lang-ko">실데이터 후보</span><span class="lang-en">data candidate</span></span>
+</div>
+<div class="type-row" role="row">
+<code role="cell">10</code><strong role="cell">Dynamic Huffman</strong><span role="cell"><span class="lang-ko">블록별 트리 포함</span><span class="lang-en">per-block trees</span></span><span role="cell"><span class="lang-ko">실데이터 후보</span><span class="lang-en">data candidate</span></span>
+</div>
+<div class="type-row reserved" role="row">
+<code role="cell">11</code><strong role="cell">Reserved</strong><span role="cell">—</span><span role="cell"><span class="lang-ko">사용 불가</span><span class="lang-en">invalid</span></span>
+</div>
+</div>
+</div>
+      <div class="core-structure reveal" aria-label="Stored block and NPNCB comparison">
+        <div class="core-structure-head"><div><span class="mini-label">SIMPLIFIED STRUCTURE</span><h3><span class="lang-ko">비압축 블록과 NPNCB 비교</span><span class="lang-en">Stored block versus NPNCB</span></h3></div><span><span class="lang-ko">실제 DBA 길이는 시작 비트 위치에 따라 달라집니다.</span><span class="lang-en">Actual DBA length depends on the starting bit offset.</span></span></div>
+        <div class="structure-row"><b>Stored block</b><div class="structure-strip"><span class="s-prefix">BFINAL+BTYPE</span><span class="s-dba">DBA</span><span class="s-len">LEN</span><span class="s-nlen">NLEN</span><span class="s-data">literal data</span></div><small><span class="lang-ko">LEN 바이트가 출력 데이터가 됩니다.</span><span class="lang-en">LEN bytes become decompressed output.</span></small></div>
+        <div class="structure-row npncb-row"><b>NPNCB</b><div class="structure-strip"><span class="s-prefix">BFINAL+BTYPE</span><span class="s-dba">DBA bits</span><span class="s-len">LEN=0</span><span class="s-nlen">NLEN=FFFF</span><span class="s-empty">no payload</span></div><small><span class="lang-ko">출력이 없으므로 디코더는 다음 블록으로 진행합니다.</span><span class="lang-en">With no output bytes, the inflater continues to the next block.</span></small></div>
+      </div>
+    </section>
+<section aria-labelledby="anatomy-title" class="content-section section-shell" id="anatomy">
+<div class="section-heading reveal">
+<span class="section-kicker">04 · DBA ANATOMY</span>
+<h2 id="anatomy-title"><span class="lang-ko">NPNCB 한 블록을 비트 단위로 펼치기</span><span class="lang-en">Unfolding one NPNCB, bit by bit</span></h2>
+<p><span class="lang-ko">블록은 항상 3비트 헤더로 시작하지만 바이트 경계에서 시작한다는 보장은 없습니다. DBA 크기는 헤더가 끝난 위치에 따라 0–7비트로 달라집니다.</span><span class="lang-en">Every block starts with a 3-bit header, but not necessarily on a byte boundary. DBA capacity therefore varies from 0 to 7 bits, depending on where that header ends.</span></p>
+</div>
+<figure class="anatomy-figure reveal">
+<figcaption>
+<span class="lang-ko">개념적 구조 — 실제 헤더 비트는 앞 바이트의 남은 공간에 걸쳐 있을 수 있습니다.</span>
+<span class="lang-en">Conceptual layout—the header may share a byte with the preceding block.</span>
+</figcaption>
+<div aria-label="NPNCB field layout" class="bit-layout">
+<div class="field field-final"><b>BFINAL</b><span>1 bit</span></div>
+<div class="field field-type"><b>BTYPE = 00</b><span>2 bits</span></div>
+<div class="field field-dba"><b>DBA</b><span>0…7 bits</span><small><span class="lang-ko">무시되는 정렬 비트</span><span class="lang-en">ignored alignment bits</span></small></div>
+<div class="field field-len"><b>LEN = 0000</b><span>16 bits · little-endian</span></div>
+<div class="field field-nlen"><b>NLEN = FFFF</b><span>16 bits · one's complement</span></div>
+<div class="field field-empty"><b><span class="lang-ko">리터럴 데이터 없음</span><span class="lang-en">no literal payload</span></b><span>0 bytes</span></div>
+</div>
+<div class="hex-annotation">
+<span class="hex-before">… previous bits</span>
+<span class="hex-header">BFINAL/BTYPE</span>
+<span class="hex-dba">DBA</span>
+<span class="hex-len">00 00</span>
+<span class="hex-nlen">FF FF</span>
+</div>
+</figure>
+<div class="anatomy-notes">
+<article class="fact-panel reveal">
+<span class="fact-number">01</span>
+<h3><span class="lang-ko">왜 표준 압축 해제기는 메시지를 못 보는가?</span><span class="lang-en">Why does a normal inflater not see the message?</span></h3>
+<p><span class="lang-ko">RFC 1951은 Stored block에서 다음 바이트 경계까지의 입력 비트를 무시하도록 정의합니다. 이후 `LEN=0`이므로 출력으로 복사할 리터럴 바이트도 없습니다.</span><span class="lang-en">RFC 1951 directs the decoder to ignore input bits up to the next byte boundary. With `LEN=0`, there are then no literal bytes to copy to output.</span></p>
+</article>
+<article class="fact-panel reveal delay-1">
+<span class="fact-number">02</span>
+<h3><span class="lang-ko">왜 `00 00 FF FF` 검색만으로는 부족한가?</span><span class="lang-en">Why is searching for `00 00 FF FF` insufficient?</span></h3>
+<p><span class="lang-ko">정상적인 zlib의 sync flush도 empty stored block과 이 4바이트를 만들 수 있고, 같은 바이트열이 압축 데이터 안에 우연히 나타날 수도 있습니다. 유효한 블록 경계를 따라 파싱해야 합니다.</span><span class="lang-en">A normal zlib sync flush can emit an empty stored block with these four bytes, and the byte sequence can also occur coincidentally. Detection must validate the actual bit-level block boundary.</span></p>
+</article>
+</div>
+<div class="interactive-lab reveal" id="capacity-lab">
+<div class="lab-heading">
+<div>
+<span class="mini-label">INTERACTIVE BIT LAB</span>
+<h3><span class="lang-ko">헤더 시작 위치에 따른 DBA 용량</span><span class="lang-en">DBA capacity by header start offset</span></h3>
+</div>
+<span class="lab-badge"><span class="lang-ko">브라우저 안에서만 계산</span><span class="lang-en">runs locally in your browser</span></span>
+</div>
+<div class="lab-grid">
+<div class="lab-controls">
+<label for="start-offset">
+<span><span class="lang-ko">NPNCB 헤더 시작 비트 오프셋</span><span class="lang-en">NPNCB header start bit offset</span></span>
+<output for="start-offset" id="start-offset-output">0</output>
+</label>
+<input id="start-offset" max="7" min="0" step="1" type="range" value="0"/>
+<label for="block-count">
+<span><span class="lang-ko">동일 오프셋 NPNCB 수 (예시)</span><span class="lang-en">NPNCB count at the same offset (illustrative)</span></span>
+<output for="block-count" id="block-count-output">32</output>
+</label>
+<input id="block-count" max="256" min="1" step="1" type="range" value="32"/>
+<label for="sample-message">
+<span><span class="lang-ko">시험 메시지</span><span class="lang-en">Sample message</span></span>
+</label>
+<input autocomplete="off" id="sample-message" maxlength="120" type="text" value="DBA 테스트 / hello"/>
+<p class="lab-disclaimer"><span class="lang-ko">실제 스트림에서는 각 NPNCB의 시작 오프셋이 서로 다를 수 있습니다. 이 계산기는 구조를 이해하기 위한 동일 오프셋 예시입니다.</span><span class="lang-en">In a real stream, each NPNCB may start at a different offset. This calculator repeats one offset only to illustrate the structure.</span></p>
+</div>
+<div class="lab-output">
+<div aria-hidden="true" class="bit-byte-labels"><span>BYTE n</span><span>BYTE n+1</span></div>
+<div aria-label="Bit position visualization" class="bit-cells" id="bit-cells"></div>
+<div class="legend-row">
+<span><i class="legend-previous"></i><span class="lang-ko">이전 블록</span><span class="lang-en">previous block</span></span>
+<span><i class="legend-header"></i><span class="lang-ko">3비트 헤더</span><span class="lang-en">3-bit header</span></span>
+<span><i class="legend-dba"></i>DBA</span>
+<span><i class="legend-next"></i>LEN</span>
+</div>
+<div class="lab-metrics">
+<div><span><span class="lang-ko">블록당 DBA</span><span class="lang-en">DBA per block</span></span><strong id="dba-per-block">5 bits</strong></div>
+<div><span><span class="lang-ko">총 연결 용량</span><span class="lang-en">connected capacity</span></span><strong id="total-capacity">160 bits</strong></div>
+<div><span><span class="lang-ko">완전한 바이트</span><span class="lang-en">whole bytes</span></span><strong id="whole-byte-capacity">20 bytes</strong></div>
+<div><span><span class="lang-ko">메시지 상태</span><span class="lang-en">message status</span></span><strong class="fit-good" id="message-fit">fits</strong></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section aria-labelledby="flow-title" class="content-section section-shell" id="flow">
+<div class="section-heading reveal">
+<span class="section-kicker">05 · DATA FLOW</span>
+<h2 id="flow-title"><span class="lang-ko">삽입과 복원은 서로 반대 방향의 파이프라인</span><span class="lang-en">Embedding and recovery are inverse pipelines</span></h2>
+<p><span class="lang-ko">메시지는 압축 해제 데이터에 섞이지 않습니다. raw DEFLATE 비트스트림 안의 정렬 영역에만 존재합니다.</span><span class="lang-en">The message is never mixed into the decompressed file. It exists only inside alignment regions of the raw DEFLATE bitstream.</span></p>
+</div>
+<div class="pipeline-grid">
+<article class="pipeline-card embed-card reveal">
+<div class="pipeline-title">
+<span class="pipeline-label">INSERT</span>
+<h3><span class="lang-ko">메시지 삽입기</span><span class="lang-en">Message inserter</span></h3>
+</div>
+<ol class="pipeline-steps">
+<li><span class="step-token">UTF-8</span><div><b><span class="lang-ko">문자열을 바이트로 변환</span><span class="lang-en">Encode text to bytes</span></b><small>strict UTF-8 · optional 0x00 terminator</small></div></li>
+<li><span class="step-token">LSB</span><div><b><span class="lang-ko">각 바이트를 LSB-first 비트로 분해</span><span class="lang-en">Split each byte LSB-first</span></b><small>b0 → b1 → … → b7</small></div></li>
+<li><span class="step-token">DBA</span><div><b><span class="lang-ko">NPNCB별 0–7비트에 이어 쓰기</span><span class="lang-en">Continue across 0–7-bit DBA slices</span></b><small>physical block order</small></div></li>
+<li><span class="step-token">ZIP</span><div><b><span class="lang-ko">raw DEFLATE를 ZIP method 8로 저장</span><span class="lang-en">Wrap raw DEFLATE as ZIP method 8</span></b><small>standard extraction remains valid</small></div></li>
+</ol>
+</article>
+<div aria-hidden="true" class="pipeline-divider reveal"><span>⇄</span><small>RAW BITS</small></div>
+<article class="pipeline-card restore-card reveal delay-1">
+<div class="pipeline-title">
+<span class="pipeline-label">RESTORE</span>
+<h3><span class="lang-ko">메시지 복원기</span><span class="lang-en">Message restorer</span></h3>
+</div>
+<ol class="pipeline-steps">
+<li><span class="step-token">ZIP</span><div><b><span class="lang-ko">Central Directory와 Local Header 분석</span><span class="lang-en">Parse Central Directory and local header</span></b><small>locate method-8 compressed bytes</small></div></li>
+<li><span class="step-token">BTYPE</span><div><b><span class="lang-ko">Stored · Fixed · Dynamic 블록 순회</span><span class="lang-en">Walk stored, fixed, and dynamic blocks</span></b><small>respect physical bit boundaries</small></div></li>
+<li><span class="step-token">0/FFFF</span><div><b><span class="lang-ko">LEN=0 · NLEN=FFFF인 Stored block 판별</span><span class="lang-en">Identify LEN=0 · NLEN=FFFF stored blocks</span></b><small>collect only their alignment bits</small></div></li>
+<li><span class="step-token">TEXT</span><div><b><span class="lang-ko">DBA 연결 → 바이트 → UTF-8 복원</span><span class="lang-en">DBA chain → bytes → UTF-8 text</span></b><small>stop at 0x00 when present</small></div></li>
+</ol>
+</article>
+</div>
+<div class="decoder-split reveal">
+<div class="split-source">
+<span class="mini-label">SAME ZIP</span>
+<div aria-hidden="true" class="zip-cube">ZIP</div>
+</div>
+<div class="split-path standard-path">
+<span class="path-line"></span>
+<div class="path-card"><b><span class="lang-ko">표준 압축 해제기</span><span class="lang-en">Standard inflater</span></b><p><span class="lang-ko">DBA를 무시하고 원본 파일만 출력</span><span class="lang-en">Ignores DBA and emits only the original file</span></p><span class="result-pill safe">PAYLOAD OK</span></div>
+</div>
+<div class="split-path custom-path">
+<span class="path-line"></span>
+<div class="path-card"><b><span class="lang-ko">DBA 인식 판독기</span><span class="lang-en">DBA-aware reader</span></b><p><span class="lang-ko">원본 파일과 별개로 정렬 비트를 수집</span><span class="lang-en">Collects alignment bits separately from file output</span></p><span class="result-pill found">MESSAGE FOUND</span></div>
+</div>
+</div>
+</section>
+<section aria-labelledby="poc-title" class="content-section section-shell" id="poc">
+<div class="section-heading reveal">
+<span class="section-kicker">06 · C# PROOF OF CONCEPT</span>
+<h2 id="poc-title"><span class="lang-ko">실데이터 압축은 적응형, NPNCB 삽입은 동일하게</span><span class="lang-en">Adaptive data compression, unchanged NPNCB insertion</span></h2>
+<p><span class="lang-ko">PoC는 C#/.NET 8의 두 독립 프로젝트로 나뉩니다. 삽입기는 각 16KiB 데이터 구간에서 Stored·Fixed·Dynamic 후보의 실제 비트 비용을 비교하고 가장 작은 형식을 선택합니다. 복원기는 어떤 조합이 선택되어도 블록 헤더를 따라 파싱합니다.</span><span class="lang-en">The PoC is split into two independent C#/.NET 8 projects. For each 16 KiB data region, the inserter measures the real bit cost of stored, fixed, and dynamic candidates and emits the smallest. The restorer follows the block headers, so it works with any resulting mixture.</span></p>
+</div>
+<div class="adaptive-diagram reveal">
+<div class="adaptive-input">
+<span class="mini-label"><span class="lang-ko">16 KiB 실데이터 구간</span><span class="lang-en">16 KiB input region</span></span>
+<div aria-hidden="true" class="data-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+</div>
+<div class="adaptive-candidates">
+<div class="candidate candidate-stored"><span>00</span><b>Stored</b><small>header + align + LEN/NLEN + bytes</small></div>
+<div class="candidate candidate-fixed"><span>01</span><b>Fixed</b><small>LZ77 + fixed trees + EOB</small></div>
+<div class="candidate candidate-dynamic"><span>10</span><b>Dynamic</b><small>trees/header + LZ77 + EOB</small></div>
+</div>
+<div class="adaptive-choice">
+<div class="argmin">arg min <sub>bits</sub></div>
+<span aria-hidden="true">→</span>
+<div class="winner"><b><span class="lang-ko">최소 후보</span><span class="lang-en">smallest candidate</span></b><small><span class="lang-ko">현재 비트 위치까지 반영</span><span class="lang-en">including current bit offset</span></small></div>
+<span aria-hidden="true">→</span>
+<div class="npncb-train"><b>NPNCB × N</b><small>DBA slices</small></div>
+</div>
+</div>
+<div class="poc-details-grid">
+<article class="project-card reveal">
+<div class="project-head">
+<div aria-hidden="true" class="project-icon inserter-icon">＋</div>
+<div><span class="mini-label">PROJECT 1</span><h3>DbaMessageInserter</h3></div>
+</div>
+<ul class="feature-list">
+<li><span class="lang-ko">입력 파일을 16KiB 구간으로 계획</span><span class="lang-en">Plans the input in 16 KiB regions</span></li>
+<li><span class="lang-ko">LZ77 토큰과 실제 Huffman 헤더 비용 측정</span><span class="lang-en">Measures LZ77 payload and real Huffman-header cost</span></li>
+<li><span class="lang-ko">Stored / Fixed / Dynamic 중 최소 비트 후보 선택</span><span class="lang-en">Chooses the smallest stored / fixed / dynamic candidate</span></li>
+<li><span class="lang-ko">각 데이터 블록 뒤 NPNCB train 삽입</span><span class="lang-en">Inserts an NPNCB train after each data block</span></li>
+<li><span class="lang-ko">UTF-8 메시지를 DBA에 LSB-first 기록</span><span class="lang-en">Writes UTF-8 message bits LSB-first into DBA</span></li>
+<li><span class="lang-ko">표준 ZipArchive로 원본 복원 검증</span><span class="lang-en">Verifies the original through standard ZipArchive extraction</span></li>
+</ul>
+<div class="project-command">
+<code>dotnet run -- "input.bin" "output.zip" "message" 32</code>
+<button class="copy-button" data-copy='dotnet run -- "input.bin" "output.zip" "message" 32' type="button"><span class="lang-ko">복사</span><span class="lang-en">Copy</span></button>
+</div>
+</article>
+<article class="project-card reveal delay-1">
+<div class="project-head">
+<div aria-hidden="true" class="project-icon restorer-icon">↺</div>
+<div><span class="mini-label">PROJECT 2</span><h3>DbaMessageRestorer</h3></div>
+</div>
+<ul class="feature-list">
+<li><span class="lang-ko">ZIP Central Directory와 Local Header 직접 파싱</span><span class="lang-en">Parses ZIP Central Directory and local header directly</span></li>
+<li><span class="lang-ko">첫 번째 method 8 엔트리의 raw DEFLATE 추출</span><span class="lang-en">Extracts raw DEFLATE from the first method-8 entry</span></li>
+<li><span class="lang-ko">Stored / Fixed / Dynamic 블록을 비트 단위로 순회</span><span class="lang-en">Walks stored / fixed / dynamic blocks at bit granularity</span></li>
+<li><span class="lang-ko">NPNCB의 DBA만 물리적 순서로 수집</span><span class="lang-en">Collects only NPNCB DBA bits in physical order</span></li>
+<li><span class="lang-ko">8비트 LSB-first 바이트와 strict UTF-8 복원</span><span class="lang-en">Rebuilds LSB-first bytes and strict UTF-8 text</span></li>
+<li><span class="lang-ko">텍스트 또는 원시 바이트로 저장 가능</span><span class="lang-en">Can save decoded text or raw bytes</span></li>
+</ul>
+<div class="project-command">
+<code>dotnet run -- "output.zip"</code>
+<button class="copy-button" data-copy='dotnet run -- "output.zip"' type="button"><span class="lang-ko">복사</span><span class="lang-en">Copy</span></button>
+</div>
+</article>
+</div>
+<div class="code-and-limits">
+<div class="code-panel reveal">
+<div class="code-panel-head">
+<div><span class="mini-label">CORE IDEA</span><h3><span class="lang-ko">DBA 용량 계산과 비트 기록</span><span class="lang-en">DBA capacity and bit writing</span></h3></div>
+<button class="copy-button" data-copy-target="core-code" type="button"><span class="lang-ko">코드 복사</span><span class="lang-en">Copy code</span></button>
+</div>
+<pre id="core-code"><code><span class="code-comment">// BFINAL + BTYPE=00</span>
+WriteBlockHeader(writer, isFinal, 0);
+
+<span class="code-comment">// Bits remaining before the next byte boundary become DBA.</span>
+int capacityBits = writer.BitsUntilByteBoundary;
+
+for (int i = 0; i &lt; capacityBits; i++)
+{
+    uint bit = ReadNextMessageBitOrZero();
+    writer.WriteBits(bit, 1);
+}
+
+<span class="code-comment">// Empty Stored block: LEN=0, NLEN=0xFFFF</span>
+writer.WriteUInt16LittleEndian(0x0000);
+writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
+</div>
+<aside class="limits-panel reveal delay-1">
+<span class="mini-label">LAB LIMITS</span>
+<h3><span class="lang-ko">이 PoC가 의도적으로 단순화한 범위</span><span class="lang-en">Intentional PoC boundaries</span></h3>
+<ul>
+<li><span class="lang-ko">classic ZIP 단일 엔트리 중심</span><span class="lang-en">classic single-entry ZIP focus</span></li>
+<li><span class="lang-ko">ZIP64 · 분할 ZIP · 암호화 엔트리 미지원</span><span class="lang-en">no ZIP64, split archives, or encrypted entries</span></li>
+<li><span class="lang-ko">고정된 16KiB 경계에서만 블록 타입 비교</span><span class="lang-en">block-type selection only at fixed 16 KiB boundaries</span></li>
+<li><span class="lang-ko">greedy hash-chain LZ77; zlib 전체 최적화 재현 아님</span><span class="lang-en">greedy hash-chain LZ77, not full zlib optimization</span></li>
+<li><span class="lang-ko">일반 압축기의 정상 empty stored block도 NPNCB로 보일 수 있음</span><span class="lang-en">legitimate empty stored blocks may also match NPNCB structure</span></li>
+<li><span class="lang-ko">메시지 암호화·인증·오류정정 기능 없음</span><span class="lang-en">no message encryption, authentication, or error correction</span></li>
+</ul>
+</aside>
+</div>
+<div class="downloads reveal" id="downloads">
+<div class="downloads-copy">
+<span class="section-kicker">DOWNLOADS</span>
+<h3><span class="lang-ko">독립 프로젝트 또는 전체 솔루션</span><span class="lang-en">Standalone projects or the complete solution</span></h3>
+<p><span class="lang-ko">소스만 포함된 .NET 8 C# 프로젝트입니다. 다운로드 후 `dotnet build -c Release`로 빌드할 수 있습니다.</span><span class="lang-en">Source-only .NET 8 C# projects. Build after download with `dotnet build -c Release`.</span></p>
+</div>
+<div class="download-list">
+<a class="download-item" download="" href="downloads/DbaMessageInserter-Adaptive-CSharp.zip">
+<span class="download-symbol">↓</span><span><b>DbaMessageInserter</b><small><span class="lang-ko">적응형 압축 + DBA 삽입</span><span class="lang-en">adaptive compression + DBA insertion</span></small></span><code>ZIP</code>
+</a>
+<a class="download-item" download="" href="downloads/DbaMessageRestorer-Adaptive-CSharp.zip">
+<span class="download-symbol">↓</span><span><b>DbaMessageRestorer</b><small><span class="lang-ko">raw DEFLATE 파싱 + 메시지 복원</span><span class="lang-en">raw DEFLATE parsing + message recovery</span></small></span><code>ZIP</code>
+</a>
+<a class="download-item" download="" href="downloads/ControlledDeflateZip-DBA-Adaptive-CSharp.zip">
+<span class="download-symbol">↓</span><span><b>Complete solution</b><small><span class="lang-ko">두 프로젝트와 Visual Studio 솔루션</span><span class="lang-en">both projects and Visual Studio solution</span></small></span><code>ZIP</code>
+</a>
+<a class="checksum-link" href="downloads/SHA256SUMS.txt"><span class="lang-ko">SHA-256 체크섬 보기</span><span class="lang-en">View SHA-256 checksums</span> →</a>
+</div>
+</div>
+</section>
+<section aria-labelledby="defense-title" class="content-section section-shell" id="defense">
+<div class="section-heading reveal">
+<span class="section-kicker">07 · DETECTION &amp; MITIGATION</span>
+<h2 id="defense-title"><span class="lang-ko">패턴 검색보다 구조 검증이 중요하다</span><span class="lang-en">Structural validation beats byte-pattern matching</span></h2>
+<p><span class="lang-ko">`00 00 FF FF`는 정상 flush에도 나타납니다. 방어 도구는 raw DEFLATE를 실제 블록 경계대로 파싱하고, DBA 값과 NPNCB 밀도, 압축 오버헤드를 함께 봐야 합니다.</span><span class="lang-en">`00 00 FF FF` also appears in legitimate flush markers. Defensive tooling should parse raw DEFLATE at real block boundaries, then evaluate DBA values, NPNCB density, and compression overhead together.</span></p>
+</div>
+<div class="signal-board reveal">
+<div class="signal-heading"><h3><span class="lang-ko">탐지 신호의 상대적 의미</span><span class="lang-en">Relative value of detection signals</span></h3><span><span class="lang-ko">단독 판정 금지</span><span class="lang-en">Do not use in isolation</span></span></div>
+<div class="signal-row"><div><b><span class="lang-ko">Stored block 정렬 비트가 0이 아님</span><span class="lang-en">Non-zero stored-block alignment bits</span></b><small><span class="lang-ko">강한 이상 신호지만 표준이 값을 제한하지는 않음</span><span class="lang-en">strong anomaly; the format does not require zero</span></small></div><div class="signal-meter"><i style="--score: 92%"></i></div><strong>HIGH</strong></div>
+<div class="signal-row"><div><b><span class="lang-ko">0길이 Stored block의 높은 밀도</span><span class="lang-en">High density of zero-length stored blocks</span></b><small><span class="lang-ko">메시지 용량 확보 시 오버헤드 증가</span><span class="lang-en">capacity requires repeated structural overhead</span></small></div><div class="signal-meter"><i style="--score: 78%"></i></div><strong>MED–HIGH</strong></div>
+<div class="signal-row"><div><b><span class="lang-ko">유효 경계의 `00 00 FF FF` 반복</span><span class="lang-en">Repeated `00 00 FF FF` at valid boundaries</span></b><small><span class="lang-ko">flush 사용과 구분 필요</span><span class="lang-en">must be distinguished from normal flushing</span></small></div><div class="signal-meter"><i style="--score: 58%"></i></div><strong>MEDIUM</strong></div>
+<div class="signal-row"><div><b><span class="lang-ko">압축 해제 후 재압축 시 raw stream 불일치</span><span class="lang-en">Raw stream changes after decompress/recompress</span></b><small><span class="lang-ko">대부분의 정상 ZIP도 달라질 수 있어 보조 신호</span><span class="lang-en">many benign archives also change; supporting signal only</span></small></div><div class="signal-meter"><i style="--score: 28%"></i></div><strong>LOW</strong></div>
+</div>
+<div class="defense-grid">
+<article class="defense-card reveal">
+<span class="defense-step">1</span>
+<h3><span class="lang-ko">Raw stream까지 검사</span><span class="lang-en">Inspect the raw stream</span></h3>
+<p><span class="lang-ko">압축 해제된 파일만 스캔하면 DBA는 사라집니다. ZIP 엔트리의 원시 compressed bytes를 보존하고 분석 경로에 포함합니다.</span><span class="lang-en">DBA disappears from extracted content. Preserve and inspect the entry’s raw compressed bytes, not only the decompressed file.</span></p>
+</article>
+<article class="defense-card reveal delay-1">
+<span class="defense-step">2</span>
+<h3><span class="lang-ko">비트 단위 DEFLATE 파서 사용</span><span class="lang-en">Use a bit-accurate parser</span></h3>
+<p><span class="lang-ko">BFINAL/BTYPE, Huffman payload, EOB, LEN/NLEN을 따라 다음 블록 시작점을 계산합니다. 단순 hex 검색은 오탐과 누락을 모두 만듭니다.</span><span class="lang-en">Follow BFINAL/BTYPE, Huffman payload, EOB, and LEN/NLEN to derive each next block boundary. Hex search alone creates both false positives and misses.</span></p>
+</article>
+<article class="defense-card reveal delay-2">
+<span class="defense-step">3</span>
+<h3><span class="lang-ko">정책 기반 정규화</span><span class="lang-en">Policy-driven normalization</span></h3>
+<p><span class="lang-ko">정확한 compressed bytes 보존이 필요하지 않은 수신 경로라면, 검증된 라이브러리로 압축 해제 후 재압축하여 ignored-bit channel을 제거할 수 있습니다.</span><span class="lang-en">Where exact compressed bytes need not be preserved, decompress with a trusted library and recompress to remove ignored-bit channels.</span></p>
+</article>
+<article class="defense-card reveal delay-3">
+<span class="defense-step">4</span>
+<h3><span class="lang-ko">여러 신호를 결합</span><span class="lang-en">Correlate multiple signals</span></h3>
+<p><span class="lang-ko">비영(非0) DBA, NPNCB 수, 블록당 오버헤드, 출처 신뢰도, 파일 유형을 함께 점수화합니다. 정상 sync flush를 악성으로 단정하지 않습니다.</span><span class="lang-en">Score non-zero DBA, NPNCB count, per-block overhead, source reputation, and file type together. Do not label legitimate sync flushes as malicious by default.</span></p>
+</article>
+</div>
+<div class="interpretation-panel reveal">
+<div class="interpretation-title"><span class="mini-label">SECURITY INTERPRETATION</span><h3><span class="lang-ko">정확히 무엇이 위험하고, 무엇은 아닌가?</span><span class="lang-en">What is—and is not—the security issue?</span></h3></div>
+<div class="interpretation-columns">
+<div class="is-column">
+<b><span class="lang-ko">이것은</span><span class="lang-en">It is</span></b>
+<ul>
+<li><span class="lang-ko">무시되는 비트를 이용한 저용량 covert channel</span><span class="lang-en">a low-capacity covert channel in ignored bits</span></li>
+<li><span class="lang-ko">“압축 해제 결과만 검사”하는 파이프라인의 blind spot</span><span class="lang-en">a blind spot for pipelines that scan only extracted output</span></li>
+<li><span class="lang-ko">포맷 정규화와 raw-stream 검사의 필요성을 보여주는 사례</span><span class="lang-en">a case for format normalization and raw-stream inspection</span></li>
+</ul>
+</div>
+<div class="not-column">
+<b><span class="lang-ko">이것은 아니다</span><span class="lang-en">It is not</span></b>
+<ul>
+<li><span class="lang-ko">DEFLATE 디코더의 메모리 손상 취약점</span><span class="lang-en">a memory-corruption bug in DEFLATE decoders</span></li>
+<li><span class="lang-ko">암호화 또는 안전한 비밀 통신</span><span class="lang-en">encryption or a secure secret channel</span></li>
+<li><span class="lang-ko">`00 00 FF FF`만으로 확정 가능한 악성 지표</span><span class="lang-en">a malicious indicator provable from `00 00 FF FF` alone</span></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section aria-labelledby="faq-title" class="content-section section-shell" id="faq">
+<div class="section-heading compact reveal">
+<span class="section-kicker">08 · FAQ</span>
+<h2 id="faq-title"><span class="lang-ko">자주 생기는 오해</span><span class="lang-en">Common misconceptions</span></h2>
+</div>
+<div class="faq-list reveal">
+<details>
+<summary><span class="lang-ko">DBA 비트는 반드시 0이어야 하나?</span><span class="lang-en">Must DBA bits be zero?</span></summary>
+<p><span class="lang-ko">RFC 1951은 그 비트들을 “무시”한다고 정의하며 특정 값으로 제한하지 않습니다. 많은 encoder가 0을 쓰지만, 비영 값 자체만으로 비준수 스트림이라고 단정할 수는 없습니다. 따라서 탐지 규칙은 구조와 맥락을 함께 보아야 합니다.</span><span class="lang-en">RFC 1951 says those bits are ignored; it does not constrain their value. Many encoders write zero, but a non-zero value alone does not prove non-compliance. Detection therefore needs structural and contextual evidence.</span></p>
+</details>
+<details>
+<summary><span class="lang-ko">NPNCB 하나에 메시지 몇 바이트를 넣을 수 있나?</span><span class="lang-en">How many message bytes fit in one NPNCB?</span></summary>
+<p><span class="lang-ko">0–7비트뿐이므로 단일 블록에는 완전한 1바이트도 보장되지 않습니다. 여러 NPNCB의 DBA를 연결해야 하며, 그만큼 4바이트 LEN/NLEN과 헤더 오버헤드가 반복되어 은닉 효율은 낮습니다.</span><span class="lang-en">Only 0–7 bits, so one block cannot guarantee even a complete byte. Multiple DBA regions must be chained, repeating header and four-byte LEN/NLEN overhead. The channel is therefore inefficient.</span></p>
+</details>
+<details>
+<summary><span class="lang-ko">ZIP CRC가 메시지를 발견하지 못하는 이유는?</span><span class="lang-en">Why does the ZIP CRC not reveal the message?</span></summary>
+<p><span class="lang-ko">PoC가 바꾸는 것은 압축 해제기가 무시하는 raw DEFLATE 비트입니다. 복원된 파일 바이트는 그대로이므로 그 파일 데이터에 대해 계산한 CRC도 그대로 통과합니다. raw compressed stream 자체의 무결성을 별도로 검증해야 합니다.</span><span class="lang-en">The PoC changes raw DEFLATE bits that the inflater ignores. The recovered file bytes remain unchanged, so a CRC over that file data still verifies. Integrity of the raw compressed stream must be checked separately.</span></p>
+</details>
+<details>
+<summary><span class="lang-ko">재압축하면 메시지는 없어지나?</span><span class="lang-en">Does recompression remove the message?</span></summary>
+<p><span class="lang-ko">일반적으로 그렇습니다. 압축 해제 후 새로 DEFLATE하면 원래의 ignored alignment bits와 블록 배치가 보존되지 않습니다. 다만 재압축은 압축 바이트 동일성, 디지털 서명, 재현 가능한 빌드 요구와 충돌할 수 있으므로 정책적으로 적용해야 합니다.</span><span class="lang-en">Generally yes. A fresh DEFLATE encoding does not preserve the original ignored alignment bits or block layout. However, recompression can conflict with byte-for-byte archive preservation, signatures, or reproducible-build requirements, so it must be policy-driven.</span></p>
+</details>
+</div>
+</section>
+<section aria-labelledby="references-title" class="content-section references section-shell" id="references">
+<div class="section-heading compact reveal">
+<span class="section-kicker">09 · SOURCES</span>
+<h2 id="references-title"><span class="lang-ko">표준과 연구 근거</span><span class="lang-en">Standards and research basis</span></h2>
+<p><span class="lang-ko">용어와 주장 사이를 구분하기 위해 1차 표준과 원 논문을 함께 제시합니다.</span><span class="lang-en">Primary specifications and the original paper are listed together to separate standardized behavior from research terminology.</span></p>
+</div>
+<ol class="reference-list reveal">
+<li>
+<span class="ref-number">[1]</span>
+<div><b>RFC 1951 — DEFLATE Compressed Data Format Specification version 1.3</b><p><span class="lang-ko">Stored block의 3비트 헤더, 바이트 정렬, LEN/NLEN 구조와 “다음 바이트 경계까지의 비트는 무시” 규칙.</span><span class="lang-en">Defines the 3-bit block header, stored-block byte alignment, LEN/NLEN, and the rule that bits up to the next byte boundary are ignored.</span></p><a href="https://datatracker.ietf.org/doc/html/rfc1951" rel="noopener noreferrer" target="_blank">IETF Datatracker ↗</a></div>
+</li>
+<li>
+<span class="ref-number">[2]</span>
+<div><b>PKWARE .ZIP File Format Specification — APPNOTE.TXT</b><p><span class="lang-ko">ZIP local/central headers, CRC-32 필드, compression method 8(DEFLATE)의 컨테이너 구조.</span><span class="lang-en">Defines ZIP local/central headers, CRC-32 fields, and compression method 8 (DEFLATE).</span></p><a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT" rel="noopener noreferrer" target="_blank">PKWARE specification ↗</a></div>
+</li>
+<li>
+<span class="ref-number">[3]</span>
+<div><b>zlib 1.3.1 Manual</b><p><span class="lang-ko">Z_SYNC_FLUSH가 3비트와 filler, 이어지는 `00 00 FF FF`로 구성된 empty stored block을 만들 수 있음을 설명합니다.</span><span class="lang-en">Documents that Z_SYNC_FLUSH can append an empty stored block consisting of three bits, filler to the next byte, and `00 00 FF FF`.</span></p><a href="https://www.zlib.net/manual.html" rel="noopener noreferrer" target="_blank">zlib manual ↗</a></div>
+</li>
+<li>
+<span class="ref-number">[4]</span>
+<div><b>Jung-hoon Kim, “Malicious Code Injection Vulnerability Analysis in the Deflate Algorithm,” JKIISC 32(5), 2022, 869–879.</b><p><span class="lang-ko">NPNCB와 DBA라는 용어를 사용하고, 정상 블록 사이에 DBA가 변형된 NPNCB를 삽입하는 은닉 채널을 분석한 원 논문. DOI: 10.13089/JKIISC.2022.32.5.869</span><span class="lang-en">The original paper using the terms NPNCB and DBA and analyzing insertion of NPNCBs with modified DBA between ordinary blocks. DOI: 10.13089/JKIISC.2022.32.5.869</span></p><a href="https://www.kci.go.kr/kciportal/landing/article.kci?arti_id=ART002888736" rel="noopener noreferrer" target="_blank">KCI record ↗</a></div>
+</li>
+
+<li>
+  <span class="ref-number">[5]</span>
+  <div><b>safe.zipdeflate.com — NPNCB Vulnerability Brief</b><p><span class="lang-ko">이 통합판의 개요·중요성·핵심 개념 정보 구조를 참고한 기존 소개 페이지입니다. 본 통합판의 문장은 별도로 재작성했습니다.</span><span class="lang-en">The earlier introduction whose information structure informed the overview, significance, and core-concept chapters. The wording in this integrated edition was independently rewritten.</span></p><a href="https://safe.zipdeflate.com/" target="_blank" rel="noopener noreferrer">Open original brief ↗</a></div>
+</li>
+</ol>
+</section>
+<section class="closing section-shell reveal">
+<div aria-hidden="true" class="closing-pattern"></div>
+<div class="closing-copy">
+<span class="section-kicker">TAKEAWAY</span>
+<h2><span class="lang-ko">“무시되는 비트”도 공격 표면의 일부다.</span><span class="lang-en">Ignored bits are still part of the attack surface.</span></h2>
+<p><span class="lang-ko">안전한 포맷 처리는 해석된 콘텐츠뿐 아니라 원시 표현, 정규화 규칙, 서로 다른 파서가 보는 데이터의 차이까지 다뤄야 합니다.</span><span class="lang-en">Secure format handling must account not only for interpreted content, but also raw representation, normalization rules, and differences between what separate parsers observe.</span></p>
+</div>
+<a class="button primary" href="#top"><span class="lang-ko">처음으로</span><span class="lang-en">Back to top</span> ↑</a>
+</section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="section-shell footer-inner">
+      <div class="footer-brand"><b>NPNCB Vulnerability Lab</b><p><span class="lang-ko">개요부터 DBA PoC와 방어까지 연결한 한·영 정적 연구 사이트</span><span class="lang-en">A bilingual static research site connecting the overview, DBA PoC, and defensive guidance</span></p></div>
+      <div class="footer-links"><a href="README.md">README</a><a href="SECURITY.md">SECURITY</a><a href="LICENSE">LICENSE</a><a href="downloads/SHA256SUMS.txt">SHA-256</a></div>
+      <div class="footer-meta"><span>Dark by default</span><span>·</span><span>GitHub Pages ready</span><span>·</span><span>No tracking · No CDN</span></div>
+    </div>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
