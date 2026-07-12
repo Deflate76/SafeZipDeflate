@@ -20,6 +20,129 @@
   <link rel="stylesheet" href="assets/styles.css">
   <title>NPNCB Vulnerability Lab — Deflate 은닉 취약점</title>
   <script src="assets/app.js" defer></script>
+
+  <!-- Added: related patent card and paper figures -->
+  <style>
+    .related-patent-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: .45rem 1rem;
+      align-items: center;
+      margin: 1rem 0 1.15rem;
+      padding: 1rem 1.05rem;
+      border: 1px solid rgba(0, 178, 240, .34);
+      border-radius: 15px;
+      background: linear-gradient(135deg, rgba(0, 178, 240, .13), rgba(255, 192, 0, .08));
+      color: inherit;
+      text-decoration: none;
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .related-patent-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 178, 240, .62);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, .18);
+    }
+    .related-patent-card:focus-visible {
+      outline: 3px solid rgba(0, 178, 240, .55);
+      outline-offset: 3px;
+    }
+    .related-patent-label {
+      grid-column: 1 / -1;
+      color: #00b2f0;
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .related-patent-title {
+      display: grid;
+      gap: .2rem;
+      min-width: 0;
+    }
+    .related-patent-title strong {
+      color: #f8fafc;
+      font-size: .98rem;
+      line-height: 1.45;
+    }
+    .related-patent-title small {
+      color: rgba(226, 232, 240, .76);
+      font-size: .76rem;
+      line-height: 1.45;
+    }
+    .related-patent-link {
+      color: #ffc000;
+      font-size: .78rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    html[data-theme="light"] .related-patent-card {
+      background: linear-gradient(135deg, rgba(0, 178, 240, .09), rgba(255, 192, 0, .1));
+    }
+    html[data-theme="light"] .related-patent-title strong { color: #111827; }
+    html[data-theme="light"] .related-patent-title small { color: #475569; }
+
+    .source-figures {
+      display: grid;
+      gap: 1.4rem;
+      margin: 1.5rem 0 2rem;
+    }
+    .source-figure {
+      margin: 0;
+      padding: clamp(.8rem, 2vw, 1.2rem);
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, .24);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .035);
+      box-shadow: 0 16px 38px rgba(0, 0, 0, .16);
+    }
+    .source-figure-canvas {
+      overflow-x: auto;
+      padding: clamp(.45rem, 1.5vw, .9rem);
+      border: 1px solid rgba(15, 23, 42, .12);
+      border-radius: 12px;
+      background: #f4f7fb;
+      scrollbar-color: #94a3b8 #e2e8f0;
+      scrollbar-width: thin;
+    }
+    .source-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-width: 720px;
+      object-fit: contain;
+    }
+    .source-figure figcaption {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .45rem .7rem;
+      align-items: baseline;
+      margin-top: .85rem;
+      color: rgba(226, 232, 240, .78);
+      font-size: .86rem;
+      line-height: 1.55;
+    }
+    .source-figure figcaption strong {
+      color: #ffc000;
+      font-size: .8rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    html[data-theme="light"] .source-figure {
+      background: rgba(15, 23, 42, .025);
+      border-color: rgba(15, 23, 42, .12);
+      box-shadow: 0 16px 38px rgba(15, 23, 42, .08);
+    }
+    html[data-theme="light"] .source-figure figcaption { color: #475569; }
+    @media (max-width: 700px) {
+      .related-patent-card { grid-template-columns: 1fr; }
+      .related-patent-link { white-space: normal; }
+      .source-figure img { min-width: 820px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .related-patent-card { transition: none; }
+      .related-patent-card:hover { transform: none; }
+    }
+  </style>
 </head>
 <body>
   <a class="skip-link" href="#main-content"><span class="lang-ko">본문으로 바로가기</span><span class="lang-en">Skip to content</span></a>
@@ -112,6 +235,15 @@
             <div><span><span class="lang-ko">발행</span><span class="lang-en">Published</span></span><b><span class="lang-ko">2022년 10월</span><span class="lang-en">October 2022</span></b></div>
             <div><span>DOI</span><b>10.13089/JKIISC.2022.32.5.869</b></div>
           </div>
+
+          <a class="related-patent-card" href="https://doi.org/10.8080/1020220096147" target="_blank" rel="noopener noreferrer" aria-label="Related patent: Apparatus and Method for Detecting Malignant Codes">
+            <span class="related-patent-label"><span class="lang-ko">관련 특허</span><span class="lang-en">RELATED PATENT</span></span>
+            <span class="related-patent-title">
+              <strong><span class="lang-ko">악성 코드 탐지 장치 및 방법</span><span class="lang-en">Apparatus and Method for Detecting Malignant Codes</span></strong>
+              <small>APPARATUS AND METHOD FOR DETECTING MALIGNANT CODES · DOI 10.8080/1020220096147</small>
+            </span>
+            <span class="related-patent-link"><span class="lang-ko">특허 정보 보기</span><span class="lang-en">Open patent record</span> ↗</span>
+          </a>
           <div class="paper-keywords"><span>Deflate</span><span>ZIP</span><span>NPNCB</span><span>DBA</span><span>Steganography</span></div>
           <div class="paper-stream" aria-label="Conceptual DEFLATE stream">
             <div class="paper-block dyn"><b>DYNAMIC</b><small>data</small></div>
@@ -247,6 +379,17 @@
 <span class="hex-nlen">FF FF</span>
 </div>
 </figure>
+
+<div class="source-figures reveal" aria-label="Figures 2 and 3 from the paper">
+<figure class="source-figure">
+<div class="source-figure-canvas"><img src="assets/Fig2.png" alt="Figure 2: DEFLATE NPNCB structure showing the DBA, BFINAL, BTYPE, LEN, and NLEN fields" loading="lazy" decoding="async"></div>
+<figcaption><strong>Fig. 2</strong><span class="lang-ko">DBA가 존재하는 NPNCB의 비트 구조와 필드 배치.</span><span class="lang-en">Bit layout and field placement of an NPNCB when a DBA is present.</span></figcaption>
+</figure>
+<figure class="source-figure">
+<div class="source-figure-canvas"><img src="assets/Fig3.png" alt="Figure 3: DEFLATE NPNCB structure when the prefix ends at a byte boundary and no DBA is required" loading="lazy" decoding="async"></div>
+<figcaption><strong>Fig. 3</strong><span class="lang-ko">Prefix가 바이트 경계에서 끝나 DBA가 필요하지 않은 경우.</span><span class="lang-en">The case where the prefix ends at a byte boundary and no DBA is required.</span></figcaption>
+</figure>
+</div>
 <div class="anatomy-notes">
 <article class="fact-panel reveal">
 <span class="fact-number">01</span>
