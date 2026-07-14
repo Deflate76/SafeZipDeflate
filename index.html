@@ -643,6 +643,57 @@
       }
     }
 
+
+    /* 2026-07 update: add a direct DOWNLOAD navigation target. */
+    #downloads {
+      scroll-margin-top: 7.5rem;
+    }
+    #downloads:target {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+    }
+    .desktop-nav.integrated-nav .nav-download {
+      color: var(--accent-2, #ffc000);
+      font-weight: 800;
+      letter-spacing: .035em;
+    }
+    .desktop-nav.integrated-nav .nav-download:hover,
+    .desktop-nav.integrated-nav .nav-download:focus-visible {
+      color: #ffe08a;
+    }
+    html[data-theme="light"] .desktop-nav.integrated-nav .nav-download {
+      color: #9a6700;
+    }
+
+    /* 2026-07 update: show Fig. 1-4 at about 70% of their former desktop size. */
+    .source-figures .source-figure {
+      width: 70%;
+      max-width: 70%;
+      justify-self: center;
+      box-sizing: border-box;
+    }
+    .source-figures .source-figure img,
+    .claim-figures .source-figure img {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      height: auto;
+      margin-inline: auto;
+    }
+    @media (max-width: 700px) {
+      .source-figures .source-figure {
+        width: 100%;
+        max-width: 100%;
+      }
+      .source-figures .source-figure img,
+      .claim-figures .source-figure img {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+      }
+    }
+
 </style>
 </head>
 <body>
@@ -668,6 +719,7 @@
         <a href="#anatomy"><span class="lang-ko">DBA</span><span class="lang-en">DBA</span></a>
         <a href="#flow"><span class="lang-ko">흐름</span><span class="lang-en">Flow</span></a>
         <a href="#poc">PoC</a>
+        <a class="nav-download" href="#downloads">DOWNLOAD</a>
         <a href="#defense"><span class="lang-ko">방어</span><span class="lang-en">Defense</span></a>
       </nav>
 
