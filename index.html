@@ -190,6 +190,459 @@
     #hero-title > .lang-ko em {
       font-size: inherit !important;
     }
+
+
+    /* 2026-07 update: make the original-paper card and downloads area
+       visually prominent, while preserving the earlier label/title fixes. */
+    .paper-spotlight {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      border: 1px solid rgba(0, 210, 255, .58) !important;
+      border-radius: 26px !important;
+      background:
+        radial-gradient(circle at 92% 4%, rgba(255, 192, 0, .18), transparent 34%),
+        radial-gradient(circle at 3% 78%, rgba(0, 178, 240, .18), transparent 42%),
+        linear-gradient(145deg, rgba(8, 21, 38, .98), rgba(4, 10, 19, .98)) !important;
+      box-shadow:
+        0 30px 86px rgba(0, 0, 0, .46),
+        0 0 0 1px rgba(255, 255, 255, .035),
+        inset 0 1px 0 rgba(255, 255, 255, .09),
+        0 0 42px rgba(0, 178, 240, .12) !important;
+      transform: translateZ(0);
+    }
+    .paper-spotlight::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: 2;
+      height: 4px;
+      background: linear-gradient(90deg, #00b2f0 0%, #70e1ff 45%, #ffc000 100%);
+      box-shadow: 0 0 22px rgba(0, 178, 240, .48);
+    }
+    .paper-spotlight::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      top: -10rem;
+      right: -9rem;
+      width: 24rem;
+      height: 24rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 192, 0, .15), transparent 68%);
+      pointer-events: none;
+    }
+    .paper-spotlight > * {
+      position: relative;
+      z-index: 1;
+    }
+    .paper-spotlight .paper-topline {
+      align-items: center;
+      gap: .75rem;
+      margin-bottom: 1rem;
+    }
+    .paper-spotlight .paper-topline > span:first-child {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      padding: .38rem .72rem;
+      border: 1px solid rgba(0, 210, 255, .52);
+      border-radius: 999px;
+      background: rgba(0, 178, 240, .12);
+      color: #75e6ff;
+      font-weight: 900;
+      letter-spacing: .14em;
+      box-shadow: inset 0 0 18px rgba(0, 178, 240, .08);
+    }
+    .paper-spotlight .paper-year {
+      padding: .32rem .62rem;
+      border: 1px solid rgba(255, 192, 0, .34);
+      border-radius: 999px;
+      background: rgba(255, 192, 0, .09);
+      color: #ffd45c;
+      font-weight: 800;
+    }
+    .paper-spotlight h2 {
+      margin: .15rem 0 1.15rem;
+      color: #f8fafc;
+      font-size: clamp(1.38rem, 1.05rem + 1.15vw, 2.1rem);
+      line-height: 1.32;
+      letter-spacing: -.025em;
+      text-wrap: balance;
+      text-shadow: 0 5px 24px rgba(0, 0, 0, .34);
+    }
+    .paper-spotlight .paper-meta {
+      gap: .7rem !important;
+      margin-bottom: 1rem;
+    }
+    .paper-spotlight .paper-meta > div {
+      padding: .76rem .82rem !important;
+      border: 1px solid rgba(148, 163, 184, .18);
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, .065), rgba(255, 255, 255, .025));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .045);
+    }
+    .paper-spotlight .paper-meta > div > span {
+      color: rgba(148, 225, 244, .82);
+    }
+    .paper-spotlight .paper-meta b {
+      color: #f8fafc;
+      overflow-wrap: anywhere;
+    }
+    .paper-access-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+      gap: .72rem;
+      margin: 1rem 0 1.15rem;
+    }
+    .paper-access-button {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: .72rem;
+      align-items: center;
+      min-width: 0;
+      padding: .82rem .9rem;
+      border: 1px solid rgba(148, 163, 184, .25);
+      border-radius: 15px;
+      color: #f8fafc;
+      text-decoration: none;
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .paper-access-button:hover {
+      transform: translateY(-3px);
+    }
+    .paper-access-button:focus-visible {
+      outline: 3px solid rgba(112, 225, 255, .72);
+      outline-offset: 3px;
+    }
+    .paper-access-button.primary {
+      border-color: rgba(255, 192, 0, .62);
+      background: linear-gradient(135deg, #ffd65c, #ffc000 56%, #ffab00);
+      color: #101720;
+      box-shadow: 0 12px 28px rgba(255, 192, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .5);
+    }
+    .paper-access-button.primary:hover {
+      border-color: #ffe49a;
+      box-shadow: 0 17px 38px rgba(255, 192, 0, .28), 0 0 24px rgba(255, 192, 0, .13);
+    }
+    .paper-access-button.doi {
+      border-color: rgba(0, 210, 255, .4);
+      background: linear-gradient(145deg, rgba(0, 178, 240, .17), rgba(0, 178, 240, .06));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+    }
+    .paper-access-button.doi:hover {
+      border-color: rgba(112, 225, 255, .8);
+      background: linear-gradient(145deg, rgba(0, 178, 240, .25), rgba(0, 178, 240, .08));
+      box-shadow: 0 15px 34px rgba(0, 178, 240, .16);
+    }
+    .paper-access-icon {
+      display: grid;
+      place-items: center;
+      width: 2.35rem;
+      height: 2.35rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .2);
+      font-size: 1.05rem;
+      font-weight: 900;
+    }
+    .paper-access-button.doi .paper-access-icon {
+      background: rgba(0, 178, 240, .16);
+      color: #70e1ff;
+    }
+    .paper-access-copy {
+      display: grid;
+      gap: .12rem;
+      min-width: 0;
+    }
+    .paper-access-copy strong {
+      font-size: .9rem;
+      line-height: 1.35;
+    }
+    .paper-access-copy small {
+      color: inherit;
+      font-size: .7rem;
+      line-height: 1.35;
+      opacity: .75;
+      overflow-wrap: anywhere;
+    }
+    .paper-access-arrow {
+      font-size: 1.05rem;
+      font-weight: 900;
+    }
+    .paper-spotlight .paper-keywords {
+      margin-top: .1rem;
+    }
+    .paper-spotlight .paper-keywords span {
+      border-color: rgba(112, 225, 255, .24);
+      background: rgba(0, 178, 240, .075);
+      color: rgba(226, 246, 252, .88);
+    }
+    .paper-spotlight .paper-stream {
+      padding: .72rem;
+      border: 1px solid rgba(148, 163, 184, .15);
+      border-radius: 15px;
+      background: rgba(0, 0, 0, .17);
+    }
+    .paper-spotlight .paper-outcomes > div {
+      border-color: rgba(148, 163, 184, .17);
+      background: rgba(255, 255, 255, .035);
+    }
+    .hero-actions .paper-direct {
+      border-color: rgba(255, 192, 0, .7) !important;
+      background: linear-gradient(135deg, rgba(255, 214, 92, .98), rgba(255, 176, 0, .98)) !important;
+      color: #111827 !important;
+      box-shadow: 0 12px 30px rgba(255, 192, 0, .2);
+    }
+    .hero-actions .paper-direct:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 38px rgba(255, 192, 0, .3);
+    }
+
+    .downloads {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      margin-top: clamp(2.2rem, 5vw, 4.5rem) !important;
+      padding: clamp(1.35rem, 3.5vw, 2.45rem) !important;
+      border: 1px solid rgba(255, 192, 0, .55) !important;
+      border-radius: 28px !important;
+      background:
+        radial-gradient(circle at 8% 5%, rgba(0, 178, 240, .2), transparent 36%),
+        radial-gradient(circle at 96% 100%, rgba(255, 192, 0, .17), transparent 42%),
+        linear-gradient(145deg, rgba(8, 21, 38, .98), rgba(4, 10, 19, .98)) !important;
+      box-shadow:
+        0 32px 86px rgba(0, 0, 0, .42),
+        0 0 0 1px rgba(255, 255, 255, .035),
+        inset 0 1px 0 rgba(255, 255, 255, .08),
+        0 0 44px rgba(255, 192, 0, .095) !important;
+    }
+    .downloads::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: 2;
+      height: 5px;
+      background: linear-gradient(90deg, #ffc000 0%, #ffe28a 35%, #00b2f0 100%);
+      box-shadow: 0 0 24px rgba(255, 192, 0, .46);
+    }
+    .downloads::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      right: -8rem;
+      bottom: -11rem;
+      width: 28rem;
+      height: 28rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 192, 0, .14), transparent 68%);
+      pointer-events: none;
+    }
+    .downloads > * {
+      position: relative;
+      z-index: 1;
+    }
+    .downloads .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      padding: .44rem .76rem;
+      border: 1px solid rgba(255, 236, 176, .62);
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ffdc72, #ffc000);
+      color: #111827 !important;
+      font-weight: 950;
+      letter-spacing: .14em;
+      box-shadow: 0 8px 20px rgba(255, 192, 0, .18);
+    }
+    .downloads-signal {
+      display: inline-flex;
+      align-items: center;
+      margin: .75rem 0 .2rem;
+      padding: .34rem .62rem;
+      border: 1px solid rgba(0, 210, 255, .28);
+      border-radius: 999px;
+      background: rgba(0, 178, 240, .08);
+      color: #79e7ff;
+      font-size: clamp(11px, .68rem + .08vw, 13px);
+      font-weight: 800;
+      letter-spacing: .045em;
+    }
+    .downloads-copy h3 {
+      margin-top: .65rem;
+      color: #f8fafc;
+      font-size: clamp(1.45rem, 1.12rem + 1.1vw, 2.25rem);
+      line-height: 1.28;
+      letter-spacing: -.025em;
+      text-wrap: balance;
+      text-shadow: 0 5px 24px rgba(0, 0, 0, .34);
+    }
+    .downloads-copy p {
+      color: rgba(226, 232, 240, .82);
+      line-height: 1.75;
+    }
+    .downloads .download-list {
+      display: grid !important;
+      gap: .78rem !important;
+    }
+    .downloads .download-item {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: .82rem;
+      align-items: center;
+      min-width: 0;
+      padding: .88rem .92rem !important;
+      border: 1px solid rgba(148, 163, 184, .21) !important;
+      border-radius: 16px !important;
+      background: linear-gradient(145deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .025)) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .045);
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .downloads .download-item:hover {
+      transform: translateY(-3px) scale(1.008);
+      border-color: rgba(112, 225, 255, .58) !important;
+      background: linear-gradient(145deg, rgba(0, 178, 240, .16), rgba(255, 255, 255, .035)) !important;
+      box-shadow: 0 16px 34px rgba(0, 0, 0, .25), 0 0 26px rgba(0, 178, 240, .1);
+    }
+    .downloads .download-item:focus-visible {
+      outline: 3px solid rgba(112, 225, 255, .72);
+      outline-offset: 3px;
+    }
+    .downloads .download-symbol {
+      display: grid;
+      place-items: center;
+      width: 2.65rem;
+      height: 2.65rem;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #ffe088, #ffc000);
+      color: #111827;
+      font-size: 1.15rem;
+      font-weight: 950;
+      box-shadow: 0 9px 22px rgba(255, 192, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .6);
+    }
+    .downloads .download-item b {
+      color: #f8fafc;
+      font-size: .96rem;
+    }
+    .downloads .download-item small {
+      color: rgba(203, 213, 225, .74);
+      line-height: 1.45;
+    }
+    .downloads .download-item code {
+      padding: .3rem .52rem;
+      border: 1px solid rgba(255, 192, 0, .32);
+      border-radius: 9px;
+      background: rgba(255, 192, 0, .08);
+      color: #ffd45c;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+    .downloads .checksum-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.8rem;
+      margin-top: .15rem;
+      padding: .65rem .9rem;
+      border: 1px dashed rgba(112, 225, 255, .38);
+      border-radius: 13px;
+      background: rgba(0, 178, 240, .06);
+      color: #79e7ff;
+      font-weight: 800;
+      text-decoration: none;
+      transition: border-color .2s ease, background .2s ease, transform .2s ease;
+    }
+    .downloads .checksum-link:hover {
+      transform: translateY(-2px);
+      border-color: rgba(112, 225, 255, .72);
+      background: rgba(0, 178, 240, .12);
+    }
+    .downloads.reveal.visible {
+      animation: downloads-spotlight-in .78s cubic-bezier(.2, .72, .2, 1) both;
+    }
+    @keyframes downloads-spotlight-in {
+      from { opacity: 0; transform: translateY(24px) scale(.985); filter: saturate(.72); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: saturate(1); }
+    }
+
+    html[data-theme="light"] .paper-spotlight {
+      border-color: rgba(0, 132, 180, .42) !important;
+      background:
+        radial-gradient(circle at 92% 4%, rgba(255, 192, 0, .16), transparent 34%),
+        radial-gradient(circle at 3% 78%, rgba(0, 178, 240, .13), transparent 42%),
+        linear-gradient(145deg, #ffffff, #eef7fb) !important;
+      box-shadow: 0 28px 70px rgba(15, 23, 42, .14), inset 0 1px 0 rgba(255, 255, 255, .8) !important;
+    }
+    html[data-theme="light"] .paper-spotlight h2,
+    html[data-theme="light"] .paper-spotlight .paper-meta b,
+    html[data-theme="light"] .paper-access-button.doi {
+      color: #0f172a;
+    }
+    html[data-theme="light"] .paper-spotlight .paper-meta > div,
+    html[data-theme="light"] .paper-spotlight .paper-outcomes > div {
+      border-color: rgba(15, 23, 42, .11);
+      background: rgba(255, 255, 255, .64);
+    }
+    html[data-theme="light"] .paper-spotlight .paper-stream {
+      background: rgba(15, 23, 42, .045);
+      border-color: rgba(15, 23, 42, .1);
+    }
+    html[data-theme="light"] .paper-spotlight .paper-keywords span {
+      color: #0f4c63;
+    }
+    html[data-theme="light"] .downloads {
+      border-color: rgba(204, 140, 0, .48) !important;
+      background:
+        radial-gradient(circle at 8% 5%, rgba(0, 178, 240, .13), transparent 36%),
+        radial-gradient(circle at 96% 100%, rgba(255, 192, 0, .14), transparent 42%),
+        linear-gradient(145deg, #ffffff, #f2f8fb) !important;
+      box-shadow: 0 30px 72px rgba(15, 23, 42, .13), inset 0 1px 0 rgba(255, 255, 255, .9) !important;
+    }
+    html[data-theme="light"] .downloads-copy h3,
+    html[data-theme="light"] .downloads .download-item b {
+      color: #0f172a;
+    }
+    html[data-theme="light"] .downloads-copy p,
+    html[data-theme="light"] .downloads .download-item small {
+      color: #475569;
+    }
+    html[data-theme="light"] .downloads .download-item {
+      border-color: rgba(15, 23, 42, .11) !important;
+      background: rgba(255, 255, 255, .66) !important;
+    }
+    html[data-theme="light"] .downloads .download-item:hover {
+      background: rgba(224, 247, 255, .82) !important;
+    }
+
+    @media (max-width: 760px) {
+      .paper-access-actions {
+        grid-template-columns: 1fr;
+      }
+      .hero-actions .paper-direct {
+        flex: 1 1 100%;
+      }
+      .downloads .download-item {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+      .downloads .download-item code {
+        grid-column: 2;
+        justify-self: start;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .paper-access-button,
+      .downloads .download-item,
+      .downloads .checksum-link {
+        transition: none;
+      }
+      .paper-access-button:hover,
+      .downloads .download-item:hover,
+      .downloads .checksum-link:hover {
+        transform: none;
+      }
+      .downloads.reveal.visible {
+        animation: none;
+      }
+    }
+
 </style>
 </head>
 <body>
@@ -255,7 +708,7 @@
           <span class="eyebrow muted">DEFLATE · ZIP · NPNCB · DBA</span>
         </div>
         <h1 id="hero-title">
-          <span class="lang-ko">Deflate 압축 스트림<br><em>NPNCB 은닉 취약점</em></span>
+          <span class="lang-ko">Deflate 압축 스트림의<br><em>NPNCB 은닉 취약점</em></span>
           <span class="lang-en">The NPNCB hiding<br><em>vulnerability in DEFLATE</em></span>
         </h1>
         <p class="hero-lead">
@@ -264,7 +717,8 @@
         </p>
         <div class="hero-actions">
           <a class="button primary" href="#overview"><span class="lang-ko">핵심 개요 보기</span><span class="lang-en">Read the overview</span><span aria-hidden="true">↘</span></a>
-          <a class="button secondary" href="https://doi.org/10.13089/JKIISC.2022.32.5.869" target="_blank" rel="noopener noreferrer"><span class="lang-ko">논문 DOI</span><span class="lang-en">Open the paper DOI</span></a>
+          <a class="button paper-direct" href="https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002888736" target="_blank" rel="noopener noreferrer"><span class="lang-ko">논문 직접 보기</span><span class="lang-en">Open paper on KCI</span><span aria-hidden="true">↗</span></a>
+          <a class="button secondary" href="https://doi.org/10.13089/JKIISC.2022.32.5.869" target="_blank" rel="noopener noreferrer"><span class="lang-ko">DOI로 열기</span><span class="lang-en">Open via DOI</span></a>
         </div>
         <ul class="hero-facts" aria-label="Key facts">
           <li><strong>2022</strong><span class="lang-ko">원 논문 발표</span><span class="lang-en">paper published</span></li>
@@ -283,6 +737,25 @@
             <div><span><span class="lang-ko">발행</span><span class="lang-en">Published</span></span><b><span class="lang-ko">2022년 10월</span><span class="lang-en">October 2022</span></b></div>
             <div><span>DOI</span><b>10.13089/JKIISC.2022.32.5.869</b></div>
           </div>
+          <div class="paper-access-actions" aria-label="Paper access links">
+            <a class="paper-access-button primary" href="https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002888736" target="_blank" rel="noopener noreferrer" aria-label="Open the original paper directly on KCI">
+              <span class="paper-access-icon" aria-hidden="true">KCI</span>
+              <span class="paper-access-copy">
+                <strong><span class="lang-ko">KCI에서 논문 직접 보기</span><span class="lang-en">Open the paper on KCI</span></strong>
+                <small><span class="lang-ko">원문 상세 페이지로 바로 이동</span><span class="lang-en">Go directly to the article page</span></small>
+              </span>
+              <span class="paper-access-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="paper-access-button doi" href="https://doi.org/10.13089/JKIISC.2022.32.5.869" target="_blank" rel="noopener noreferrer" aria-label="Open paper using DOI 10.13089/JKIISC.2022.32.5.869">
+              <span class="paper-access-icon" aria-hidden="true">DOI</span>
+              <span class="paper-access-copy">
+                <strong><span class="lang-ko">DOI로 논문 열기</span><span class="lang-en">Open using DOI</span></strong>
+                <small>10.13089/JKIISC.2022.32.5.869</small>
+              </span>
+              <span class="paper-access-arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
+
 
           <a class="related-patent-card" href="https://doi.org/10.8080/1020220096147" target="_blank" rel="noopener noreferrer" aria-label="Related patent: Apparatus and Method for Detecting Malignant Codes">
             <span class="related-patent-label"><span class="lang-ko">관련 특허</span><span class="lang-en">RELATED PATENT</span></span>
@@ -654,6 +1127,7 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
 <div class="downloads reveal" id="downloads">
 <div class="downloads-copy">
 <span class="section-kicker">DOWNLOADS</span>
+<span class="downloads-signal"><span class="lang-ko">4개 ZIP 패키지 · SHA-256 체크섬 제공</span><span class="lang-en">4 ZIP packages · SHA-256 checksums included</span></span>
 <h3><span class="lang-ko">세 개의 독립 프로젝트 또는 전체 솔루션</span><span class="lang-en">Three standalone projects or the complete solution</span></h3>
 <p><span class="lang-ko">개별 다운로드는 소스만 포함된 .NET 8 C# 프로젝트이며, 전체 솔루션은 첨부된 최신 Visual Studio 솔루션입니다. 다운로드 후 `dotnet build -c Release`로 빌드할 수 있습니다.</span><span class="lang-en">The individual downloads are source-only .NET 8 C# projects; the complete download is the latest attached Visual Studio solution. Build with `dotnet build -c Release` after download.</span></p>
 </div>
