@@ -181,6 +181,15 @@
     @media (max-width: 700px) {
       .claim-figures .source-figure img { min-width: 980px; }
     }
+
+    /* 2026-07 update: reduce only the Korean hero title by about 20%.
+       60.372px at the current viewport becomes approximately 48.3px. */
+    #hero-title > .lang-ko {
+      font-size: 80% !important;
+    }
+    #hero-title > .lang-ko em {
+      font-size: inherit !important;
+    }
 </style>
 </head>
 <body>
