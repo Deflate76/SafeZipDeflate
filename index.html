@@ -144,9 +144,19 @@
     }
   
 
-    /* 2026-07 update: enlarge every text-bearing span to at least 25 px. */
-    span:not(:empty) {
-      font-size: max(25px, 1em) !important;
+    /* 2026-07 update: keep label-style spans compact and readable.
+       General spans now inherit each component's original typography. */
+    .related-patent-label,
+    .related-patent-label span,
+    .claim-label,
+    .claim-label span,
+    .mini-label,
+    .mini-label span,
+    .pipeline-label,
+    .pipeline-label span,
+    .bit-byte-labels span {
+      font-size: clamp(12px, .72rem + .15vw, 14px) !important;
+      line-height: 1.4;
     }
 
     /* Figures added below the main claim. */
@@ -162,9 +172,11 @@
     .claim-figures .source-figure img {
       min-width: 900px;
     }
-    .source-figure figcaption,
+    .source-figure figcaption {
+      font-size: clamp(13px, .78rem + .15vw, 15px) !important;
+    }
     .source-figure figcaption strong {
-      font-size: 25px !important;
+      font-size: clamp(12px, .72rem + .1vw, 13px) !important;
     }
     @media (max-width: 700px) {
       .claim-figures .source-figure img { min-width: 980px; }
