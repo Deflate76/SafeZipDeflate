@@ -1075,6 +1075,134 @@
       }
     }
 
+
+
+    /* Bit lab v4: Byte n-1 through n+2, conditional Byte n+3, boundary checkbox, and corrected field colours. */
+    #capacity-lab .npncb-previous-byte-option {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) !important;
+      align-items: center !important;
+      gap: .6rem !important;
+      width: 100% !important;
+      margin: .15rem 0 .95rem !important;
+      padding: .72rem .78rem !important;
+      border: 1px solid rgba(148, 163, 184, .22) !important;
+      border-radius: 13px !important;
+      background: rgba(255, 255, 255, .035) !important;
+      color: inherit !important;
+      cursor: pointer !important;
+      box-sizing: border-box !important;
+    }
+
+    #capacity-lab .npncb-previous-byte-option input {
+      width: 1.05rem !important;
+      height: 1.05rem !important;
+      margin: 0 !important;
+      accent-color: #38bdf8 !important;
+      cursor: pointer !important;
+    }
+
+    #capacity-lab .npncb-previous-byte-option > span {
+      display: block !important;
+      min-width: 0 !important;
+      font-size: .82rem !important;
+      font-weight: 750 !important;
+      line-height: 1.45 !important;
+    }
+
+    #capacity-lab #start-offset:disabled {
+      opacity: .42 !important;
+      cursor: not-allowed !important;
+      filter: grayscale(.35) !important;
+    }
+
+    #capacity-lab .npncb-offset-label.is-disabled {
+      opacity: .55 !important;
+    }
+
+    /* The requested palette: DBA = orange, LEN = green, NLEN = violet. */
+    #capacity-lab .npncb-flow-segment.dba {
+      color: #fb923c !important;
+    }
+
+    #capacity-lab .npncb-flow-segment.len {
+      color: #86efac !important;
+    }
+
+    #capacity-lab .npncb-flow-segment.nlen {
+      color: #d8b4fe !important;
+    }
+
+    #capacity-lab .npncb-bit-cell.dba {
+      border-color: rgba(251, 146, 60, .52) !important;
+      background: linear-gradient(180deg, rgba(249, 115, 22, .28), rgba(194, 65, 12, .15)) !important;
+    }
+
+    #capacity-lab .npncb-bit-cell.len {
+      border-color: rgba(74, 222, 128, .46) !important;
+      background: linear-gradient(180deg, rgba(34, 197, 94, .25), rgba(22, 163, 74, .14)) !important;
+    }
+
+    #capacity-lab .npncb-bit-cell.nlen {
+      border-color: rgba(192, 132, 252, .48) !important;
+      background: linear-gradient(180deg, rgba(168, 85, 247, .25), rgba(126, 34, 206, .14)) !important;
+    }
+
+    #capacity-lab .npncb-bit-cell.nlen .npncb-bit-symbol {
+      font-size: clamp(.62rem, 2.25vw, .86rem) !important;
+      letter-spacing: -.035em !important;
+    }
+
+    #capacity-lab .legend-row .legend-dba,
+    #capacity-lab .legend-row .legend-next,
+    #capacity-lab .legend-row .legend-nlen {
+      display: inline-block !important;
+      width: .72rem !important;
+      height: .72rem !important;
+      flex: 0 0 .72rem !important;
+      border-radius: 3px !important;
+      box-sizing: border-box !important;
+    }
+
+    #capacity-lab .legend-row .legend-dba {
+      border-color: rgba(251, 146, 60, .78) !important;
+      background: #fb923c !important;
+      box-shadow: 0 0 0 1px rgba(251, 146, 60, .2) !important;
+    }
+
+    #capacity-lab .legend-row .legend-next {
+      border-color: rgba(74, 222, 128, .78) !important;
+      background: #22c55e !important;
+      box-shadow: 0 0 0 1px rgba(74, 222, 128, .2) !important;
+    }
+
+    #capacity-lab .legend-row .legend-nlen {
+      border-color: rgba(192, 132, 252, .78) !important;
+      background: #a855f7 !important;
+      box-shadow: 0 0 0 1px rgba(192, 132, 252, .2) !important;
+    }
+
+    html[data-theme="light"] #capacity-lab .npncb-previous-byte-option {
+      border-color: rgba(15, 23, 42, .13) !important;
+      background: rgba(248, 250, 252, .8) !important;
+    }
+
+    @media (max-width: 700px) {
+      #capacity-lab .npncb-previous-byte-option {
+        gap: .5rem !important;
+        margin-bottom: .8rem !important;
+        padding: .62rem .66rem !important;
+      }
+
+      #capacity-lab .npncb-previous-byte-option > span {
+        font-size: .76rem !important;
+      }
+
+      #capacity-lab .npncb-bit-cell.nlen .npncb-bit-symbol {
+        font-size: clamp(.55rem, 2.4vw, .72rem) !important;
+      }
+    }
+
 </style>
 </head>
 <body>
@@ -1377,11 +1505,15 @@
 </div>
 <div class="lab-grid">
 <div class="lab-controls">
-<label for="start-offset">
-<span><span class="lang-ko">직전 블럭의 마지막 비트 위치</span><span class="lang-en">Previous block's last bit position</span></span>
+<label class="npncb-offset-label" for="start-offset">
+<span><span class="lang-ko">직전 블럭의 마지막 비트 위치 (Byte n 내부)</span><span class="lang-en">Previous block's last bit offset inside Byte n</span></span>
 <output for="start-offset" id="start-offset-output">0</output>
 </label>
 <input id="start-offset" max="7" min="0" step="1" type="range" value="0"/>
+<label class="npncb-previous-byte-option" for="previous-byte-end">
+<input id="previous-byte-end" type="checkbox"/>
+<span><span class="lang-ko">마지막 비트가 Byte n-1에서 끝남</span><span class="lang-en">The previous block's last bit ends in Byte n-1</span></span>
+</label>
 <label for="block-count">
 <span><span class="lang-ko">동일 오프셋 NPNCB 수 (예시)</span><span class="lang-en">NPNCB count at the same offset (illustrative)</span></span>
 <output for="block-count" id="block-count-output">32</output>
@@ -1391,7 +1523,7 @@
 <span><span class="lang-ko">시험 메시지</span><span class="lang-en">Sample message</span></span>
 </label>
 <input autocomplete="off" id="sample-message" maxlength="120" type="text" value="DBA 테스트 / hello"/>
-<p class="lab-disclaimer"><span class="lang-ko">실제 스트림에서는 각 NPNCB의 시작 오프셋이 서로 다를 수 있습니다. 이 계산기는 구조를 이해하기 위한 동일 오프셋 예시입니다.</span><span class="lang-en">In a real stream, each NPNCB may start at a different offset. This calculator repeats one offset only to illustrate the structure.</span></p>
+<p class="lab-disclaimer"><span class="lang-ko">실제 스트림에서는 각 NPNCB의 시작 오프셋이 서로 다를 수 있습니다. 직전 블록이 Byte n-1의 끝에서 종료되어 Byte n이 새 블록으로 시작하면 위 체크박스를 선택하세요.</span><span class="lang-en">In a real stream, each NPNCB may start at a different offset. Select the checkbox when the previous block ends in Byte n-1 and the new block begins at Byte n.</span></p>
 </div>
 <div class="lab-output">
 <div aria-hidden="true" class="bit-byte-labels"><span><b>Byte</b><small>n</small></span><span><b>Byte</b><small>n+1</small></span></div>
@@ -1401,6 +1533,7 @@
 <span><i class="legend-header"></i><span class="lang-ko">3비트 헤더</span><span class="lang-en">3-bit header</span></span>
 <span><i class="legend-dba"></i>DBA</span>
 <span><i class="legend-next"></i>LEN</span>
+<span><i class="legend-nlen"></i>NLEN</span>
 </div>
 <div class="lab-metrics">
 <div><span><span class="lang-ko">블록당 DBA</span><span class="lang-en">DBA per block</span></span><strong id="dba-per-block">5 bits</strong></div>
@@ -1724,8 +1857,8 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
       }
 
       function initBitLab() {
-        if (window.__npncbBitLabV2) return;
-        window.__npncbBitLabV2 = true;
+        if (window.__npncbBitLabV4) return;
+        window.__npncbBitLabV4 = true;
 
         const byId = (id) => document.getElementById(id);
         const replaceControl = (id) => {
@@ -1740,6 +1873,7 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
         const startOffset = replaceControl('start-offset');
         const blockCount = replaceControl('block-count');
         const sampleMessage = replaceControl('sample-message');
+        const previousByteEnd = byId('previous-byte-end');
         const oldBitCells = byId('bit-cells');
         if (!startOffset || !oldBitCells) return;
 
@@ -1752,8 +1886,11 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
         const totalCapacity = byId('total-capacity');
         const wholeByteCapacity = byId('whole-byte-capacity');
         const messageFit = byId('message-fit');
+        const offsetLabel = document.querySelector('#capacity-lab .npncb-offset-label');
         const byteLabels = document.querySelector('#capacity-lab .bit-byte-labels');
         if (byteLabels) byteLabels.hidden = true;
+
+        const BYTE_NAMES = ['Byte n-1', 'Byte n', 'Byte n+1', 'Byte n+2', 'Byte n+3'];
 
         const utf8BitLength = (value) => {
           if (typeof TextEncoder === 'function') {
@@ -1763,41 +1900,56 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
         };
 
         const emptyCell = () => ({ symbol: '', kind: 'empty', description: 'empty' });
-        const makeBytes = () => [
-          Array.from({ length: 8 }, emptyCell),
-          Array.from({ length: 8 }, emptyCell),
-        ];
+        const makeBytes = () => Array.from(
+          { length: BYTE_NAMES.length },
+          () => Array.from({ length: 8 }, emptyCell),
+        );
 
         const setCell = (bytes, byteIndex, offset, symbol, kind, description) => {
-          if (byteIndex < 0 || byteIndex > 1 || offset < 0 || offset > 7) return;
+          if (byteIndex < 0 || byteIndex >= bytes.length || offset < 0 || offset > 7) return;
           bytes[byteIndex][offset] = { symbol, kind, description };
+        };
+
+        const fillByte = (bytes, byteIndex, symbol, kind, description) => {
+          for (let offset = 0; offset <= 7; offset += 1) {
+            setCell(bytes, byteIndex, offset, symbol, kind, description);
+          }
         };
 
         /*
          * Visual convention requested by the page owner:
          *   leftmost cell = offset 0, rightmost cell = offset 7.
-         *   stream/header direction = 7 -> 0 (right to left).
-         *   DBA/LEN direction       = 0 -> 7 (left to right).
+         *   previous/header direction = 7 -> 0 (right to left).
+         *   DBA/LEN/NLEN direction    = 0 -> 7 (left to right).
          */
-        const buildLayout = (previousLastOffset) => {
+        const buildLayout = (previousLastOffset, endsInPreviousByte) => {
           const bytes = makeBytes();
 
-          /*
-           * The selected offset is the previous block's LAST bit.
-           * Because this diagram places offset 0 on the left and offset 7 on the right,
-           * every cell from the selected offset through offset 7 still belongs to the
-           * previous block. Fill that entire continuous region with dots so its single
-           * right-to-left flow arrow spans the complete previous-block area.
-           */
-          for (let previousOffset = previousLastOffset; previousOffset <= 7; previousOffset += 1) {
-            const description = previousOffset === previousLastOffset
+          /* Byte n-1 is always context from the preceding block. */
+          for (let offset = 0; offset <= 7; offset += 1) {
+            const description = endsInPreviousByte && offset === 0
               ? 'previous block last bit'
               : 'previous block bit';
-            setCell(bytes, 0, previousOffset, '·', 'previous', description);
+            setCell(bytes, 0, offset, '·', 'previous', description);
           }
 
-          let byteIndex = 0;
-          let offset = previousLastOffset - 1;
+          let byteIndex = 1; /* Byte n */
+          let offset;
+
+          if (endsInPreviousByte) {
+            /* Byte n begins at a byte boundary: F7, T6, T5, then DBA D0-D4. */
+            offset = 7;
+          } else {
+            /* The selected offset through offset 7 is still the preceding block. */
+            for (let previousOffset = previousLastOffset; previousOffset <= 7; previousOffset += 1) {
+              const description = previousOffset === previousLastOffset
+                ? 'previous block last bit'
+                : 'previous block bit';
+              setCell(bytes, byteIndex, previousOffset, '·', 'previous', description);
+            }
+            offset = previousLastOffset - 1;
+          }
+
           const header = [
             ['F', 'BFINAL'],
             ['T', 'BTYPE'],
@@ -1813,21 +1965,22 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
             offset -= 1;
           });
 
-          /* Remaining positions through offset 0 are DBA. */
-          if (byteIndex <= 1) {
-            for (let dbaOffset = offset; dbaOffset >= 0; dbaOffset -= 1) {
-              setCell(bytes, byteIndex, dbaOffset, 'D', 'dba', 'DBA');
-            }
+          /* The rest of the current byte, down through offset 0, is DBA. */
+          for (let dbaOffset = offset; dbaOffset >= 0; dbaOffset -= 1) {
+            setCell(bytes, byteIndex, dbaOffset, 'D', 'dba', 'DBA');
           }
 
-          /* If the header/DBA end in Byte n, Byte n+1 starts LEN. */
-          if (byteIndex === 0) {
-            for (let lenOffset = 0; lenOffset <= 7; lenOffset += 1) {
-              setCell(bytes, 1, lenOffset, 'L', 'len', 'LEN');
-            }
-          }
+          /* LEN and NLEN each occupy the next displayed byte in this explanatory view. */
+          const lenByteIndex = byteIndex + 1;
+          const nlenByteIndex = lenByteIndex + 1;
+          fillByte(bytes, lenByteIndex, 'L', 'len', 'LEN');
+          fillByte(bytes, nlenByteIndex, 'NL', 'nlen', 'NLEN');
 
-          return bytes;
+          return {
+            bytes,
+            /* Byte n+3 is rendered only when the header crosses into Byte n+1 (offset 0-2). */
+            visibleByteCount: nlenByteIndex + 1,
+          };
         };
 
         const flowMeta = {
@@ -1835,6 +1988,7 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
           header: { lane: 'reverse', direction: 'reverse', label: 'F/T', title: 'F/T 헤더: offset 7 → 0' },
           dba: { lane: 'forward', direction: 'forward', label: 'D', title: 'DBA: offset 0 → 7' },
           len: { lane: 'forward', direction: 'forward', label: 'L', title: 'LEN: offset 0 → 7' },
+          nlen: { lane: 'forward', direction: 'forward', label: 'NL', title: 'NLEN: offset 0 → 7' },
         };
 
         const collectSegments = (cells, lane) => {
@@ -1949,18 +2103,30 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
           return row;
         };
 
-        const capacityForPreviousOffset = (previousLastOffset) => (previousLastOffset + 5) % 8;
+        const capacityForPreviousOffset = (previousLastOffset, endsInPreviousByte) => (
+          endsInPreviousByte ? 5 : (previousLastOffset + 5) % 8
+        );
 
         const update = () => {
+          const endsInPreviousByte = Boolean(previousByteEnd?.checked);
           const previousLastOffset = Math.max(0, Math.min(7, Number(startOffset.value) || 0));
           const count = Math.max(1, Number(blockCount?.value) || 1);
           const messageBits = utf8BitLength(sampleMessage?.value || '');
-          const capacity = capacityForPreviousOffset(previousLastOffset);
+          const capacity = capacityForPreviousOffset(previousLastOffset, endsInPreviousByte);
           const totalBits = capacity * count;
           const wholeBytes = Math.floor(totalBits / 8);
           const fits = messageBits <= totalBits;
 
-          if (startOffsetOutput) startOffsetOutput.textContent = String(previousLastOffset);
+          startOffset.disabled = endsInPreviousByte;
+          startOffset.setAttribute('aria-disabled', String(endsInPreviousByte));
+          offsetLabel?.classList.toggle('is-disabled', endsInPreviousByte);
+
+          if (startOffsetOutput) {
+            startOffsetOutput.textContent = endsInPreviousByte ? 'n-1' : String(previousLastOffset);
+            startOffsetOutput.title = endsInPreviousByte
+              ? '직전 블록은 Byte n-1의 offset 0에서 끝나고 Byte n은 새 블록으로 시작합니다.'
+              : `직전 블록 마지막 비트: Byte n offset ${previousLastOffset}`;
+          }
           if (blockCountOutput) blockCountOutput.textContent = String(count);
           if (dbaPerBlock) dbaPerBlock.textContent = `${capacity} bits`;
           if (totalCapacity) totalCapacity.textContent = `${totalBits} bits`;
@@ -1971,11 +2137,12 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
             messageFit.classList.add(fits ? 'fit-good' : 'fit-bad');
           }
 
-          const layout = buildLayout(previousLastOffset);
-          bitCells.replaceChildren(
-            renderByteRow('Byte n', layout[0]),
-            renderByteRow('Byte n+1', layout[1]),
-          );
+          const layout = buildLayout(previousLastOffset, endsInPreviousByte);
+          const rows = [];
+          for (let index = 0; index < layout.visibleByteCount; index += 1) {
+            rows.push(renderByteRow(BYTE_NAMES[index], layout.bytes[index]));
+          }
+          bitCells.replaceChildren(...rows);
         };
 
         const bindExclusiveUpdate = (control) => {
@@ -1991,6 +2158,7 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
         bindExclusiveUpdate(startOffset);
         bindExclusiveUpdate(blockCount);
         bindExclusiveUpdate(sampleMessage);
+        bindExclusiveUpdate(previousByteEnd);
         update();
       }
     }());
