@@ -1462,6 +1462,425 @@
       }
     }
 
+
+    /* 2026-07 update: keep desktop and hamburger navigation identical,
+       and add an accessible right-side floating section navigator. */
+    @media (prefers-reduced-motion: no-preference) {
+      html { scroll-behavior: smooth; }
+    }
+
+    #overview,
+    #why,
+    #core-concepts,
+    #anatomy,
+    #flow,
+    #poc,
+    #downloads,
+    #defense,
+    #faq,
+    #references {
+      scroll-margin-top: 7.5rem;
+    }
+
+    .mobile-nav[hidden] {
+      display: none !important;
+    }
+
+    .mobile-nav .nav-download {
+      color: var(--accent-2, #ffc000) !important;
+      font-weight: 900 !important;
+      letter-spacing: .04em;
+    }
+
+    .mobile-nav .nav-download::after {
+      content: "↓";
+      margin-left: auto;
+      font-size: .9em;
+      line-height: 1;
+    }
+
+    @media (max-width: 1100px) {
+      .mobile-nav:not([hidden]) {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .5rem;
+        max-height: calc(100vh - 5.5rem);
+        max-height: calc(100dvh - 5.5rem);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .mobile-nav a {
+        min-width: 0;
+      }
+
+      body.mobile-nav-open {
+        overflow: hidden;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .mobile-nav:not([hidden]) {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .floating-section-nav {
+      --scroll-progress: 0;
+      position: fixed;
+      z-index: 95;
+      top: 50%;
+      right: max(.65rem, env(safe-area-inset-right));
+      display: flex;
+      align-items: center;
+      transform: translateY(-50%);
+      font-family: inherit;
+    }
+
+    .floating-nav-toggle {
+      display: none;
+      position: relative;
+      width: 3rem;
+      height: 3rem;
+      padding: 0;
+      border: 1px solid rgba(112, 225, 255, .42);
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 28% 20%, rgba(255, 192, 0, .16), transparent 45%),
+        rgba(6, 16, 29, .94);
+      color: #e6f8ff;
+      box-shadow:
+        0 16px 38px rgba(0, 0, 0, .34),
+        inset 0 1px 0 rgba(255, 255, 255, .08),
+        0 0 24px rgba(0, 178, 240, .11);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .floating-nav-toggle:hover,
+    .floating-nav-toggle:focus-visible,
+    .floating-section-nav.is-open .floating-nav-toggle {
+      border-color: rgba(255, 214, 92, .76);
+      color: #ffe08a;
+    }
+
+    .floating-nav-toggle:focus-visible {
+      outline: 3px solid rgba(112, 225, 255, .64);
+      outline-offset: 3px;
+    }
+
+    .floating-nav-toggle-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: grid;
+      grid-template-columns: repeat(2, 4px);
+      gap: 4px;
+      transform: translate(-50%, -50%);
+    }
+
+    .floating-nav-toggle-icon i {
+      display: block;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    .floating-nav-toggle-current {
+      position: absolute;
+      right: -.28rem;
+      bottom: -.28rem;
+      display: grid;
+      place-items: center;
+      min-width: 1.35rem;
+      height: 1.35rem;
+      padding-inline: .18rem;
+      border: 2px solid #06101d;
+      border-radius: 999px;
+      background: #ffc000;
+      color: #111827;
+      font-size: .58rem;
+      font-weight: 950;
+      line-height: 1;
+      box-sizing: border-box;
+    }
+
+    .floating-nav-panel {
+      width: clamp(12rem, 13vw, 14rem);
+      max-height: calc(100vh - 7rem);
+      max-height: calc(100dvh - 7rem);
+      padding: .72rem;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, .24);
+      border-radius: 19px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(0, 178, 240, .13), transparent 38%),
+        linear-gradient(155deg, rgba(8, 21, 38, .95), rgba(4, 10, 19, .96));
+      box-shadow:
+        0 22px 58px rgba(0, 0, 0, .4),
+        inset 0 1px 0 rgba(255, 255, 255, .07),
+        0 0 30px rgba(0, 178, 240, .08);
+      -webkit-backdrop-filter: blur(18px) saturate(1.15);
+      backdrop-filter: blur(18px) saturate(1.15);
+      box-sizing: border-box;
+    }
+
+    .floating-nav-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .6rem;
+      margin-bottom: .52rem;
+      color: rgba(226, 232, 240, .72);
+      font-size: .62rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .floating-nav-progress-text {
+      color: #79e7ff;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .02em;
+    }
+
+    .floating-nav-progress {
+      position: relative;
+      height: 3px;
+      margin-bottom: .6rem;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, .16);
+    }
+
+    .floating-nav-progress > span {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: calc(var(--scroll-progress) * 100%);
+      border-radius: inherit;
+      background: linear-gradient(90deg, #00b2f0, #70e1ff 52%, #ffc000);
+      box-shadow: 0 0 12px rgba(0, 178, 240, .35);
+      transition: width .12s linear;
+    }
+
+    .floating-nav-links {
+      display: grid;
+      gap: .22rem;
+      max-height: calc(100vh - 10rem);
+      max-height: calc(100dvh - 10rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(112, 225, 255, .38) transparent;
+    }
+
+    .floating-nav-link {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      min-height: 2.25rem;
+      min-width: 0;
+      padding: .36rem .48rem;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      color: rgba(226, 232, 240, .76);
+      text-decoration: none;
+      transition: color .18s ease, background .18s ease, border-color .18s ease, transform .18s ease;
+      box-sizing: border-box;
+    }
+
+    .floating-nav-link:hover,
+    .floating-nav-link:focus-visible {
+      color: #f8fafc;
+      border-color: rgba(112, 225, 255, .28);
+      background: rgba(0, 178, 240, .09);
+      transform: translateX(-2px);
+    }
+
+    .floating-nav-link:focus-visible {
+      outline: 2px solid rgba(112, 225, 255, .64);
+      outline-offset: 2px;
+    }
+
+    .floating-nav-link.is-active,
+    .floating-nav-link[aria-current="location"] {
+      color: #f8fafc;
+      border-color: rgba(112, 225, 255, .38);
+      background: linear-gradient(135deg, rgba(0, 178, 240, .17), rgba(255, 192, 0, .055));
+      box-shadow: inset 3px 0 0 #00b2f0;
+    }
+
+    .floating-nav-link.nav-download {
+      color: #ffd45c;
+    }
+
+    .floating-nav-link.nav-download.is-active,
+    .floating-nav-link.nav-download:hover,
+    .floating-nav-link.nav-download:focus-visible {
+      border-color: rgba(255, 192, 0, .4);
+      background: rgba(255, 192, 0, .09);
+      box-shadow: inset 3px 0 0 #ffc000;
+    }
+
+    .floating-nav-index {
+      display: grid;
+      place-items: center;
+      flex: 0 0 1.72rem;
+      width: 1.72rem;
+      height: 1.72rem;
+      border: 1px solid rgba(148, 163, 184, .22);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .035);
+      color: #8ddfff;
+      font-size: .61rem;
+      font-weight: 950;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      box-sizing: border-box;
+    }
+
+    .floating-nav-link.is-active .floating-nav-index,
+    .floating-nav-link[aria-current="location"] .floating-nav-index {
+      border-color: rgba(112, 225, 255, .54);
+      background: rgba(0, 178, 240, .14);
+      color: #e6f8ff;
+    }
+
+    .floating-nav-link.nav-download .floating-nav-index {
+      color: #ffd45c;
+      border-color: rgba(255, 192, 0, .26);
+    }
+
+    .floating-nav-label {
+      min-width: 0;
+      overflow: hidden;
+      font-size: .73rem;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: .01em;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .floating-nav-separator {
+      height: 1px;
+      margin: .28rem .42rem;
+      background: linear-gradient(90deg, transparent, rgba(148, 163, 184, .26), transparent);
+    }
+
+    .floating-nav-top .floating-nav-index {
+      color: #86efac;
+      border-color: rgba(74, 222, 128, .28);
+    }
+
+    html[data-theme="light"] .floating-nav-panel {
+      border-color: rgba(15, 23, 42, .14);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(0, 178, 240, .1), transparent 38%),
+        linear-gradient(155deg, rgba(255, 255, 255, .96), rgba(242, 248, 251, .96));
+      box-shadow: 0 20px 48px rgba(15, 23, 42, .15), inset 0 1px 0 rgba(255, 255, 255, .9);
+    }
+
+    html[data-theme="light"] .floating-nav-head,
+    html[data-theme="light"] .floating-nav-link {
+      color: #475569;
+    }
+
+    html[data-theme="light"] .floating-nav-link:hover,
+    html[data-theme="light"] .floating-nav-link:focus-visible,
+    html[data-theme="light"] .floating-nav-link.is-active,
+    html[data-theme="light"] .floating-nav-link[aria-current="location"] {
+      color: #0f172a;
+    }
+
+    html[data-theme="light"] .floating-nav-toggle {
+      border-color: rgba(0, 132, 180, .34);
+      background: rgba(255, 255, 255, .96);
+      color: #0f4c63;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, .16);
+    }
+
+    html[data-theme="light"] .floating-nav-toggle-current {
+      border-color: #ffffff;
+    }
+
+    @media (max-width: 1599px) {
+      .floating-nav-toggle {
+        display: block;
+      }
+
+      .floating-nav-panel {
+        position: absolute;
+        top: 50%;
+        right: calc(100% + .68rem);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translate(1rem, -50%) scale(.98);
+        transform-origin: right center;
+        transition: opacity .2s ease, visibility .2s ease, transform .2s ease;
+      }
+
+      .floating-section-nav.is-open .floating-nav-panel {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translate(0, -50%) scale(1);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .floating-section-nav {
+        top: auto;
+        right: max(.7rem, env(safe-area-inset-right));
+        bottom: max(.8rem, env(safe-area-inset-bottom));
+        transform: none;
+      }
+
+      .floating-nav-toggle {
+        width: 2.8rem;
+        height: 2.8rem;
+        border-radius: 15px;
+      }
+
+      .floating-nav-panel {
+        top: auto;
+        right: calc(100% + .58rem);
+        bottom: 0;
+        width: min(17rem, calc(100vw - 5.2rem));
+        max-height: calc(100vh - 6.5rem);
+        max-height: calc(100dvh - 6.5rem);
+        transform: translateX(1rem) scale(.98);
+        transform-origin: right bottom;
+      }
+
+      .floating-section-nav.is-open .floating-nav-panel {
+        transform: translateX(0) scale(1);
+      }
+
+      .floating-nav-links {
+        max-height: calc(100vh - 10rem);
+        max-height: calc(100dvh - 10rem);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .floating-nav-progress > span,
+      .floating-nav-link,
+      .floating-nav-panel {
+        transition: none;
+      }
+
+      .floating-nav-link:hover,
+      .floating-nav-link:focus-visible {
+        transform: none;
+      }
+    }
+
 </style>
 </head>
 <body>
@@ -1508,16 +1927,45 @@
     </div>
     <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation" hidden>
       <a href="#overview"><span class="lang-ko">개요</span><span class="lang-en">Overview</span></a>
-      <a href="#why"><span class="lang-ko">왜 중요한가</span><span class="lang-en">Why it matters</span></a>
-      <a href="#core-concepts"><span class="lang-ko">핵심 개념</span><span class="lang-en">Core concepts</span></a>
-      <a href="#anatomy"><span class="lang-ko">DBA 구조</span><span class="lang-en">DBA anatomy</span></a>
-      <a href="#flow"><span class="lang-ko">삽입·복원 흐름</span><span class="lang-en">Embedding & recovery</span></a>
-      <a href="#poc"><span class="lang-ko">PoC 프로그램</span><span class="lang-en">PoC programs</span></a>
-      <a href="#defense"><span class="lang-ko">탐지·대응</span><span class="lang-en">Detection & mitigation</span></a>
-      <a href="#faq">FAQ</a>
-      <a href="#references"><span class="lang-ko">근거 자료</span><span class="lang-en">References</span></a>
+      <a href="#why"><span class="lang-ko">중요성</span><span class="lang-en">Why</span></a>
+      <a href="#core-concepts"><span class="lang-ko">핵심 개념</span><span class="lang-en">Concepts</span></a>
+      <a href="#anatomy"><span class="lang-ko">DBA</span><span class="lang-en">DBA</span></a>
+      <a href="#flow"><span class="lang-ko">흐름</span><span class="lang-en">Flow</span></a>
+      <a href="#poc">PoC</a>
+      <a class="nav-download" href="#downloads">DOWNLOAD</a>
+      <a href="#defense"><span class="lang-ko">방어</span><span class="lang-en">Defense</span></a>
     </nav>
   </header>
+
+  <nav class="floating-section-nav" id="floating-section-nav" aria-label="빠른 섹션 이동 / Quick section navigation">
+    <button class="floating-nav-toggle" id="floating-nav-toggle" type="button" aria-expanded="false" aria-controls="floating-nav-panel">
+      <span class="floating-nav-toggle-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span class="floating-nav-toggle-current" aria-hidden="true">01</span>
+      <span class="sr-only"><span class="lang-ko">빠른 이동 메뉴 열기</span><span class="lang-en">Open quick navigation</span></span>
+    </button>
+    <div class="floating-nav-panel" id="floating-nav-panel">
+      <div class="floating-nav-head">
+        <span><span class="lang-ko">빠른 이동</span><span class="lang-en">QUICK NAV</span></span>
+        <span class="floating-nav-progress-text">0%</span>
+      </div>
+      <div class="floating-nav-progress" aria-hidden="true"><span></span></div>
+      <div class="floating-nav-links">
+        <a class="floating-nav-link" href="#overview" title="개요 / Overview"><span class="floating-nav-index">01</span><span class="floating-nav-label"><span class="lang-ko">개요</span><span class="lang-en">Overview</span></span></a>
+        <a class="floating-nav-link" href="#why" title="중요성 / Why"><span class="floating-nav-index">02</span><span class="floating-nav-label"><span class="lang-ko">중요성</span><span class="lang-en">Why</span></span></a>
+        <a class="floating-nav-link" href="#core-concepts" title="핵심 개념 / Concepts"><span class="floating-nav-index">03</span><span class="floating-nav-label"><span class="lang-ko">핵심 개념</span><span class="lang-en">Concepts</span></span></a>
+        <a class="floating-nav-link" href="#anatomy" title="DBA"><span class="floating-nav-index">04</span><span class="floating-nav-label">DBA</span></a>
+        <a class="floating-nav-link" href="#flow" title="흐름 / Flow"><span class="floating-nav-index">05</span><span class="floating-nav-label"><span class="lang-ko">흐름</span><span class="lang-en">Flow</span></span></a>
+        <a class="floating-nav-link" href="#poc" title="PoC"><span class="floating-nav-index">06</span><span class="floating-nav-label">PoC</span></a>
+        <a class="floating-nav-link nav-download" href="#downloads" title="DOWNLOAD"><span class="floating-nav-index">07</span><span class="floating-nav-label">DOWNLOAD</span></a>
+        <a class="floating-nav-link" href="#defense" title="방어 / Defense"><span class="floating-nav-index">08</span><span class="floating-nav-label"><span class="lang-ko">방어</span><span class="lang-en">Defense</span></span></a>
+        <span class="floating-nav-separator" aria-hidden="true"></span>
+        <a class="floating-nav-link" href="#faq" title="FAQ"><span class="floating-nav-index">09</span><span class="floating-nav-label">FAQ</span></a>
+        <a class="floating-nav-link" href="#references" title="근거 자료 / References"><span class="floating-nav-index">10</span><span class="floating-nav-label"><span class="lang-ko">근거 자료</span><span class="lang-en">References</span></span></a>
+        <span class="floating-nav-separator" aria-hidden="true"></span>
+        <a class="floating-nav-link floating-nav-top" href="#top" title="처음으로 / Back to top"><span class="floating-nav-index">↑</span><span class="floating-nav-label"><span class="lang-ko">처음으로</span><span class="lang-en">Back to top</span></span></a>
+      </div>
+    </div>
+  </nav>
 
   <main id="main-content">
 
@@ -2104,6 +2552,228 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+
+
+
+  <script>
+    (function () {
+      'use strict';
+
+      const desktopNav = document.querySelector('.desktop-nav.integrated-nav');
+      const mobileNav = document.getElementById('mobile-nav');
+      const mobileButton = document.getElementById('mobile-menu-button');
+
+      /* Keep hamburger navigation sourced from the desktop navigation so the
+         labels, order, and DOWNLOAD link cannot drift apart later. */
+      if (desktopNav && mobileNav) {
+        mobileNav.innerHTML = desktopNav.innerHTML;
+        mobileNav.dataset.syncedWithDesktop = 'true';
+      }
+
+      const closeMobileNav = () => {
+        if (!mobileNav || !mobileButton) return;
+        mobileNav.hidden = true;
+        mobileButton.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('mobile-nav-open');
+      };
+
+      if (mobileNav && mobileButton) {
+        mobileNav.querySelectorAll('a[href^="#"]').forEach((link) => {
+          link.addEventListener('click', closeMobileNav);
+        });
+
+        /* assets/app.js remains the primary controller. This fallback only
+           toggles the menu when no other handler changed its state. */
+        mobileButton.addEventListener('click', () => {
+          const beforeExpanded = mobileButton.getAttribute('aria-expanded');
+          const beforeHidden = mobileNav.hidden;
+
+          window.setTimeout(() => {
+            const untouched = (
+              mobileButton.getAttribute('aria-expanded') === beforeExpanded
+              && mobileNav.hidden === beforeHidden
+            );
+            if (!untouched) return;
+
+            const shouldOpen = beforeExpanded !== 'true';
+            mobileButton.setAttribute('aria-expanded', String(shouldOpen));
+            mobileNav.hidden = !shouldOpen;
+            document.body.classList.toggle('mobile-nav-open', shouldOpen);
+          }, 0);
+        });
+
+        document.addEventListener('click', (event) => {
+          if (mobileNav.hidden || event.target.closest('.site-header')) return;
+          closeMobileNav();
+        });
+
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 1100) closeMobileNav();
+        }, { passive: true });
+      }
+
+      let cancelHashSettlement = () => {};
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      function scheduleHashSettlement(link) {
+        const href = link && link.getAttribute('href');
+        if (!href || href.charAt(0) !== '#' || href.length < 2) return;
+
+        const target = document.getElementById(decodeURIComponent(href.slice(1)));
+        if (!target) return;
+
+        cancelHashSettlement();
+        let cancelled = false;
+        const timers = [];
+        const cancelEvents = ['wheel', 'touchstart', 'pointerdown', 'keydown'];
+
+        const cleanup = () => {
+          if (cancelled) return;
+          cancelled = true;
+          timers.forEach((timer) => window.clearTimeout(timer));
+          cancelEvents.forEach((type) => window.removeEventListener(type, cleanup));
+        };
+        cancelHashSettlement = cleanup;
+
+        cancelEvents.forEach((type) => {
+          window.addEventListener(type, cleanup, { once: true, passive: true });
+        });
+
+        const alignTarget = (behavior) => {
+          if (cancelled || window.location.hash !== href) return;
+          const scrollMargin = Number.parseFloat(window.getComputedStyle(target).scrollMarginTop) || 0;
+          const delta = target.getBoundingClientRect().top - scrollMargin;
+          if (Math.abs(delta) > 6) {
+            window.scrollBy({ top: delta, left: 0, behavior });
+          }
+          requestFloatingUpdate();
+        };
+
+        timers.push(window.setTimeout(
+          () => alignTarget(reducedMotion.matches ? 'auto' : 'smooth'),
+          450,
+        ));
+        timers.push(window.setTimeout(() => {
+          alignTarget('auto');
+          cleanup();
+        }, 1450));
+      }
+
+      const floatingNav = document.getElementById('floating-section-nav');
+      const floatingToggle = document.getElementById('floating-nav-toggle');
+      if (!floatingNav || !floatingToggle) return;
+
+      const floatingLinks = Array.from(
+        floatingNav.querySelectorAll('.floating-nav-link[href^="#"]:not(.floating-nav-top)')
+      );
+      const progressText = floatingNav.querySelector('.floating-nav-progress-text');
+      const currentNumber = floatingNav.querySelector('.floating-nav-toggle-current');
+      const compactMode = window.matchMedia('(max-width: 1599px)');
+
+      const records = floatingLinks.map((link) => {
+        const id = decodeURIComponent(link.getAttribute('href').slice(1));
+        return { link, section: document.getElementById(id) };
+      }).filter((record) => record.section);
+
+      const closeFloatingNav = () => {
+        floatingNav.classList.remove('is-open');
+        floatingToggle.setAttribute('aria-expanded', 'false');
+      };
+
+      if (mobileButton) {
+        mobileButton.addEventListener('click', closeFloatingNav);
+      }
+
+      floatingToggle.addEventListener('click', (event) => {
+        event.stopPropagation();
+        closeMobileNav();
+        const willOpen = !floatingNav.classList.contains('is-open');
+        floatingNav.classList.toggle('is-open', willOpen);
+        floatingToggle.setAttribute('aria-expanded', String(willOpen));
+      });
+
+      floatingNav.querySelectorAll('a[href^="#"]').forEach((link) => {
+        link.addEventListener('click', () => {
+          closeMobileNav();
+          if (compactMode.matches) closeFloatingNav();
+        });
+      });
+
+      document.querySelectorAll(
+        '.desktop-nav.integrated-nav a[href^="#"], #mobile-nav a[href^="#"], .floating-section-nav a[href^="#"]'
+      ).forEach((link) => {
+        link.addEventListener('click', () => scheduleHashSettlement(link));
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!floatingNav.contains(event.target)) closeFloatingNav();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        closeFloatingNav();
+        closeMobileNav();
+      });
+
+      const handleCompactChange = () => {
+        if (!compactMode.matches) closeFloatingNav();
+      };
+      if (typeof compactMode.addEventListener === 'function') {
+        compactMode.addEventListener('change', handleCompactChange);
+      } else if (typeof compactMode.addListener === 'function') {
+        compactMode.addListener(handleCompactChange);
+      }
+
+      let frameRequested = false;
+      const updateFloatingNav = () => {
+        frameRequested = false;
+
+        const root = document.documentElement;
+        const maxScroll = Math.max(1, root.scrollHeight - window.innerHeight);
+        const progress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
+        floatingNav.style.setProperty('--scroll-progress', String(progress));
+        if (progressText) progressText.textContent = `${Math.round(progress * 100)}%`;
+
+        if (!records.length) return;
+        const marker = window.scrollY + Math.min(window.innerHeight * 0.36, 320);
+        let activeRecord = records[0];
+
+        records.forEach((record) => {
+          const sectionTop = record.section.getBoundingClientRect().top + window.scrollY;
+          if (sectionTop <= marker) activeRecord = record;
+        });
+
+        if (window.scrollY + window.innerHeight >= root.scrollHeight - 4) {
+          activeRecord = records[records.length - 1];
+        }
+
+        records.forEach((record) => {
+          const isActive = record === activeRecord;
+          record.link.classList.toggle('is-active', isActive);
+          if (isActive) {
+            record.link.setAttribute('aria-current', 'location');
+          } else {
+            record.link.removeAttribute('aria-current');
+          }
+        });
+
+        const index = activeRecord.link.querySelector('.floating-nav-index');
+        if (currentNumber && index) currentNumber.textContent = index.textContent.trim();
+      };
+
+      const requestFloatingUpdate = () => {
+        if (frameRequested) return;
+        frameRequested = true;
+        window.requestAnimationFrame(updateFloatingNav);
+      };
+
+      window.addEventListener('scroll', requestFloatingUpdate, { passive: true });
+      window.addEventListener('resize', requestFloatingUpdate, { passive: true });
+      window.addEventListener('hashchange', requestFloatingUpdate);
+      window.addEventListener('load', requestFloatingUpdate, { once: true });
+      requestFloatingUpdate();
+    }());
+  </script>
 
   <script>
     (function () {
