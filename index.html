@@ -29,26 +29,38 @@
       gap: .45rem 1rem;
       align-items: center;
       margin: 1rem 0 1.15rem;
-      padding: 1rem 1.05rem;
-      border: 1px solid rgba(0, 178, 240, .34);
-      border-radius: 15px;
-      background: linear-gradient(135deg, rgba(0, 178, 240, .13), rgba(255, 192, 0, .08));
+      padding: 1.05rem 1.1rem;
+      border: 1px solid rgba(34, 197, 94, .48);
+      border-radius: 17px;
+      background:
+        radial-gradient(circle at 92% 10%, rgba(187, 247, 208, .20), transparent 28%),
+        radial-gradient(circle at 8% 88%, rgba(21, 128, 61, .18), transparent 34%),
+        linear-gradient(135deg, rgba(8, 48, 28, .96), rgba(10, 27, 19, .97));
       color: inherit;
       text-decoration: none;
-      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+      box-shadow:
+        0 16px 36px rgba(0, 0, 0, .26),
+        0 0 0 1px rgba(187, 247, 208, .06),
+        inset 0 1px 0 rgba(255, 255, 255, .06),
+        0 0 28px rgba(34, 197, 94, .12);
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, filter .2s ease;
     }
     .related-patent-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(0, 178, 240, .62);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, .18);
+      transform: translateY(-3px);
+      border-color: rgba(74, 222, 128, .78);
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, .32),
+        0 0 0 1px rgba(134, 239, 172, .09),
+        0 0 34px rgba(74, 222, 128, .18);
+      filter: saturate(1.05);
     }
     .related-patent-card:focus-visible {
-      outline: 3px solid rgba(0, 178, 240, .55);
+      outline: 3px solid rgba(74, 222, 128, .52);
       outline-offset: 3px;
     }
     .related-patent-label {
       grid-column: 1 / -1;
-      color: #00b2f0;
+      color: #86efac;
       font-size: .72rem;
       font-weight: 800;
       letter-spacing: .13em;
@@ -60,7 +72,7 @@
       min-width: 0;
     }
     .related-patent-title strong {
-      color: #f8fafc;
+      color: #f0fdf4;
       font-size: .98rem;
       line-height: 1.45;
     }
@@ -70,16 +82,18 @@
       line-height: 1.45;
     }
     .related-patent-link {
-      color: #ffc000;
+      color: #bbf7d0;
       font-size: .78rem;
       font-weight: 800;
       white-space: nowrap;
     }
     html[data-theme="light"] .related-patent-card {
-      background: linear-gradient(135deg, rgba(0, 178, 240, .09), rgba(255, 192, 0, .1));
+      background: linear-gradient(135deg, rgba(220, 252, 231, .95), rgba(187, 247, 208, .92));
+      border-color: rgba(34, 197, 94, .30);
+      box-shadow: 0 14px 34px rgba(21, 128, 61, .08);
     }
-    html[data-theme="light"] .related-patent-title strong { color: #111827; }
-    html[data-theme="light"] .related-patent-title small { color: #475569; }
+    html[data-theme="light"] .related-patent-title strong { color: #14532d; }
+    html[data-theme="light"] .related-patent-title small { color: #166534; }
 
     .source-figures {
       display: grid;
@@ -141,6 +155,202 @@
     @media (prefers-reduced-motion: reduce) {
       .related-patent-card { transition: none; }
       .related-patent-card:hover { transform: none; }
+    }
+
+
+    .footer-meta {
+      display: none !important;
+    }
+
+    .bit-byte-labels {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .7rem;
+      margin-bottom: .55rem;
+    }
+    .bit-byte-labels span {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .02rem;
+      min-height: 2.3rem;
+      text-align: center;
+      line-height: 1.05;
+      white-space: normal;
+    }
+    .bit-byte-labels span b {
+      display: block;
+      font-size: .86em;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .bit-byte-labels span small {
+      display: block;
+      font-size: .82em;
+      letter-spacing: .02em;
+    }
+
+    .bit-cells {
+      display: grid;
+      gap: .8rem;
+    }
+    .bit-byte-row {
+      border: 1px solid rgba(148, 163, 184, .22);
+      border-radius: 16px;
+      padding: .8rem .8rem .9rem;
+      background: rgba(15, 23, 42, .26);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .bit-byte-row-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      margin-bottom: .5rem;
+    }
+    .bit-byte-row-title {
+      font-size: .84rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #e2e8f0;
+    }
+    .bit-byte-row-arrows {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: .3rem .5rem;
+      color: rgba(226, 232, 240, .84);
+      font-size: .72rem;
+    }
+    .bit-byte-row-arrows span {
+      display: inline-flex;
+      align-items: center;
+      gap: .24rem;
+      padding: .16rem .42rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+    }
+    .bit-byte-row-arrows i {
+      font-style: normal;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .bit-offset-grid,
+    .bit-symbol-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: .35rem;
+    }
+    .bit-offset-grid {
+      margin-bottom: .34rem;
+    }
+    .bit-offset {
+      text-align: center;
+      font-size: .67rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: rgba(148, 163, 184, .92);
+    }
+    .bit-cell {
+      position: relative;
+      min-height: 4.5rem;
+      padding: .42rem .2rem .36rem;
+      border: 1px solid rgba(148, 163, 184, .18);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .22rem;
+      background: rgba(255, 255, 255, .035);
+      text-align: center;
+      overflow: hidden;
+    }
+    .bit-cell.empty {
+      opacity: .36;
+      background: rgba(255,255,255,.018);
+    }
+    .bit-cell.previous {
+      background: linear-gradient(180deg, rgba(71, 85, 105, .30), rgba(30, 41, 59, .55));
+      border-color: rgba(148, 163, 184, .30);
+    }
+    .bit-cell.header {
+      background: linear-gradient(180deg, rgba(14, 165, 233, .22), rgba(2, 132, 199, .14));
+      border-color: rgba(56, 189, 248, .38);
+    }
+    .bit-cell.dba {
+      background: linear-gradient(180deg, rgba(250, 204, 21, .24), rgba(202, 138, 4, .15));
+      border-color: rgba(250, 204, 21, .36);
+    }
+    .bit-cell.len {
+      background: linear-gradient(180deg, rgba(34, 197, 94, .22), rgba(22, 163, 74, .14));
+      border-color: rgba(74, 222, 128, .36);
+    }
+    .bit-symbol {
+      font-size: 1.02rem;
+      font-weight: 900;
+      line-height: 1;
+      color: #f8fafc;
+    }
+    .bit-role {
+      font-size: .66rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+      color: rgba(241, 245, 249, .9);
+      text-transform: uppercase;
+    }
+    .bit-arrow {
+      font-size: .74rem;
+      font-weight: 900;
+      line-height: 1;
+      color: rgba(255,255,255,.86);
+    }
+    html[data-theme="light"] .bit-byte-row {
+      background: rgba(15, 23, 42, .03);
+      border-color: rgba(148, 163, 184, .22);
+    }
+    html[data-theme="light"] .bit-byte-row-title,
+    html[data-theme="light"] .bit-byte-row-arrows,
+    html[data-theme="light"] .bit-symbol {
+      color: #0f172a;
+    }
+    html[data-theme="light"] .bit-cell {
+      background: rgba(255,255,255,.76);
+    }
+    html[data-theme="light"] .bit-cell.empty {
+      background: rgba(148, 163, 184, .08);
+    }
+    @media (max-width: 700px) {
+      .bit-byte-row {
+        padding: .72rem .62rem .84rem;
+      }
+      .bit-symbol-grid,
+      .bit-offset-grid {
+        gap: .22rem;
+      }
+      .bit-cell {
+        min-height: 4.15rem;
+        border-radius: 10px;
+        padding: .3rem .12rem;
+      }
+      .bit-symbol {
+        font-size: .94rem;
+      }
+      .bit-role {
+        font-size: .6rem;
+      }
+      .bit-arrow {
+        font-size: .68rem;
+      }
+      .bit-byte-row-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .bit-byte-row-arrows {
+        justify-content: flex-start;
+      }
     }
   
 
@@ -845,7 +1055,7 @@
       <div class="section-heading reveal">
         <span class="section-kicker">01 · OVERVIEW</span>
         <h2 id="overview-title"><span class="lang-ko">핵심 개요</span><span class="lang-en">Executive summary</span></h2>
-        <p><span class="lang-ko">NPNCB는 압축 해제 출력에 바이트를 추가하지 않는 0길이 Stored block입니다. 이 블록의 3비트 헤더 뒤에는 다음 바이트 경계까지 정렬 비트가 생길 수 있으며, 연구에서는 이를 DBA라고 부릅니다. 여러 DBA 조각을 연결하면 낮은 용량의 별도 데이터 채널이 됩니다.</span><span class="lang-en">An NPNCB is a zero-length stored block that adds no bytes to decompressed output. After its 3-bit header, alignment bits may appear before the next byte boundary; the cited research calls them the DBA. Chaining many DBA fragments creates a low-capacity auxiliary data channel.</span></p>
+        <p><span class="lang-ko">NPNCB(No Payload Non Compressed Block)는 압축 해제 출력에 바이트를 추가하지 않는 0길이 Stored block입니다. 이 블록의 3비트 헤더 뒤에는 다음 바이트 경계까지 정렬 비트가 생길 수 있으며, 연구에서는 이를 DBA라고 부릅니다. 여러 DBA 조각을 연결하면 낮은 용량의 별도 데이터 채널이 됩니다.</span><span class="lang-en">NPNCB (No Payload Non Compressed Block) is a zero-length stored block that adds no bytes to decompressed output. After its 3-bit header, alignment bits may appear before the next byte boundary; the cited research calls them the DBA. Chaining many DBA fragments creates a low-capacity auxiliary data channel.</span></p>
       </div>
       <div class="overview-grid">
         <article class="overview-card reveal"><span class="overview-index">01</span><h3><span class="lang-ko">NPNCB 삽입</span><span class="lang-en">NPNCB insertion</span></h3><p><span class="lang-ko">출력 데이터가 없는 zero-length Stored block을 정상 데이터 블록 사이에 배치할 수 있습니다.</span><span class="lang-en">Zero-length stored blocks that emit no payload can be placed between ordinary data blocks.</span></p><code>BTYPE=00 · LEN=0</code></article>
@@ -990,14 +1200,14 @@
 <div class="lab-heading">
 <div>
 <span class="mini-label">INTERACTIVE BIT LAB</span>
-<h3><span class="lang-ko">헤더 시작 위치에 따른 DBA 용량</span><span class="lang-en">DBA capacity by header start offset</span></h3>
+<h3><span class="lang-ko">직전 블럭의 마지막 비트 위치에 따른 DBA 용량</span><span class="lang-en">DBA capacity by the previous block's last bit position</span></h3>
 </div>
 <span class="lab-badge"><span class="lang-ko">브라우저 안에서만 계산</span><span class="lang-en">runs locally in your browser</span></span>
 </div>
 <div class="lab-grid">
 <div class="lab-controls">
 <label for="start-offset">
-<span><span class="lang-ko">NPNCB 헤더 시작 비트 오프셋</span><span class="lang-en">NPNCB header start bit offset</span></span>
+<span><span class="lang-ko">직전 블럭의 마지막 비트 위치</span><span class="lang-en">Previous block's last bit position</span></span>
 <output for="start-offset" id="start-offset-output">0</output>
 </label>
 <input id="start-offset" max="7" min="0" step="1" type="range" value="0"/>
@@ -1013,7 +1223,7 @@
 <p class="lab-disclaimer"><span class="lang-ko">실제 스트림에서는 각 NPNCB의 시작 오프셋이 서로 다를 수 있습니다. 이 계산기는 구조를 이해하기 위한 동일 오프셋 예시입니다.</span><span class="lang-en">In a real stream, each NPNCB may start at a different offset. This calculator repeats one offset only to illustrate the structure.</span></p>
 </div>
 <div class="lab-output">
-<div aria-hidden="true" class="bit-byte-labels"><span>BYTE n</span><span>BYTE n+1</span></div>
+<div aria-hidden="true" class="bit-byte-labels"><span><b>Byte</b><small>n</small></span><span><b>Byte</b><small>n+1</small></span></div>
 <div aria-label="Bit position visualization" class="bit-cells" id="bit-cells"></div>
 <div class="legend-row">
 <span><i class="legend-previous"></i><span class="lang-ko">이전 블록</span><span class="lang-en">previous block</span></span>
@@ -1326,9 +1536,158 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
     <div class="section-shell footer-inner">
       <div class="footer-brand"><b>NPNCB Vulnerability Lab</b><p><span class="lang-ko">개요부터 DBA PoC와 방어까지 연결한 한·영 정적 연구 사이트</span><span class="lang-en">A bilingual static research site connecting the overview, DBA PoC, and defensive guidance</span></p></div>
       <div class="footer-links"><a href="README.md">README</a><a href="SECURITY.md">SECURITY</a><a href="LICENSE">LICENSE</a><a href="downloads/SHA256SUMS.txt">SHA-256</a></div>
-      <div class="footer-meta"><span>Dark by default</span><span>·</span><span>GitHub Pages ready</span><span>·</span><span>No tracking · No CDN</span></div>
-    </div>
+          </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      const $ = (id) => document.getElementById(id);
+      const startOffset = $('start-offset');
+      const startOffsetOutput = $('start-offset-output');
+      const blockCount = $('block-count');
+      const blockCountOutput = $('block-count-output');
+      const sampleMessage = $('sample-message');
+      const bitCells = $('bit-cells');
+      const dbaPerBlock = $('dba-per-block');
+      const totalCapacity = $('total-capacity');
+      const wholeByteCapacity = $('whole-byte-capacity');
+      const messageFit = $('message-fit');
+      if (!startOffset || !bitCells) return;
+
+      const utf8BitLength = (value) => new TextEncoder().encode(value || '').length * 8;
+      const desc = (start) => {
+        const out = [];
+        for (let offset = start; offset >= 0; offset -= 1) out.push([0, offset]);
+        for (let offset = 7; offset >= 0; offset -= 1) out.push([1, offset]);
+        return out;
+      };
+      const makeCells = () => ([Array.from({ length: 8 }, () => ({ symbol: '', role: '', kind: 'empty', arrow: '', label: '' })), Array.from({ length: 8 }, () => ({ symbol: '', role: '', kind: 'empty', arrow: '', label: '' }))]);
+      const setCell = (bytes, byteIndex, offset, symbol, kind, arrow, label) => {
+        if (byteIndex > 1 || byteIndex < 0 || offset > 7 || offset < 0) return;
+        bytes[byteIndex][offset] = { symbol, role: label, kind, arrow, label };
+      };
+      const computeCapacity = (prevPos) => (prevPos + 5) % 8;
+
+      const buildLayout = (prevPos) => {
+        const bytes = makeCells();
+        setCell(bytes, 0, prevPos, '·', 'previous', '←', 'PREV');
+        const positions = desc(prevPos - 1);
+        const headerSymbols = ['F', 'T', 'T'];
+        let lastHeader = null;
+        headerSymbols.forEach((sym, idx) => {
+          const pos = positions[idx];
+          if (!pos) return;
+          lastHeader = pos;
+          setCell(bytes, pos[0], pos[1], sym, 'header', '←', sym === 'F' ? 'BFINAL' : 'BTYPE');
+        });
+
+        if (lastHeader) {
+          const [lastByte, lastOffset] = lastHeader;
+          for (let offset = lastOffset - 1; offset >= 0; offset -= 1) {
+            setCell(bytes, lastByte, offset, 'D', 'dba', '→', 'DBA');
+          }
+          if (lastByte === 0) {
+            for (let offset = 0; offset <= 7; offset += 1) {
+              setCell(bytes, 1, offset, 'L', 'len', '→', 'LEN');
+            }
+          }
+        }
+        return bytes;
+      };
+
+      const renderByteRow = (byteName, byteIndex, cells) => {
+        const row = document.createElement('div');
+        row.className = 'bit-byte-row';
+
+        const header = document.createElement('div');
+        header.className = 'bit-byte-row-header';
+
+        const title = document.createElement('div');
+        title.className = 'bit-byte-row-title';
+        title.textContent = byteName;
+        header.appendChild(title);
+
+        const uniqueKinds = [];
+        cells.forEach((cell) => {
+          if (!cell.symbol) return;
+          const key = `${cell.symbol}|${cell.arrow}|${cell.role}`;
+          if (!uniqueKinds.some((item) => item.key === key)) uniqueKinds.push({ key, symbol: cell.symbol, arrow: cell.arrow, role: cell.role });
+        });
+        const arrows = document.createElement('div');
+        arrows.className = 'bit-byte-row-arrows';
+        uniqueKinds.forEach((item) => {
+          const token = document.createElement('span');
+          token.innerHTML = `<b>${item.symbol}</b> <small>${item.arrow}</small> <span>${item.role}</span>`;
+          arrows.appendChild(token);
+        });
+        if (uniqueKinds.length) header.appendChild(arrows);
+        row.appendChild(header);
+
+        const offsetGrid = document.createElement('div');
+        offsetGrid.className = 'bit-offset-grid';
+        for (let offset = 0; offset <= 7; offset += 1) {
+          const el = document.createElement('div');
+          el.className = 'bit-offset';
+          el.textContent = String(offset);
+          offsetGrid.appendChild(el);
+        }
+        row.appendChild(offsetGrid);
+
+        const symbolGrid = document.createElement('div');
+        symbolGrid.className = 'bit-symbol-grid';
+        for (let offset = 0; offset <= 7; offset += 1) {
+          const cell = cells[offset];
+          const el = document.createElement('div');
+          el.className = `bit-cell ${cell.kind || 'empty'} ${cell.symbol ? 'filled' : 'empty'}`;
+          const symbol = document.createElement('div');
+          symbol.className = 'bit-symbol';
+          symbol.textContent = cell.symbol || ' '; 
+          const role = document.createElement('div');
+          role.className = 'bit-role';
+          role.textContent = cell.label || ' '; 
+          const arrow = document.createElement('div');
+          arrow.className = 'bit-arrow';
+          arrow.textContent = cell.arrow || ' '; 
+          el.append(symbol, role, arrow);
+          symbolGrid.appendChild(el);
+        }
+        row.appendChild(symbolGrid);
+        return row;
+      };
+
+      const update = () => {
+        const prevPos = Number(startOffset.value || 0);
+        const count = Number(blockCount.value || 1);
+        const msgBits = utf8BitLength(sampleMessage.value || '');
+        const capacity = computeCapacity(prevPos);
+        const total = capacity * count;
+        const wholeBytes = Math.floor(total / 8);
+        const fits = msgBits <= total;
+
+        startOffsetOutput.textContent = String(prevPos);
+        blockCountOutput.textContent = String(count);
+        if (dbaPerBlock) dbaPerBlock.textContent = `${capacity} bits`;
+        if (totalCapacity) totalCapacity.textContent = `${total} bits`;
+        if (wholeByteCapacity) wholeByteCapacity.textContent = `${wholeBytes} bytes`;
+        if (messageFit) {
+          messageFit.textContent = fits ? 'fits' : 'too large';
+          messageFit.classList.remove('fit-good', 'fit-bad');
+          messageFit.classList.add(fits ? 'fit-good' : 'fit-bad');
+        }
+
+        const layout = buildLayout(prevPos);
+        bitCells.innerHTML = '';
+        bitCells.appendChild(renderByteRow('Byte n', 0, layout[0]));
+        bitCells.appendChild(renderByteRow('Byte n+1', 1, layout[1]));
+      };
+
+      startOffset.addEventListener('input', update);
+      blockCount && blockCount.addEventListener('input', update);
+      sampleMessage && sampleMessage.addEventListener('input', update);
+      update();
+    }());
+  </script>
+
 </body>
 </html>
