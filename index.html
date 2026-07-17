@@ -162,197 +162,368 @@
       display: none !important;
     }
 
-    .bit-byte-labels {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: .7rem;
-      margin-bottom: .55rem;
-    }
-    .bit-byte-labels span {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: .02rem;
-      min-height: 2.3rem;
-      text-align: center;
-      line-height: 1.05;
-      white-space: normal;
-    }
-    .bit-byte-labels span b {
-      display: block;
-      font-size: .86em;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    .bit-byte-labels span small {
-      display: block;
-      font-size: .82em;
-      letter-spacing: .02em;
+
+    /* Bit lab v2: two byte rows, non-overlapping cells, and one arrow per continuous field. */
+    #capacity-lab .bit-byte-labels {
+      display: none !important;
     }
 
-    .bit-cells {
-      display: grid;
-      gap: .8rem;
+    #capacity-lab .lab-output,
+    #capacity-lab #bit-cells {
+      min-width: 0 !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
     }
-    .bit-byte-row {
-      border: 1px solid rgba(148, 163, 184, .22);
-      border-radius: 16px;
-      padding: .8rem .8rem .9rem;
-      background: rgba(15, 23, 42, .26);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+
+    #capacity-lab #bit-cells {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: 1rem !important;
+      overflow: visible !important;
     }
-    .bit-byte-row-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: .75rem;
-      margin-bottom: .5rem;
+
+    #capacity-lab .npncb-byte-row {
+      position: relative !important;
+      inset: auto !important;
+      display: block !important;
+      min-width: 0 !important;
+      width: auto !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: .82rem .78rem .88rem !important;
+      border: 1px solid rgba(148, 163, 184, .24) !important;
+      border-radius: 16px !important;
+      background: rgba(15, 23, 42, .28) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035) !important;
+      transform: none !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
     }
-    .bit-byte-row-title {
-      font-size: .84rem;
-      font-weight: 800;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: #e2e8f0;
+
+    #capacity-lab .npncb-byte-row-head {
+      display: flex !important;
+      align-items: baseline !important;
+      justify-content: space-between !important;
+      gap: .75rem !important;
+      min-width: 0 !important;
+      margin: 0 0 .52rem !important;
     }
-    .bit-byte-row-arrows {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: .3rem .5rem;
-      color: rgba(226, 232, 240, .84);
-      font-size: .72rem;
+
+    #capacity-lab .npncb-byte-title {
+      min-width: 0 !important;
+      color: #e2e8f0 !important;
+      font-size: .84rem !important;
+      font-weight: 900 !important;
+      line-height: 1.2 !important;
+      letter-spacing: .08em !important;
+      text-transform: none !important;
+      white-space: nowrap !important;
     }
-    .bit-byte-row-arrows span {
-      display: inline-flex;
-      align-items: center;
-      gap: .24rem;
-      padding: .16rem .42rem;
-      border-radius: 999px;
-      background: rgba(255,255,255,.05);
+
+    #capacity-lab .npncb-byte-order {
+      min-width: 0 !important;
+      color: rgba(148, 163, 184, .92) !important;
+      font-size: .67rem !important;
+      font-weight: 700 !important;
+      line-height: 1.25 !important;
+      text-align: right !important;
+      white-space: normal !important;
     }
-    .bit-byte-row-arrows i {
-      font-style: normal;
-      font-weight: 900;
-      line-height: 1;
+
+    #capacity-lab .npncb-offset-grid,
+    #capacity-lab .npncb-flow-track,
+    #capacity-lab .npncb-cell-grid {
+      display: grid !important;
+      grid-template-columns: repeat(8, minmax(0, 1fr)) !important;
+      column-gap: clamp(2px, .48vw, 6px) !important;
+      min-width: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      box-sizing: border-box !important;
     }
-    .bit-offset-grid,
-    .bit-symbol-grid {
-      display: grid;
-      grid-template-columns: repeat(8, minmax(0, 1fr));
-      gap: .35rem;
+
+    #capacity-lab .npncb-offset-grid {
+      align-items: end !important;
+      margin-bottom: .18rem !important;
     }
-    .bit-offset-grid {
-      margin-bottom: .34rem;
+
+    #capacity-lab .npncb-offset {
+      min-width: 0 !important;
+      padding: 0 !important;
+      color: rgba(148, 163, 184, .94) !important;
+      font-size: clamp(.58rem, 1.8vw, .68rem) !important;
+      font-weight: 800 !important;
+      line-height: 1.1 !important;
+      letter-spacing: 0 !important;
+      text-align: center !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
     }
-    .bit-offset {
-      text-align: center;
-      font-size: .67rem;
-      font-weight: 700;
-      letter-spacing: .04em;
-      color: rgba(148, 163, 184, .92);
+
+    #capacity-lab .npncb-flow-track {
+      position: relative !important;
+      align-items: center !important;
+      min-height: 1.12rem !important;
+      overflow: visible !important;
     }
-    .bit-cell {
-      position: relative;
-      min-height: 4.5rem;
-      padding: .42rem .2rem .36rem;
-      border: 1px solid rgba(148, 163, 184, .18);
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: .22rem;
-      background: rgba(255, 255, 255, .035);
-      text-align: center;
-      overflow: hidden;
+
+    #capacity-lab .npncb-flow-track.reverse {
+      margin-bottom: .22rem !important;
     }
-    .bit-cell.empty {
-      opacity: .36;
-      background: rgba(255,255,255,.018);
+
+    #capacity-lab .npncb-flow-track.forward {
+      margin-top: .22rem !important;
     }
-    .bit-cell.previous {
-      background: linear-gradient(180deg, rgba(71, 85, 105, .30), rgba(30, 41, 59, .55));
-      border-color: rgba(148, 163, 184, .30);
+
+    #capacity-lab .npncb-flow-segment {
+      position: relative !important;
+      inset: auto !important;
+      align-self: center !important;
+      min-width: 0 !important;
+      width: auto !important;
+      max-width: none !important;
+      height: .9rem !important;
+      margin: 0 !important;
+      padding: 0 .16rem !important;
+      border: 0 !important;
+      border-radius: 999px !important;
+      background: transparent !important;
+      color: rgba(226, 232, 240, .84) !important;
+      transform: none !important;
+      box-sizing: border-box !important;
+      overflow: visible !important;
+      pointer-events: none !important;
     }
-    .bit-cell.header {
-      background: linear-gradient(180deg, rgba(14, 165, 233, .22), rgba(2, 132, 199, .14));
-      border-color: rgba(56, 189, 248, .38);
+
+    #capacity-lab .npncb-flow-segment::before {
+      content: "" !important;
+      position: absolute !important;
+      z-index: 0 !important;
+      top: 50% !important;
+      left: .18rem !important;
+      right: .18rem !important;
+      height: 1px !important;
+      margin: 0 !important;
+      background: currentColor !important;
+      transform: translateY(-50%) !important;
+      opacity: .88 !important;
     }
-    .bit-cell.dba {
-      background: linear-gradient(180deg, rgba(250, 204, 21, .24), rgba(202, 138, 4, .15));
-      border-color: rgba(250, 204, 21, .36);
+
+    #capacity-lab .npncb-flow-segment.reverse::after,
+    #capacity-lab .npncb-flow-segment.forward::after {
+      content: "" !important;
+      position: absolute !important;
+      z-index: 1 !important;
+      top: 50% !important;
+      width: .34rem !important;
+      height: .34rem !important;
+      margin: 0 !important;
+      border-top: 1px solid currentColor !important;
+      border-right: 1px solid currentColor !important;
+      background: transparent !important;
+      box-sizing: border-box !important;
     }
-    .bit-cell.len {
-      background: linear-gradient(180deg, rgba(34, 197, 94, .22), rgba(22, 163, 74, .14));
-      border-color: rgba(74, 222, 128, .36);
+
+    #capacity-lab .npncb-flow-segment.reverse::after {
+      left: .18rem !important;
+      transform: translateY(-50%) rotate(-135deg) !important;
     }
-    .bit-symbol {
-      font-size: 1.02rem;
-      font-weight: 900;
-      line-height: 1;
-      color: #f8fafc;
+
+    #capacity-lab .npncb-flow-segment.forward::after {
+      right: .18rem !important;
+      transform: translateY(-50%) rotate(45deg) !important;
     }
-    .bit-role {
-      font-size: .66rem;
-      font-weight: 800;
-      letter-spacing: .05em;
-      color: rgba(241, 245, 249, .9);
-      text-transform: uppercase;
+
+    #capacity-lab .npncb-flow-label {
+      position: absolute !important;
+      z-index: 2 !important;
+      top: 50% !important;
+      left: 50% !important;
+      display: inline-block !important;
+      min-width: 0 !important;
+      max-width: calc(100% - .7rem) !important;
+      margin: 0 !important;
+      padding: 0 .18rem !important;
+      border: 0 !important;
+      border-radius: 4px !important;
+      background: #111827 !important;
+      color: currentColor !important;
+      font-size: clamp(.48rem, 1.45vw, .61rem) !important;
+      font-weight: 900 !important;
+      line-height: 1.05 !important;
+      letter-spacing: .01em !important;
+      text-align: center !important;
+      white-space: nowrap !important;
+      text-overflow: clip !important;
+      overflow: hidden !important;
+      transform: translate(-50%, -50%) !important;
+      box-sizing: border-box !important;
     }
-    .bit-arrow {
-      font-size: .74rem;
-      font-weight: 900;
-      line-height: 1;
-      color: rgba(255,255,255,.86);
+
+    #capacity-lab .npncb-flow-segment.single .npncb-flow-label {
+      display: none !important;
     }
-    html[data-theme="light"] .bit-byte-row {
-      background: rgba(15, 23, 42, .03);
-      border-color: rgba(148, 163, 184, .22);
+
+    #capacity-lab .npncb-flow-segment.previous {
+      color: #cbd5e1 !important;
     }
-    html[data-theme="light"] .bit-byte-row-title,
-    html[data-theme="light"] .bit-byte-row-arrows,
-    html[data-theme="light"] .bit-symbol {
-      color: #0f172a;
+
+    #capacity-lab .npncb-flow-segment.header {
+      color: #7dd3fc !important;
     }
-    html[data-theme="light"] .bit-cell {
-      background: rgba(255,255,255,.76);
+
+    #capacity-lab .npncb-flow-segment.dba {
+      color: #fde047 !important;
     }
-    html[data-theme="light"] .bit-cell.empty {
-      background: rgba(148, 163, 184, .08);
+
+    #capacity-lab .npncb-flow-segment.len {
+      color: #86efac !important;
     }
+
+    #capacity-lab .npncb-cell-grid {
+      align-items: stretch !important;
+    }
+
+    #capacity-lab .npncb-bit-cell {
+      position: relative !important;
+      inset: auto !important;
+      display: grid !important;
+      place-items: center !important;
+      align-self: stretch !important;
+      min-width: 0 !important;
+      width: auto !important;
+      max-width: 100% !important;
+      min-height: clamp(2.75rem, 7vw, 4.1rem) !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: .24rem .08rem !important;
+      border: 1px solid rgba(148, 163, 184, .19) !important;
+      border-radius: 10px !important;
+      background: rgba(255, 255, 255, .035) !important;
+      box-shadow: none !important;
+      color: #f8fafc !important;
+      text-align: center !important;
+      transform: none !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
+      aspect-ratio: auto !important;
+    }
+
+    #capacity-lab .npncb-bit-cell.empty {
+      opacity: .34 !important;
+      background: rgba(255, 255, 255, .018) !important;
+    }
+
+    #capacity-lab .npncb-bit-cell.previous {
+      border-color: rgba(148, 163, 184, .38) !important;
+      background: linear-gradient(180deg, rgba(71, 85, 105, .38), rgba(30, 41, 59, .58)) !important;
+    }
+
+    #capacity-lab .npncb-bit-cell.header {
+      border-color: rgba(56, 189, 248, .43) !important;
+      background: linear-gradient(180deg, rgba(14, 165, 233, .25), rgba(2, 132, 199, .13)) !important;
+    }
+
+    #capacity-lab .npncb-bit-cell.dba {
+      border-color: rgba(250, 204, 21, .42) !important;
+      background: linear-gradient(180deg, rgba(250, 204, 21, .25), rgba(202, 138, 4, .14)) !important;
+    }
+
+    #capacity-lab .npncb-bit-cell.len {
+      border-color: rgba(74, 222, 128, .42) !important;
+      background: linear-gradient(180deg, rgba(34, 197, 94, .24), rgba(22, 163, 74, .13)) !important;
+    }
+
+    #capacity-lab .npncb-bit-symbol {
+      display: block !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      color: inherit !important;
+      font-size: clamp(.94rem, 3vw, 1.22rem) !important;
+      font-weight: 950 !important;
+      line-height: 1 !important;
+      letter-spacing: 0 !important;
+      text-align: center !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      transform: none !important;
+    }
+
+    html[data-theme="light"] #capacity-lab .npncb-byte-row {
+      border-color: rgba(15, 23, 42, .14) !important;
+      background: rgba(248, 250, 252, .82) !important;
+    }
+
+    html[data-theme="light"] #capacity-lab .npncb-byte-title,
+    html[data-theme="light"] #capacity-lab .npncb-bit-cell,
+    html[data-theme="light"] #capacity-lab .npncb-flow-label {
+      color: #0f172a !important;
+    }
+
+    html[data-theme="light"] #capacity-lab .npncb-flow-label {
+      background: #f8fafc !important;
+    }
+
+    html[data-theme="light"] #capacity-lab .npncb-bit-cell.empty {
+      background: rgba(148, 163, 184, .08) !important;
+    }
+
     @media (max-width: 700px) {
-      .bit-byte-row {
-        padding: .72rem .62rem .84rem;
+      #capacity-lab .npncb-byte-row {
+        padding: .66rem .5rem .72rem !important;
+        border-radius: 13px !important;
       }
-      .bit-symbol-grid,
-      .bit-offset-grid {
-        gap: .22rem;
+
+      #capacity-lab .npncb-byte-row-head {
+        align-items: flex-start !important;
+        gap: .4rem !important;
+        margin-bottom: .44rem !important;
       }
-      .bit-cell {
-        min-height: 4.15rem;
-        border-radius: 10px;
-        padding: .3rem .12rem;
+
+      #capacity-lab .npncb-byte-order {
+        max-width: 58% !important;
+        font-size: .59rem !important;
       }
-      .bit-symbol {
-        font-size: .94rem;
+
+      #capacity-lab .npncb-offset-grid,
+      #capacity-lab .npncb-flow-track,
+      #capacity-lab .npncb-cell-grid {
+        column-gap: 2px !important;
       }
-      .bit-role {
-        font-size: .6rem;
+
+      #capacity-lab .npncb-flow-track {
+        min-height: .96rem !important;
       }
-      .bit-arrow {
-        font-size: .68rem;
+
+      #capacity-lab .npncb-flow-segment {
+        height: .76rem !important;
+        padding-inline: .06rem !important;
       }
-      .bit-byte-row-header {
-        flex-direction: column;
-        align-items: flex-start;
+
+      #capacity-lab .npncb-flow-segment::before {
+        left: .08rem !important;
+        right: .08rem !important;
       }
-      .bit-byte-row-arrows {
-        justify-content: flex-start;
+
+      #capacity-lab .npncb-flow-segment.reverse::after {
+        left: .08rem !important;
+      }
+
+      #capacity-lab .npncb-flow-segment.forward::after {
+        right: .08rem !important;
+      }
+
+      #capacity-lab .npncb-bit-cell {
+        min-height: 2.65rem !important;
+        padding: .16rem .02rem !important;
+        border-radius: 7px !important;
       }
     }
-  
+
 
     /* 2026-07 update: keep label-style spans compact and readable.
        General spans now inherit each component's original typography. */
@@ -1540,154 +1711,271 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+
   <script>
     (function () {
-      const $ = (id) => document.getElementById(id);
-      const startOffset = $('start-offset');
-      const startOffsetOutput = $('start-offset-output');
-      const blockCount = $('block-count');
-      const blockCountOutput = $('block-count-output');
-      const sampleMessage = $('sample-message');
-      const bitCells = $('bit-cells');
-      const dbaPerBlock = $('dba-per-block');
-      const totalCapacity = $('total-capacity');
-      const wholeByteCapacity = $('whole-byte-capacity');
-      const messageFit = $('message-fit');
-      if (!startOffset || !bitCells) return;
+      'use strict';
 
-      const utf8BitLength = (value) => new TextEncoder().encode(value || '').length * 8;
-      const desc = (start) => {
-        const out = [];
-        for (let offset = start; offset >= 0; offset -= 1) out.push([0, offset]);
-        for (let offset = 7; offset >= 0; offset -= 1) out.push([1, offset]);
-        return out;
-      };
-      const makeCells = () => ([Array.from({ length: 8 }, () => ({ symbol: '', role: '', kind: 'empty', arrow: '', label: '' })), Array.from({ length: 8 }, () => ({ symbol: '', role: '', kind: 'empty', arrow: '', label: '' }))]);
-      const setCell = (bytes, byteIndex, offset, symbol, kind, arrow, label) => {
-        if (byteIndex > 1 || byteIndex < 0 || offset > 7 || offset < 0) return;
-        bytes[byteIndex][offset] = { symbol, role: label, kind, arrow, label };
-      };
-      const computeCapacity = (prevPos) => (prevPos + 5) % 8;
+      const scheduleInit = () => window.setTimeout(initBitLab, 32);
+      if (document.readyState === 'complete') {
+        scheduleInit();
+      } else {
+        window.addEventListener('load', scheduleInit, { once: true });
+      }
 
-      const buildLayout = (prevPos) => {
-        const bytes = makeCells();
-        setCell(bytes, 0, prevPos, '·', 'previous', '←', 'PREV');
-        const positions = desc(prevPos - 1);
-        const headerSymbols = ['F', 'T', 'T'];
-        let lastHeader = null;
-        headerSymbols.forEach((sym, idx) => {
-          const pos = positions[idx];
-          if (!pos) return;
-          lastHeader = pos;
-          setCell(bytes, pos[0], pos[1], sym, 'header', '←', sym === 'F' ? 'BFINAL' : 'BTYPE');
-        });
+      function initBitLab() {
+        if (window.__npncbBitLabV2) return;
+        window.__npncbBitLabV2 = true;
 
-        if (lastHeader) {
-          const [lastByte, lastOffset] = lastHeader;
-          for (let offset = lastOffset - 1; offset >= 0; offset -= 1) {
-            setCell(bytes, lastByte, offset, 'D', 'dba', '→', 'DBA');
+        const byId = (id) => document.getElementById(id);
+        const replaceControl = (id) => {
+          const oldControl = byId(id);
+          if (!oldControl) return null;
+          const cleanControl = oldControl.cloneNode(true);
+          oldControl.replaceWith(cleanControl);
+          return cleanControl;
+        };
+
+        /* Remove any bit-lab listeners previously attached by assets/app.js. */
+        const startOffset = replaceControl('start-offset');
+        const blockCount = replaceControl('block-count');
+        const sampleMessage = replaceControl('sample-message');
+        const oldBitCells = byId('bit-cells');
+        if (!startOffset || !oldBitCells) return;
+
+        const bitCells = oldBitCells.cloneNode(false);
+        oldBitCells.replaceWith(bitCells);
+
+        const startOffsetOutput = byId('start-offset-output');
+        const blockCountOutput = byId('block-count-output');
+        const dbaPerBlock = byId('dba-per-block');
+        const totalCapacity = byId('total-capacity');
+        const wholeByteCapacity = byId('whole-byte-capacity');
+        const messageFit = byId('message-fit');
+        const byteLabels = document.querySelector('#capacity-lab .bit-byte-labels');
+        if (byteLabels) byteLabels.hidden = true;
+
+        const utf8BitLength = (value) => {
+          if (typeof TextEncoder === 'function') {
+            return new TextEncoder().encode(value || '').length * 8;
           }
-          if (lastByte === 0) {
-            for (let offset = 0; offset <= 7; offset += 1) {
-              setCell(bytes, 1, offset, 'L', 'len', '→', 'LEN');
+          return unescape(encodeURIComponent(value || '')).length * 8;
+        };
+
+        const emptyCell = () => ({ symbol: '', kind: 'empty', description: 'empty' });
+        const makeBytes = () => [
+          Array.from({ length: 8 }, emptyCell),
+          Array.from({ length: 8 }, emptyCell),
+        ];
+
+        const setCell = (bytes, byteIndex, offset, symbol, kind, description) => {
+          if (byteIndex < 0 || byteIndex > 1 || offset < 0 || offset > 7) return;
+          bytes[byteIndex][offset] = { symbol, kind, description };
+        };
+
+        /*
+         * Visual convention requested by the page owner:
+         *   leftmost cell = offset 0, rightmost cell = offset 7.
+         *   stream/header direction = 7 -> 0 (right to left).
+         *   DBA/LEN direction       = 0 -> 7 (left to right).
+         */
+        const buildLayout = (previousLastOffset) => {
+          const bytes = makeBytes();
+          setCell(bytes, 0, previousLastOffset, '·', 'previous', 'previous block last bit');
+
+          let byteIndex = 0;
+          let offset = previousLastOffset - 1;
+          const header = [
+            ['F', 'BFINAL'],
+            ['T', 'BTYPE'],
+            ['T', 'BTYPE'],
+          ];
+
+          header.forEach(([symbol, description]) => {
+            if (offset < 0) {
+              byteIndex += 1;
+              offset = 7;
+            }
+            setCell(bytes, byteIndex, offset, symbol, 'header', description);
+            offset -= 1;
+          });
+
+          /* Remaining positions through offset 0 are DBA. */
+          if (byteIndex <= 1) {
+            for (let dbaOffset = offset; dbaOffset >= 0; dbaOffset -= 1) {
+              setCell(bytes, byteIndex, dbaOffset, 'D', 'dba', 'DBA');
             }
           }
-        }
-        return bytes;
-      };
 
-      const renderByteRow = (byteName, byteIndex, cells) => {
-        const row = document.createElement('div');
-        row.className = 'bit-byte-row';
+          /* If the header/DBA end in Byte n, Byte n+1 starts LEN. */
+          if (byteIndex === 0) {
+            for (let lenOffset = 0; lenOffset <= 7; lenOffset += 1) {
+              setCell(bytes, 1, lenOffset, 'L', 'len', 'LEN');
+            }
+          }
 
-        const header = document.createElement('div');
-        header.className = 'bit-byte-row-header';
+          return bytes;
+        };
 
-        const title = document.createElement('div');
-        title.className = 'bit-byte-row-title';
-        title.textContent = byteName;
-        header.appendChild(title);
+        const flowMeta = {
+          previous: { lane: 'reverse', direction: 'reverse', label: '·', title: '직전 블록 비트: offset 7 → 0' },
+          header: { lane: 'reverse', direction: 'reverse', label: 'F/T', title: 'F/T 헤더: offset 7 → 0' },
+          dba: { lane: 'forward', direction: 'forward', label: 'D', title: 'DBA: offset 0 → 7' },
+          len: { lane: 'forward', direction: 'forward', label: 'L', title: 'LEN: offset 0 → 7' },
+        };
 
-        const uniqueKinds = [];
-        cells.forEach((cell) => {
-          if (!cell.symbol) return;
-          const key = `${cell.symbol}|${cell.arrow}|${cell.role}`;
-          if (!uniqueKinds.some((item) => item.key === key)) uniqueKinds.push({ key, symbol: cell.symbol, arrow: cell.arrow, role: cell.role });
-        });
-        const arrows = document.createElement('div');
-        arrows.className = 'bit-byte-row-arrows';
-        uniqueKinds.forEach((item) => {
-          const token = document.createElement('span');
-          token.innerHTML = `<b>${item.symbol}</b> <small>${item.arrow}</small> <span>${item.role}</span>`;
-          arrows.appendChild(token);
-        });
-        if (uniqueKinds.length) header.appendChild(arrows);
-        row.appendChild(header);
+        const collectSegments = (cells, lane) => {
+          const segments = [];
+          let offset = 0;
 
-        const offsetGrid = document.createElement('div');
-        offsetGrid.className = 'bit-offset-grid';
-        for (let offset = 0; offset <= 7; offset += 1) {
-          const el = document.createElement('div');
-          el.className = 'bit-offset';
-          el.textContent = String(offset);
-          offsetGrid.appendChild(el);
-        }
-        row.appendChild(offsetGrid);
+          while (offset <= 7) {
+            const kind = cells[offset].kind;
+            const meta = flowMeta[kind];
+            if (!meta || meta.lane !== lane) {
+              offset += 1;
+              continue;
+            }
 
-        const symbolGrid = document.createElement('div');
-        symbolGrid.className = 'bit-symbol-grid';
-        for (let offset = 0; offset <= 7; offset += 1) {
-          const cell = cells[offset];
-          const el = document.createElement('div');
-          el.className = `bit-cell ${cell.kind || 'empty'} ${cell.symbol ? 'filled' : 'empty'}`;
-          const symbol = document.createElement('div');
-          symbol.className = 'bit-symbol';
-          symbol.textContent = cell.symbol || ' '; 
-          const role = document.createElement('div');
-          role.className = 'bit-role';
-          role.textContent = cell.label || ' '; 
-          const arrow = document.createElement('div');
-          arrow.className = 'bit-arrow';
-          arrow.textContent = cell.arrow || ' '; 
-          el.append(symbol, role, arrow);
-          symbolGrid.appendChild(el);
-        }
-        row.appendChild(symbolGrid);
-        return row;
-      };
+            const start = offset;
+            while (
+              offset + 1 <= 7 &&
+              cells[offset + 1].kind === kind &&
+              flowMeta[cells[offset + 1].kind]?.lane === lane
+            ) {
+              offset += 1;
+            }
+            segments.push({ kind, start, end: offset, ...meta });
+            offset += 1;
+          }
 
-      const update = () => {
-        const prevPos = Number(startOffset.value || 0);
-        const count = Number(blockCount.value || 1);
-        const msgBits = utf8BitLength(sampleMessage.value || '');
-        const capacity = computeCapacity(prevPos);
-        const total = capacity * count;
-        const wholeBytes = Math.floor(total / 8);
-        const fits = msgBits <= total;
+          return segments;
+        };
 
-        startOffsetOutput.textContent = String(prevPos);
-        blockCountOutput.textContent = String(count);
-        if (dbaPerBlock) dbaPerBlock.textContent = `${capacity} bits`;
-        if (totalCapacity) totalCapacity.textContent = `${total} bits`;
-        if (wholeByteCapacity) wholeByteCapacity.textContent = `${wholeBytes} bytes`;
-        if (messageFit) {
-          messageFit.textContent = fits ? 'fits' : 'too large';
-          messageFit.classList.remove('fit-good', 'fit-bad');
-          messageFit.classList.add(fits ? 'fit-good' : 'fit-bad');
-        }
+        const renderFlowTrack = (cells, lane) => {
+          const track = document.createElement('div');
+          track.className = `npncb-flow-track ${lane}`;
+          track.setAttribute('aria-hidden', 'true');
 
-        const layout = buildLayout(prevPos);
-        bitCells.innerHTML = '';
-        bitCells.appendChild(renderByteRow('Byte n', 0, layout[0]));
-        bitCells.appendChild(renderByteRow('Byte n+1', 1, layout[1]));
-      };
+          collectSegments(cells, lane).forEach((segment) => {
+            const el = document.createElement('span');
+            const single = segment.start === segment.end ? ' single' : '';
+            el.className = `npncb-flow-segment ${segment.direction} ${segment.kind}${single}`;
+            el.style.gridColumn = `${segment.start + 1} / ${segment.end + 2}`;
+            el.title = segment.title;
 
-      startOffset.addEventListener('input', update);
-      blockCount && blockCount.addEventListener('input', update);
-      sampleMessage && sampleMessage.addEventListener('input', update);
-      update();
+            const label = document.createElement('span');
+            label.className = 'npncb-flow-label';
+            label.textContent = segment.label;
+            el.appendChild(label);
+            track.appendChild(el);
+          });
+
+          return track;
+        };
+
+        const cellDescription = (byteName, offset, cell) => {
+          if (cell.kind === 'empty') return `${byteName}, offset ${offset}: 표시 없음`;
+          if (cell.kind === 'previous') return `${byteName}, offset ${offset}: 직전 블록 마지막 비트 ·`;
+          if (cell.kind === 'header') return `${byteName}, offset ${offset}: ${cell.symbol} (${cell.description})`;
+          return `${byteName}, offset ${offset}: ${cell.symbol} (${cell.description})`;
+        };
+
+        const renderByteRow = (byteName, cells) => {
+          const row = document.createElement('section');
+          row.className = 'npncb-byte-row';
+          row.setAttribute('aria-label', `${byteName} bit layout`);
+
+          const head = document.createElement('div');
+          head.className = 'npncb-byte-row-head';
+
+          const title = document.createElement('strong');
+          title.className = 'npncb-byte-title';
+          title.textContent = byteName;
+
+          const order = document.createElement('span');
+          order.className = 'npncb-byte-order';
+          order.textContent = 'offset 0 (왼쪽) · offset 7 (오른쪽)';
+          head.append(title, order);
+          row.appendChild(head);
+
+          const offsets = document.createElement('div');
+          offsets.className = 'npncb-offset-grid';
+          for (let offset = 0; offset <= 7; offset += 1) {
+            const marker = document.createElement('span');
+            marker.className = 'npncb-offset';
+            marker.textContent = String(offset);
+            offsets.appendChild(marker);
+          }
+          row.appendChild(offsets);
+          row.appendChild(renderFlowTrack(cells, 'reverse'));
+
+          const cellGrid = document.createElement('div');
+          cellGrid.className = 'npncb-cell-grid';
+          cells.forEach((cell, offset) => {
+            const el = document.createElement('div');
+            el.className = `npncb-bit-cell ${cell.kind}`;
+            const description = cellDescription(byteName, offset, cell);
+            el.setAttribute('aria-label', description);
+            el.title = description;
+
+            const symbol = document.createElement('span');
+            symbol.className = 'npncb-bit-symbol';
+            symbol.textContent = cell.symbol || '';
+            el.appendChild(symbol);
+            cellGrid.appendChild(el);
+          });
+          row.appendChild(cellGrid);
+          row.appendChild(renderFlowTrack(cells, 'forward'));
+          return row;
+        };
+
+        const capacityForPreviousOffset = (previousLastOffset) => (previousLastOffset + 5) % 8;
+
+        const update = () => {
+          const previousLastOffset = Math.max(0, Math.min(7, Number(startOffset.value) || 0));
+          const count = Math.max(1, Number(blockCount?.value) || 1);
+          const messageBits = utf8BitLength(sampleMessage?.value || '');
+          const capacity = capacityForPreviousOffset(previousLastOffset);
+          const totalBits = capacity * count;
+          const wholeBytes = Math.floor(totalBits / 8);
+          const fits = messageBits <= totalBits;
+
+          if (startOffsetOutput) startOffsetOutput.textContent = String(previousLastOffset);
+          if (blockCountOutput) blockCountOutput.textContent = String(count);
+          if (dbaPerBlock) dbaPerBlock.textContent = `${capacity} bits`;
+          if (totalCapacity) totalCapacity.textContent = `${totalBits} bits`;
+          if (wholeByteCapacity) wholeByteCapacity.textContent = `${wholeBytes} bytes`;
+          if (messageFit) {
+            messageFit.textContent = fits ? 'fits' : 'too large';
+            messageFit.classList.remove('fit-good', 'fit-bad');
+            messageFit.classList.add(fits ? 'fit-good' : 'fit-bad');
+          }
+
+          const layout = buildLayout(previousLastOffset);
+          bitCells.replaceChildren(
+            renderByteRow('Byte n', layout[0]),
+            renderByteRow('Byte n+1', layout[1]),
+          );
+        };
+
+        const bindExclusiveUpdate = (control) => {
+          if (!control) return;
+          const handler = (event) => {
+            event.stopImmediatePropagation();
+            update();
+          };
+          control.addEventListener('input', handler, { capture: true });
+          control.addEventListener('change', handler, { capture: true });
+        };
+
+        bindExclusiveUpdate(startOffset);
+        bindExclusiveUpdate(blockCount);
+        bindExclusiveUpdate(sampleMessage);
+        update();
+      }
     }());
   </script>
+
 
 </body>
 </html>
