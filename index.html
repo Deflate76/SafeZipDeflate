@@ -1203,6 +1203,265 @@
       }
     }
 
+
+    /* Bit lab v5: show the exact F/T/D/LEN/NLEN span as one connected NPNCB block. */
+    #capacity-lab .npncb-block-frame {
+      position: relative !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: .9rem !important;
+      min-width: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: .78rem .7rem .72rem .82rem !important;
+      border: 2px solid rgba(34, 211, 238, .55) !important;
+      border-radius: 21px !important;
+      background:
+        radial-gradient(circle at 96% 0%, rgba(14, 165, 233, .13), transparent 34%),
+        linear-gradient(145deg, rgba(8, 47, 73, .20), rgba(15, 23, 42, .20)) !important;
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, .18),
+        0 0 0 1px rgba(125, 211, 252, .055),
+        inset 0 1px 0 rgba(255, 255, 255, .045),
+        0 0 28px rgba(34, 211, 238, .08) !important;
+      overflow: visible !important;
+      box-sizing: border-box !important;
+      isolation: isolate !important;
+    }
+
+    #capacity-lab .npncb-block-frame::before {
+      content: "" !important;
+      position: absolute !important;
+      z-index: 3 !important;
+      top: 3.55rem !important;
+      bottom: .78rem !important;
+      left: -.24rem !important;
+      width: .34rem !important;
+      border-radius: 999px !important;
+      background: linear-gradient(180deg, #67e8f9, #38bdf8 45%, #22d3ee) !important;
+      box-shadow: 0 0 16px rgba(34, 211, 238, .48) !important;
+      pointer-events: none !important;
+    }
+
+    #capacity-lab .npncb-block-head {
+      position: relative !important;
+      z-index: 4 !important;
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) auto !important;
+      align-items: center !important;
+      gap: .66rem .78rem !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: .12rem .16rem .04rem !important;
+      box-sizing: border-box !important;
+    }
+
+    #capacity-lab .npncb-block-badge {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-height: 2rem !important;
+      padding: .38rem .72rem !important;
+      border: 1px solid rgba(103, 232, 249, .72) !important;
+      border-radius: 999px !important;
+      background: linear-gradient(135deg, rgba(8, 145, 178, .42), rgba(14, 116, 144, .24)) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10), 0 0 18px rgba(34, 211, 238, .14) !important;
+      color: #cffafe !important;
+      font-size: .76rem !important;
+      font-weight: 950 !important;
+      line-height: 1 !important;
+      letter-spacing: .13em !important;
+      white-space: nowrap !important;
+    }
+
+    #capacity-lab .npncb-block-copy {
+      display: grid !important;
+      gap: .12rem !important;
+      min-width: 0 !important;
+    }
+
+    #capacity-lab .npncb-block-copy strong {
+      color: #ecfeff !important;
+      font-size: clamp(.78rem, .72rem + .24vw, .92rem) !important;
+      font-weight: 900 !important;
+      line-height: 1.25 !important;
+      letter-spacing: .01em !important;
+      overflow-wrap: anywhere !important;
+    }
+
+    #capacity-lab .npncb-block-copy small {
+      color: rgba(207, 250, 254, .72) !important;
+      font-size: clamp(.62rem, .57rem + .18vw, .72rem) !important;
+      font-weight: 650 !important;
+      line-height: 1.38 !important;
+    }
+
+    #capacity-lab .npncb-block-sequence {
+      display: inline-flex !important;
+      flex-wrap: wrap !important;
+      justify-content: flex-end !important;
+      gap: .25rem !important;
+      min-width: 0 !important;
+    }
+
+    #capacity-lab .npncb-block-sequence span {
+      display: inline-grid !important;
+      place-items: center !important;
+      min-width: 1.42rem !important;
+      min-height: 1.42rem !important;
+      padding: .16rem .31rem !important;
+      border: 1px solid currentColor !important;
+      border-radius: 7px !important;
+      background: rgba(15, 23, 42, .54) !important;
+      font-size: .61rem !important;
+      font-weight: 950 !important;
+      line-height: 1 !important;
+      white-space: nowrap !important;
+      box-sizing: border-box !important;
+    }
+
+    #capacity-lab .npncb-block-sequence .header { color: #7dd3fc !important; }
+    #capacity-lab .npncb-block-sequence .dba { color: #fb923c !important; }
+    #capacity-lab .npncb-block-sequence .len { color: #86efac !important; }
+    #capacity-lab .npncb-block-sequence .nlen { color: #d8b4fe !important; }
+
+    #capacity-lab .npncb-block-frame > .npncb-byte-row {
+      border-color: rgba(34, 211, 238, .18) !important;
+      background: linear-gradient(180deg, rgba(8, 47, 73, .15), rgba(15, 23, 42, .25)) !important;
+    }
+
+    #capacity-lab .npncb-cell-stage {
+      position: relative !important;
+      display: block !important;
+      min-width: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      box-sizing: border-box !important;
+      isolation: isolate !important;
+    }
+
+    #capacity-lab .npncb-region-grid {
+      position: absolute !important;
+      z-index: 3 !important;
+      inset: -.24rem !important;
+      display: grid !important;
+      grid-template-columns: repeat(8, minmax(0, 1fr)) !important;
+      column-gap: clamp(2px, .48vw, 6px) !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      pointer-events: none !important;
+      box-sizing: border-box !important;
+    }
+
+    #capacity-lab .npncb-region-band {
+      position: relative !important;
+      display: block !important;
+      min-width: 0 !important;
+      height: 100% !important;
+      border: 2px dashed rgba(103, 232, 249, .82) !important;
+      border-radius: 12px !important;
+      background: linear-gradient(90deg, rgba(34, 211, 238, .035), rgba(56, 189, 248, .07)) !important;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .025),
+        0 0 16px rgba(34, 211, 238, .18) !important;
+      box-sizing: border-box !important;
+    }
+
+    #capacity-lab .npncb-bit-cell.npncb-member {
+      box-shadow:
+        inset 0 0 0 1px rgba(207, 250, 254, .11),
+        0 0 11px rgba(34, 211, 238, .08) !important;
+    }
+
+    #capacity-lab .legend-row .legend-npncb {
+      display: inline-block !important;
+      width: .82rem !important;
+      height: .72rem !important;
+      flex: 0 0 .82rem !important;
+      border: 2px dashed #67e8f9 !important;
+      border-radius: 4px !important;
+      background: rgba(34, 211, 238, .035) !important;
+      box-shadow: 0 0 8px rgba(34, 211, 238, .18) !important;
+      box-sizing: border-box !important;
+    }
+
+    html[data-theme="light"] #capacity-lab .npncb-block-frame {
+      border-color: rgba(8, 145, 178, .42) !important;
+      background:
+        radial-gradient(circle at 96% 0%, rgba(14, 165, 233, .10), transparent 34%),
+        linear-gradient(145deg, rgba(236, 254, 255, .92), rgba(248, 250, 252, .84)) !important;
+      box-shadow: 0 16px 34px rgba(8, 145, 178, .09), inset 0 1px 0 rgba(255, 255, 255, .9) !important;
+    }
+
+    html[data-theme="light"] #capacity-lab .npncb-block-copy strong {
+      color: #164e63 !important;
+    }
+
+    html[data-theme="light"] #capacity-lab .npncb-block-copy small {
+      color: rgba(21, 94, 117, .78) !important;
+    }
+
+    html[data-theme="light"] #capacity-lab .npncb-block-sequence span {
+      background: rgba(255, 255, 255, .86) !important;
+    }
+
+    html[data-theme="light"] #capacity-lab .npncb-block-frame > .npncb-byte-row {
+      background: rgba(255, 255, 255, .68) !important;
+    }
+
+    @media (max-width: 700px) {
+      #capacity-lab .npncb-block-frame {
+        gap: .72rem !important;
+        padding: .66rem .46rem .58rem .58rem !important;
+        border-radius: 16px !important;
+      }
+
+      #capacity-lab .npncb-block-frame::before {
+        top: 5.25rem !important;
+        bottom: .64rem !important;
+        left: -.2rem !important;
+        width: .28rem !important;
+      }
+
+      #capacity-lab .npncb-block-head {
+        grid-template-columns: auto minmax(0, 1fr) !important;
+        gap: .46rem .52rem !important;
+        padding-inline: .04rem !important;
+      }
+
+      #capacity-lab .npncb-block-badge {
+        min-height: 1.72rem !important;
+        padding: .3rem .55rem !important;
+        font-size: .68rem !important;
+      }
+
+      #capacity-lab .npncb-block-sequence {
+        grid-column: 1 / -1 !important;
+        justify-content: flex-start !important;
+        padding-left: .02rem !important;
+      }
+
+      #capacity-lab .npncb-block-sequence span {
+        min-width: 1.25rem !important;
+        min-height: 1.25rem !important;
+        padding: .13rem .25rem !important;
+        font-size: .56rem !important;
+      }
+
+      #capacity-lab .npncb-region-grid {
+        inset: -.2rem !important;
+        column-gap: 2px !important;
+      }
+
+      #capacity-lab .npncb-region-band {
+        border-radius: 9px !important;
+      }
+    }
+
 </style>
 </head>
 <body>
@@ -1534,6 +1793,7 @@
 <span><i class="legend-dba"></i>DBA</span>
 <span><i class="legend-next"></i>LEN</span>
 <span><i class="legend-nlen"></i>NLEN</span>
+<span><i class="legend-npncb"></i><span class="lang-ko">NPNCB 전체 영역</span><span class="lang-en">NPNCB field region</span></span>
 </div>
 <div class="lab-metrics">
 <div><span><span class="lang-ko">블록당 DBA</span><span class="lang-en">DBA per block</span></span><strong id="dba-per-block">5 bits</strong></div>
@@ -1857,8 +2117,8 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
       }
 
       function initBitLab() {
-        if (window.__npncbBitLabV4) return;
-        window.__npncbBitLabV4 = true;
+        if (window.__npncbBitLabV5) return;
+        window.__npncbBitLabV5 = true;
 
         const byId = (id) => document.getElementById(id);
         const replaceControl = (id) => {
@@ -1891,6 +2151,9 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
         if (byteLabels) byteLabels.hidden = true;
 
         const BYTE_NAMES = ['Byte n-1', 'Byte n', 'Byte n+1', 'Byte n+2', 'Byte n+3'];
+        const NPNCB_KINDS = new Set(['header', 'dba', 'len', 'nlen']);
+        const isNpncbKind = (kind) => NPNCB_KINDS.has(kind);
+        const rowHasNpncb = (cells) => cells.some((cell) => isNpncbKind(cell.kind));
 
         const utf8BitLength = (value) => {
           if (typeof TextEncoder === 'function') {
@@ -2059,6 +2322,12 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
           row.className = 'npncb-byte-row';
           row.setAttribute('aria-label', `${byteName} bit layout`);
 
+          const memberOffsets = [];
+          cells.forEach((cell, offset) => {
+            if (isNpncbKind(cell.kind)) memberOffsets.push(offset);
+          });
+          if (memberOffsets.length) row.classList.add('has-npncb-fields');
+
           const head = document.createElement('div');
           head.className = 'npncb-byte-row-head';
 
@@ -2083,11 +2352,30 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
           row.appendChild(offsets);
           row.appendChild(renderFlowTrack(cells, 'reverse'));
 
+          const cellStage = document.createElement('div');
+          cellStage.className = 'npncb-cell-stage';
+
+          if (memberOffsets.length) {
+            const regionGrid = document.createElement('div');
+            regionGrid.className = 'npncb-region-grid';
+            regionGrid.setAttribute('aria-hidden', 'true');
+
+            const band = document.createElement('span');
+            band.className = 'npncb-region-band';
+            const startOffset = Math.min(...memberOffsets);
+            const endOffset = Math.max(...memberOffsets);
+            band.style.gridColumn = `${startOffset + 1} / ${endOffset + 2}`;
+            band.title = `NPNCB 구성 영역: ${byteName} offset ${startOffset}–${endOffset}`;
+            regionGrid.appendChild(band);
+            cellStage.appendChild(regionGrid);
+          }
+
           const cellGrid = document.createElement('div');
           cellGrid.className = 'npncb-cell-grid';
           cells.forEach((cell, offset) => {
             const el = document.createElement('div');
             el.className = `npncb-bit-cell ${cell.kind}`;
+            if (isNpncbKind(cell.kind)) el.classList.add('npncb-member');
             const description = cellDescription(byteName, offset, cell);
             el.setAttribute('aria-label', description);
             el.title = description;
@@ -2098,9 +2386,50 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
             el.appendChild(symbol);
             cellGrid.appendChild(el);
           });
-          row.appendChild(cellGrid);
+          cellStage.appendChild(cellGrid);
+          row.appendChild(cellStage);
           row.appendChild(renderFlowTrack(cells, 'forward'));
           return row;
+        };
+
+        const createNpncbFrameHead = () => {
+          const head = document.createElement('header');
+          head.className = 'npncb-block-head';
+
+          const badge = document.createElement('span');
+          badge.className = 'npncb-block-badge';
+          badge.textContent = 'NPNCB';
+
+          const copy = document.createElement('span');
+          copy.className = 'npncb-block-copy';
+          const name = document.createElement('strong');
+          name.textContent = 'No Payload Non-Compressed Block';
+          const noteKo = document.createElement('small');
+          noteKo.className = 'lang-ko';
+          noteKo.textContent = '청록색 점선 안의 F · T · D · LEN · NLEN 셀이 실제 NPNCB 구성 영역입니다.';
+          const noteEn = document.createElement('small');
+          noteEn.className = 'lang-en';
+          noteEn.textContent = 'The cyan dashed bands mark the exact F · T · D · LEN · NLEN span of the NPNCB.';
+          copy.append(name, noteKo, noteEn);
+
+          const sequence = document.createElement('span');
+          sequence.className = 'npncb-block-sequence';
+          [
+            ['F', 'header'],
+            ['T', 'header'],
+            ['T', 'header'],
+            ['D', 'dba'],
+            ['LEN', 'len'],
+            ['NLEN', 'nlen'],
+          ].forEach(([label, kind]) => {
+            const token = document.createElement('span');
+            token.className = kind;
+            token.textContent = label;
+            sequence.appendChild(token);
+          });
+
+          head.append(badge, copy, sequence);
+          return head;
         };
 
         const capacityForPreviousOffset = (previousLastOffset, endsInPreviousByte) => (
@@ -2138,11 +2467,36 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
           }
 
           const layout = buildLayout(previousLastOffset, endsInPreviousByte);
-          const rows = [];
-          for (let index = 0; index < layout.visibleByteCount; index += 1) {
-            rows.push(renderByteRow(BYTE_NAMES[index], layout.bytes[index]));
+          const visibleBytes = layout.bytes.slice(0, layout.visibleByteCount);
+          const firstNpncbIndex = visibleBytes.findIndex(rowHasNpncb);
+          let lastNpncbIndex = -1;
+          visibleBytes.forEach((cells, index) => {
+            if (rowHasNpncb(cells)) lastNpncbIndex = index;
+          });
+
+          const outputNodes = [];
+          const renderedRows = visibleBytes.map((cells, index) => renderByteRow(BYTE_NAMES[index], cells));
+
+          if (firstNpncbIndex < 0) {
+            outputNodes.push(...renderedRows);
+          } else {
+            outputNodes.push(...renderedRows.slice(0, firstNpncbIndex));
+
+            const frame = document.createElement('section');
+            frame.className = 'npncb-block-frame';
+            frame.setAttribute('aria-label', 'NPNCB · No Payload Non-Compressed Block field region');
+            frame.appendChild(createNpncbFrameHead());
+
+            renderedRows.slice(firstNpncbIndex, lastNpncbIndex + 1).forEach((row, relativeIndex, groupRows) => {
+              if (relativeIndex === 0) row.classList.add('npncb-row-first');
+              if (relativeIndex === groupRows.length - 1) row.classList.add('npncb-row-last');
+              frame.appendChild(row);
+            });
+            outputNodes.push(frame);
+            outputNodes.push(...renderedRows.slice(lastNpncbIndex + 1));
           }
-          bitCells.replaceChildren(...rows);
+
+          bitCells.replaceChildren(...outputNodes);
         };
 
         const bindExclusiveUpdate = (control) => {
