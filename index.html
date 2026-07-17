@@ -1781,7 +1781,20 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
          */
         const buildLayout = (previousLastOffset) => {
           const bytes = makeBytes();
-          setCell(bytes, 0, previousLastOffset, '·', 'previous', 'previous block last bit');
+
+          /*
+           * The selected offset is the previous block's LAST bit.
+           * Because this diagram places offset 0 on the left and offset 7 on the right,
+           * every cell from the selected offset through offset 7 still belongs to the
+           * previous block. Fill that entire continuous region with dots so its single
+           * right-to-left flow arrow spans the complete previous-block area.
+           */
+          for (let previousOffset = previousLastOffset; previousOffset <= 7; previousOffset += 1) {
+            const description = previousOffset === previousLastOffset
+              ? 'previous block last bit'
+              : 'previous block bit';
+            setCell(bytes, 0, previousOffset, '·', 'previous', description);
+          }
 
           let byteIndex = 0;
           let offset = previousLastOffset - 1;
@@ -1861,7 +1874,9 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
             const single = segment.start === segment.end ? ' single' : '';
             el.className = `npncb-flow-segment ${segment.direction} ${segment.kind}${single}`;
             el.style.gridColumn = `${segment.start + 1} / ${segment.end + 2}`;
-            el.title = segment.title;
+            el.title = segment.kind === 'previous'
+              ? `직전 블록 영역: offset ${segment.end} → ${segment.start}`
+              : segment.title;
 
             const label = document.createElement('span');
             label.className = 'npncb-flow-label';
@@ -1875,7 +1890,12 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
 
         const cellDescription = (byteName, offset, cell) => {
           if (cell.kind === 'empty') return `${byteName}, offset ${offset}: 표시 없음`;
-          if (cell.kind === 'previous') return `${byteName}, offset ${offset}: 직전 블록 마지막 비트 ·`;
+          if (cell.kind === 'previous') {
+            const role = cell.description === 'previous block last bit'
+              ? '직전 블록 마지막 비트'
+              : '직전 블록 영역';
+            return `${byteName}, offset ${offset}: ${role} ·`;
+          }
           if (cell.kind === 'header') return `${byteName}, offset ${offset}: ${cell.symbol} (${cell.description})`;
           return `${byteName}, offset ${offset}: ${cell.symbol} (${cell.description})`;
         };
