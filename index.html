@@ -1881,6 +1881,84 @@
       }
     }
 
+
+    /* Bit lab v6: controls above output, paired byte cards, and full 16-bit LEN/NLEN. */
+    #capacity-lab .lab-grid {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      align-items: start !important;
+      gap: clamp(1rem, 2vw, 1.5rem) !important;
+      min-width: 0 !important;
+      width: 100% !important;
+    }
+
+    #capacity-lab .lab-controls,
+    #capacity-lab .lab-output {
+      grid-column: 1 / -1 !important;
+      min-width: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    #capacity-lab .lab-controls {
+      position: relative !important;
+      inset: auto !important;
+      top: auto !important;
+      align-self: stretch !important;
+    }
+
+    #capacity-lab .lab-output {
+      margin: 0 !important;
+    }
+
+    #capacity-lab #bit-cells {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    #capacity-lab .npncb-block-frame.npncb-byte-pair-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      grid-auto-flow: row !important;
+      align-items: stretch !important;
+      gap: 1rem !important;
+    }
+
+    #capacity-lab .npncb-byte-pair-grid > .npncb-block-head {
+      grid-column: 1 / -1 !important;
+    }
+
+    #capacity-lab .npncb-byte-pair-grid > .npncb-byte-row {
+      min-width: 0 !important;
+      height: 100% !important;
+    }
+
+    #capacity-lab .npncb-context-row {
+      border-color: rgba(148, 163, 184, .34) !important;
+      background: linear-gradient(180deg, rgba(51, 65, 85, .28), rgba(15, 23, 42, .34)) !important;
+    }
+
+    #capacity-lab .npncb-block-sequence .len,
+    #capacity-lab .npncb-block-sequence .nlen {
+      min-width: 4.7rem !important;
+    }
+
+    html[data-theme="light"] #capacity-lab .npncb-context-row {
+      border-color: rgba(15, 23, 42, .16) !important;
+      background: rgba(226, 232, 240, .58) !important;
+    }
+
+    @media (max-width: 700px) {
+      #capacity-lab .npncb-block-frame.npncb-byte-pair-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: .78rem !important;
+      }
+
+      #capacity-lab .npncb-block-sequence .len,
+      #capacity-lab .npncb-block-sequence .nlen {
+        min-width: 4.15rem !important;
+      }
+    }
+
 </style>
 </head>
 <body>
@@ -2239,8 +2317,8 @@
 <span><i class="legend-previous"></i><span class="lang-ko">이전 블록</span><span class="lang-en">previous block</span></span>
 <span><i class="legend-header"></i><span class="lang-ko">3비트 헤더</span><span class="lang-en">3-bit header</span></span>
 <span><i class="legend-dba"></i>DBA</span>
-<span><i class="legend-next"></i>LEN</span>
-<span><i class="legend-nlen"></i>NLEN</span>
+<span><i class="legend-next"></i>LEN · 16 bits (2 bytes)</span>
+<span><i class="legend-nlen"></i>NLEN · 16 bits (2 bytes)</span>
 <span><i class="legend-npncb"></i><span class="lang-ko">NPNCB 전체 영역</span><span class="lang-en">NPNCB field region</span></span>
 </div>
 <div class="lab-metrics">
@@ -2787,8 +2865,8 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
       }
 
       function initBitLab() {
-        if (window.__npncbBitLabV5) return;
-        window.__npncbBitLabV5 = true;
+        if (window.__npncbBitLabV6) return;
+        window.__npncbBitLabV6 = true;
 
         const byId = (id) => document.getElementById(id);
         const replaceControl = (id) => {
@@ -2820,7 +2898,15 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
         const byteLabels = document.querySelector('#capacity-lab .bit-byte-labels');
         if (byteLabels) byteLabels.hidden = true;
 
-        const BYTE_NAMES = ['Byte n-1', 'Byte n', 'Byte n+1', 'Byte n+2', 'Byte n+3'];
+        const BYTE_NAMES = [
+          'Byte n-1',
+          'Byte n',
+          'Byte n+1',
+          'Byte n+2',
+          'Byte n+3',
+          'Byte n+4',
+          'Byte n+5',
+        ];
         const NPNCB_KINDS = new Set(['header', 'dba', 'len', 'nlen']);
         const isNpncbKind = (kind) => NPNCB_KINDS.has(kind);
         const rowHasNpncb = (cells) => cells.some((cell) => isNpncbKind(cell.kind));
@@ -2903,16 +2989,25 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
             setCell(bytes, byteIndex, dbaOffset, 'D', 'dba', 'DBA');
           }
 
-          /* LEN and NLEN each occupy the next displayed byte in this explanatory view. */
-          const lenByteIndex = byteIndex + 1;
-          const nlenByteIndex = lenByteIndex + 1;
-          fillByte(bytes, lenByteIndex, 'L', 'len', 'LEN');
-          fillByte(bytes, nlenByteIndex, 'NL', 'nlen', 'NLEN');
+          /*
+           * Stored-block fields are consecutive and do not share a byte:
+           *   LEN  = 16 bits = low byte + high byte
+           *   NLEN = 16 bits = low byte + high byte
+           */
+          const lenLowByteIndex = byteIndex + 1;
+          const lenHighByteIndex = lenLowByteIndex + 1;
+          const nlenLowByteIndex = lenHighByteIndex + 1;
+          const nlenHighByteIndex = nlenLowByteIndex + 1;
+
+          fillByte(bytes, lenLowByteIndex, 'L', 'len', 'LEN low byte · bits 0–7 of 16');
+          fillByte(bytes, lenHighByteIndex, 'L', 'len', 'LEN high byte · bits 8–15 of 16');
+          fillByte(bytes, nlenLowByteIndex, 'NL', 'nlen', 'NLEN low byte · bits 0–7 of 16');
+          fillByte(bytes, nlenHighByteIndex, 'NL', 'nlen', 'NLEN high byte · bits 8–15 of 16');
 
           return {
             bytes,
-            /* Byte n+3 is rendered only when the header crosses into Byte n+1 (offset 0-2). */
-            visibleByteCount: nlenByteIndex + 1,
+            /* The crossing-header case reaches Byte n+5; the other case reaches Byte n+4. */
+            visibleByteCount: nlenHighByteIndex + 1,
           };
         };
 
@@ -2920,8 +3015,8 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
           previous: { lane: 'reverse', direction: 'reverse', label: '·', title: '직전 블록 비트: offset 7 → 0' },
           header: { lane: 'reverse', direction: 'reverse', label: 'F/T', title: 'F/T 헤더: offset 7 → 0' },
           dba: { lane: 'forward', direction: 'forward', label: 'D', title: 'DBA: offset 0 → 7' },
-          len: { lane: 'forward', direction: 'forward', label: 'L', title: 'LEN: offset 0 → 7' },
-          nlen: { lane: 'forward', direction: 'forward', label: 'NL', title: 'NLEN: offset 0 → 7' },
+          len: { lane: 'forward', direction: 'forward', label: 'L · 8b', title: 'LEN 16-bit field: each byte offset 0 → 7' },
+          nlen: { lane: 'forward', direction: 'forward', label: 'NL · 8b', title: 'NLEN 16-bit field: each byte offset 0 → 7' },
         };
 
         const collectSegments = (cells, lane) => {
@@ -3076,10 +3171,10 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
           name.textContent = 'No Payload Non-Compressed Block';
           const noteKo = document.createElement('small');
           noteKo.className = 'lang-ko';
-          noteKo.textContent = '청록색 점선 안의 F · T · D · LEN · NLEN 셀이 실제 NPNCB 구성 영역입니다.';
+          noteKo.textContent = '바이트 카드는 왼쪽→오른쪽, 위→아래의 2열 순서입니다. LEN 2바이트 뒤에 NLEN 2바이트가 연속되며 서로 바이트를 공유하지 않습니다.';
           const noteEn = document.createElement('small');
           noteEn.className = 'lang-en';
-          noteEn.textContent = 'The cyan dashed bands mark the exact F · T · D · LEN · NLEN span of the NPNCB.';
+          noteEn.textContent = 'Byte cards flow left-to-right in two columns. Two LEN bytes are followed by two NLEN bytes; the fields never share a byte.';
           copy.append(name, noteKo, noteEn);
 
           const sequence = document.createElement('span');
@@ -3089,8 +3184,8 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
             ['T', 'header'],
             ['T', 'header'],
             ['D', 'dba'],
-            ['LEN', 'len'],
-            ['NLEN', 'nlen'],
+            ['LEN · 16b', 'len'],
+            ['NLEN · 16b', 'nlen'],
           ].forEach(([label, kind]) => {
             const token = document.createElement('span');
             token.className = kind;
@@ -3144,29 +3239,30 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
             if (rowHasNpncb(cells)) lastNpncbIndex = index;
           });
 
-          const outputNodes = [];
           const renderedRows = visibleBytes.map((cells, index) => renderByteRow(BYTE_NAMES[index], cells));
 
           if (firstNpncbIndex < 0) {
-            outputNodes.push(...renderedRows);
+            bitCells.replaceChildren(...renderedRows);
           } else {
-            outputNodes.push(...renderedRows.slice(0, firstNpncbIndex));
-
+            /*
+             * Keep every byte card in one two-column grid so the visual order is:
+             * n-1 | n, then n+1 | n+2, then n+3 | n+4, and so on.
+             * The per-byte cyan bands still mark the exact NPNCB cells.
+             */
             const frame = document.createElement('section');
-            frame.className = 'npncb-block-frame';
-            frame.setAttribute('aria-label', 'NPNCB · No Payload Non-Compressed Block field region');
+            frame.className = 'npncb-block-frame npncb-byte-pair-grid';
+            frame.setAttribute('aria-label', 'NPNCB bitstream window with previous-byte context');
             frame.appendChild(createNpncbFrameHead());
 
-            renderedRows.slice(firstNpncbIndex, lastNpncbIndex + 1).forEach((row, relativeIndex, groupRows) => {
-              if (relativeIndex === 0) row.classList.add('npncb-row-first');
-              if (relativeIndex === groupRows.length - 1) row.classList.add('npncb-row-last');
+            renderedRows.forEach((row, index) => {
+              if (index < firstNpncbIndex) row.classList.add('npncb-context-row');
+              if (index === firstNpncbIndex) row.classList.add('npncb-row-first');
+              if (index === lastNpncbIndex) row.classList.add('npncb-row-last');
               frame.appendChild(row);
             });
-            outputNodes.push(frame);
-            outputNodes.push(...renderedRows.slice(lastNpncbIndex + 1));
-          }
 
-          bitCells.replaceChildren(...outputNodes);
+            bitCells.replaceChildren(frame);
+          }
         };
 
         const bindExclusiveUpdate = (control) => {
