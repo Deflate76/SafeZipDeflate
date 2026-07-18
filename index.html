@@ -1959,6 +1959,310 @@
       }
     }
 
+
+    /* 2026-07 update: anatomy labels, technical contact, and a resilient visitor counter. */
+    .hero-utility-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(15.5rem, .72fr);
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+
+    .hero-contact-card,
+    .hero-visitor-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: .72rem;
+      align-items: center;
+      min-width: 0;
+      min-height: 5.2rem;
+      padding: .82rem .9rem;
+      border: 1px solid rgba(112, 225, 255, .28);
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 96% 4%, rgba(255, 192, 0, .09), transparent 34%),
+        linear-gradient(145deg, rgba(0, 178, 240, .105), rgba(255, 255, 255, .028));
+      color: inherit;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+      box-sizing: border-box;
+    }
+
+    .hero-contact-card {
+      text-decoration: none;
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .hero-contact-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(112, 225, 255, .62);
+      background:
+        radial-gradient(circle at 96% 4%, rgba(255, 192, 0, .14), transparent 34%),
+        linear-gradient(145deg, rgba(0, 178, 240, .17), rgba(255, 255, 255, .035));
+      box-shadow: 0 13px 30px rgba(0, 0, 0, .2), inset 0 1px 0 rgba(255, 255, 255, .065);
+    }
+
+    .hero-contact-card:focus-visible {
+      outline: 3px solid rgba(112, 225, 255, .65);
+      outline-offset: 3px;
+    }
+
+    .hero-utility-icon {
+      display: grid;
+      place-items: center;
+      width: 2.55rem;
+      height: 2.55rem;
+      border: 1px solid rgba(112, 225, 255, .38);
+      border-radius: 13px;
+      background: rgba(0, 178, 240, .13);
+      color: #79e7ff;
+      font-size: 1rem;
+      font-weight: 950;
+      line-height: 1;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07);
+    }
+
+    .hero-utility-icon.visitor-icon {
+      border-color: rgba(255, 214, 92, .42);
+      background: rgba(255, 192, 0, .105);
+      color: #ffd45c;
+    }
+
+    .hero-utility-copy {
+      display: grid;
+      gap: .18rem;
+      min-width: 0;
+    }
+
+    .hero-utility-copy strong {
+      color: #f8fafc;
+      font-size: .84rem;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .hero-utility-copy small {
+      color: rgba(203, 213, 225, .77);
+      font-size: .7rem;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .hero-utility-action {
+      color: #79e7ff;
+      font-size: .68rem;
+      font-weight: 900;
+      line-height: 1.3;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .visitor-count-value {
+      min-width: 4.4rem;
+      color: #ffd45c;
+      font-size: clamp(1.18rem, .98rem + .7vw, 1.72rem);
+      font-weight: 950;
+      line-height: 1;
+      text-align: right;
+      letter-spacing: -.035em;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 18px rgba(255, 192, 0, .16);
+    }
+
+    .hero-visitor-card.is-ready .visitor-count-value {
+      animation: visitor-count-in .42s ease both;
+    }
+
+    .hero-visitor-card.is-error {
+      border-color: rgba(148, 163, 184, .22);
+      background: rgba(148, 163, 184, .035);
+    }
+
+    .hero-visitor-card.is-error .visitor-count-value {
+      color: rgba(203, 213, 225, .72);
+      text-shadow: none;
+    }
+
+    @keyframes visitor-count-in {
+      from { opacity: .2; transform: translateY(.35rem); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    html[data-theme="light"] .hero-contact-card,
+    html[data-theme="light"] .hero-visitor-card {
+      border-color: rgba(0, 132, 180, .2);
+      background: linear-gradient(145deg, rgba(224, 247, 255, .72), rgba(255, 255, 255, .82));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
+    }
+
+    html[data-theme="light"] .hero-utility-copy strong { color: #0f172a; }
+    html[data-theme="light"] .hero-utility-copy small { color: #475569; }
+    html[data-theme="light"] .hero-utility-action { color: #036b8e; }
+    html[data-theme="light"] .visitor-count-value { color: #9a6700; }
+
+    #anatomy .anatomy-figure {
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(112, 225, 255, .38) transparent;
+    }
+
+    #anatomy .bit-layout {
+      display: grid !important;
+      grid-template-columns:
+        minmax(9.5rem, 1.1fr)
+        minmax(6.7rem, .72fr)
+        minmax(8rem, .86fr)
+        minmax(9rem, 1fr)
+        minmax(10rem, 1.12fr)
+        minmax(11rem, 1.2fr)
+        minmax(9.2rem, 1.04fr) !important;
+      gap: .5rem !important;
+      align-items: stretch !important;
+      min-width: 72rem;
+      padding: .12rem .05rem .35rem;
+      box-sizing: border-box;
+    }
+
+    #anatomy .field-stack {
+      display: grid;
+      grid-template-rows: minmax(8rem, 1fr) auto;
+      gap: .38rem;
+      min-width: 0;
+      align-items: stretch;
+    }
+
+    #anatomy .field-stack-final,
+    #anatomy .field-stack-type,
+    #anatomy .field-stack-previous,
+    #anatomy .field-stack-empty {
+      grid-template-rows: minmax(8rem, 1fr);
+    }
+
+    #anatomy .field-stack > .field {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      justify-content: center !important;
+      gap: .34rem !important;
+      min-width: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      padding: .82rem .78rem !important;
+      box-sizing: border-box !important;
+    }
+
+    #anatomy .field-stack > .field b,
+    #anatomy .field-stack > .field span,
+    #anatomy .field-stack > .field small {
+      min-width: 0;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    #anatomy .field-previous {
+      border-color: rgba(148, 163, 184, .42) !important;
+      background:
+        linear-gradient(180deg, rgba(71, 85, 105, .42), rgba(30, 41, 59, .6)) !important;
+      color: #e2e8f0 !important;
+    }
+
+    #anatomy .field-previous > span:not(.lang-ko):not(.lang-en) {
+      color: rgba(226, 232, 240, .68);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 1.15rem;
+      letter-spacing: .16em;
+    }
+
+    #anatomy .field-hex-inline,
+    #anatomy .field-hex-below {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      min-height: 1.65rem;
+      padding: .28rem .48rem;
+      border: 1px solid currentColor;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, .62);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: .67rem !important;
+      font-weight: 900 !important;
+      line-height: 1 !important;
+      letter-spacing: .055em;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+
+    #anatomy .field-hex-inline {
+      align-self: stretch;
+      margin-top: auto;
+    }
+
+    #anatomy .field-hex-below {
+      justify-self: stretch;
+      width: 100%;
+    }
+
+    #anatomy .hex-header { color: #7dd3fc !important; }
+    #anatomy .hex-dba { color: #fb923c !important; }
+    #anatomy .hex-len { color: #86efac !important; }
+    #anatomy .hex-nlen { color: #d8b4fe !important; }
+
+    #anatomy .hex-annotation {
+      display: none !important;
+    }
+
+    html[data-theme="light"] #anatomy .field-previous {
+      border-color: rgba(15, 23, 42, .18) !important;
+      background: linear-gradient(180deg, rgba(226, 232, 240, .9), rgba(203, 213, 225, .75)) !important;
+      color: #0f172a !important;
+    }
+
+    html[data-theme="light"] #anatomy .field-previous > span:not(.lang-ko):not(.lang-en) {
+      color: #475569;
+    }
+
+    html[data-theme="light"] #anatomy .field-hex-inline,
+    html[data-theme="light"] #anatomy .field-hex-below {
+      background: rgba(255, 255, 255, .84);
+    }
+
+    @media (max-width: 980px) {
+      .hero-utility-panel {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero-contact-card,
+      .hero-visitor-card {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .hero-utility-action,
+      .visitor-count-value {
+        grid-column: 2;
+        justify-self: start;
+        min-width: 0;
+        text-align: left;
+      }
+
+      .visitor-count-value {
+        margin-top: .16rem;
+      }
+
+      #anatomy .bit-layout {
+        min-width: 66rem;
+        gap: .4rem !important;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-contact-card { transition: none; }
+      .hero-contact-card:hover { transform: none; }
+      .hero-visitor-card.is-ready .visitor-count-value { animation: none; }
+    }
+
 </style>
 </head>
 <body>
@@ -2071,6 +2375,29 @@
           <li><strong>0–7 bits</strong><span class="lang-ko">NPNCB당 DBA</span><span class="lang-en">DBA per NPNCB</span></li>
           <li><strong>0 bytes</strong><span class="lang-ko">NPNCB 출력 데이터</span><span class="lang-en">NPNCB output</span></li>
         </ul>
+
+        <div class="hero-utility-panel" aria-label="기술 문의 및 방문자 수 / Technical contact and visitor count">
+          <a class="hero-contact-card" href="mailto:powerzenith@naver.com?subject=NPNCB%20Vulnerability%20Lab%20%EA%B8%B0%EC%88%A0%20%EB%AC%B8%EC%9D%98" aria-label="기술 문의 메일 보내기: powerzenith@naver.com">
+            <span class="hero-utility-icon" aria-hidden="true">@</span>
+            <span class="hero-utility-copy">
+              <strong><span class="lang-ko">기술에 대한 문의</span><span class="lang-en">Technical inquiries</span></strong>
+              <small><span class="lang-ko">기술 관련 문의는 powerzenith@naver.com으로 메일을 보내주세요.</span><span class="lang-en">For technical questions, please email powerzenith@naver.com.</span></small>
+            </span>
+            <span class="hero-utility-action"><span class="lang-ko">메일 보내기</span><span class="lang-en">Send email</span> <span aria-hidden="true">↗</span></span>
+          </a>
+
+          <div class="hero-visitor-card" id="visitor-counter" data-counter-endpoint="/api/visitor-count" title="브라우저별 24시간 중복 방문을 줄여 집계하는 누적 방문 수입니다.">
+            <span class="hero-utility-icon visitor-icon" aria-hidden="true">◉</span>
+            <span class="hero-utility-copy">
+              <strong><span class="lang-ko">누적 방문</span><span class="lang-en">Total visits</span></strong>
+              <small id="visitor-count-status" aria-live="polite">
+                <span class="lang-ko" id="visitor-count-status-ko">방문자 수를 불러오는 중</span>
+                <span class="lang-en" id="visitor-count-status-en">Loading visitor count</span>
+              </small>
+            </span>
+            <strong class="visitor-count-value" id="visitor-count-value" aria-live="polite">—</strong>
+          </div>
+        </div>
       </div>
 
       <div class="hero-visual reveal delay-1">
@@ -2242,19 +2569,30 @@
 <span class="lang-en">Conceptual layout—the header may share a byte with the preceding block.</span>
 </figcaption>
 <div aria-label="NPNCB field layout" class="bit-layout">
-<div class="field field-final"><b>BFINAL</b><span>1 bit</span></div>
-<div class="field field-type"><b>BTYPE = 00</b><span>2 bits</span></div>
-<div class="field field-dba"><b>DBA</b><span>0…7 bits</span><small><span class="lang-ko">무시되는 정렬 비트</span><span class="lang-en">ignored alignment bits</span></small></div>
-<div class="field field-len"><b>LEN = 0000</b><span>16 bits · little-endian</span></div>
-<div class="field field-nlen"><b>NLEN = FFFF</b><span>16 bits · one's complement</span></div>
-<div class="field field-empty"><b><span class="lang-ko">리터럴 데이터 없음</span><span class="lang-en">no literal payload</span></b><span>0 bytes</span></div>
+<div class="field-stack field-stack-previous">
+  <div class="field field-previous"><b><span class="lang-ko">이전 블록의 비트</span><span class="lang-en">previous block's bits</span></b><span>…</span><small><span class="lang-ko">현재 NPNCB 앞의 비트 영역</span><span class="lang-en">bits preceding this NPNCB</span></small></div>
 </div>
-<div class="hex-annotation">
-<span class="hex-before">… previous bits</span>
-<span class="hex-header">BFINAL/BTYPE</span>
-<span class="hex-dba">DBA</span>
-<span class="hex-len">00 00</span>
-<span class="hex-nlen">FF FF</span>
+<div class="field-stack field-stack-final">
+  <div class="field field-final"><b>BFINAL</b><span>1 bit</span><small class="field-hex-inline hex-header">BFINAL</small></div>
+</div>
+<div class="field-stack field-stack-type">
+  <div class="field field-type"><b>BTYPE = 00</b><span>2 bits</span><small class="field-hex-inline hex-header">BTYPE</small></div>
+</div>
+<div class="field-stack field-stack-dba">
+  <div class="field field-dba"><b>DBA</b><span>0…7 bits</span><small><span class="lang-ko">무시되는 정렬 비트</span><span class="lang-en">ignored alignment bits</span></small></div>
+  <span class="field-hex-below hex-dba">DBA</span>
+</div>
+<div class="field-stack field-stack-len">
+  <div class="field field-len"><b>LEN = 0000</b><span>16 bits · little-endian</span></div>
+  <span class="field-hex-below hex-len">00 00</span>
+</div>
+<div class="field-stack field-stack-nlen">
+  <div class="field field-nlen"><b>NLEN = FFFF</b><span>16 bits · one's complement</span></div>
+  <span class="field-hex-below hex-nlen">FF FF</span>
+</div>
+<div class="field-stack field-stack-empty">
+  <div class="field field-empty"><b><span class="lang-ko">리터럴 데이터 없음</span><span class="lang-en">no literal payload</span></b><span>0 bytes</span></div>
+</div>
 </div>
 </figure>
 
@@ -3281,6 +3619,147 @@ writer.WriteUInt16LittleEndian(0xFFFF);</code></pre>
         bindExclusiveUpdate(previousByteEnd);
         update();
       }
+    }());
+  </script>
+
+
+  <script>
+    (function () {
+      'use strict';
+
+      const root = document.getElementById('visitor-counter');
+      const valueNode = document.getElementById('visitor-count-value');
+      const statusKo = document.getElementById('visitor-count-status-ko');
+      const statusEn = document.getElementById('visitor-count-status-en');
+      if (!root || !valueNode || !statusKo || !statusEn) return;
+
+      const ONE_DAY = 24 * 60 * 60 * 1000;
+      const endpoint = root.dataset.counterEndpoint || '/api/visitor-count';
+      const hostKey = (window.location.hostname || 'npncbvulnerabilitylab')
+        .replace(/[^a-zA-Z0-9]/g, '')
+        .slice(0, 80) || 'npncbvulnerabilitylab';
+      const storageKey = `npncb-visitor-counted-at:${hostKey}`;
+
+      const setStatus = (ko, en) => {
+        statusKo.textContent = ko;
+        statusEn.textContent = en;
+      };
+
+      const getLastCountedAt = () => {
+        try {
+          const value = Number(window.localStorage.getItem(storageKey));
+          return Number.isFinite(value) ? value : 0;
+        } catch (_) {
+          return 0;
+        }
+      };
+
+      const rememberCounted = () => {
+        try {
+          window.localStorage.setItem(storageKey, String(Date.now()));
+        } catch (_) {
+          /* The counter still works when storage is unavailable; reloads may be counted again. */
+        }
+      };
+
+      const shouldIncrement = Date.now() - getLastCountedAt() >= ONE_DAY;
+
+      const extractCount = (payload) => {
+        const candidate = payload && (
+          payload.count ?? payload.value ?? payload.Count ?? payload.total ?? payload.result
+        );
+        const numeric = typeof candidate === 'string'
+          ? Number(candidate.replace(/[^0-9.-]/g, ''))
+          : Number(candidate);
+        if (!Number.isFinite(numeric) || numeric < 0) {
+          throw new Error('Visitor counter returned an invalid value.');
+        }
+        return Math.floor(numeric);
+      };
+
+      const requestJson = async (url, options) => {
+        const controller = typeof AbortController === 'function' ? new AbortController() : null;
+        const timer = controller ? window.setTimeout(() => controller.abort(), 4500) : null;
+        try {
+          const response = await fetch(url, {
+            ...options,
+            signal: controller?.signal,
+            headers: {
+              Accept: 'application/json',
+              ...(options?.headers || {}),
+            },
+          });
+          if (!response.ok) throw new Error(`Visitor counter HTTP ${response.status}`);
+          return await response.json();
+        } finally {
+          if (timer) window.clearTimeout(timer);
+        }
+      };
+
+      const trySameOriginCounter = async () => {
+        const payload = await requestJson(endpoint, {
+          method: shouldIncrement ? 'POST' : 'GET',
+          credentials: 'same-origin',
+          cache: 'no-store',
+        });
+        return extractCount(payload);
+      };
+
+      const tryStaticFallbackCounter = async () => {
+        if (!/^https?:$/.test(window.location.protocol) || !window.location.hostname) {
+          throw new Error('Static counter is available only after web deployment.');
+        }
+        const base = `https://api.counterapi.dev/v1/${encodeURIComponent(hostKey)}/sitevisitorsv1`;
+        const payload = await requestJson(shouldIncrement ? `${base}/up` : base, {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-store',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+        });
+        return extractCount(payload);
+      };
+
+      const showCount = (count, source) => {
+        const locale = document.documentElement.lang === 'en' ? 'en-US' : 'ko-KR';
+        valueNode.textContent = new Intl.NumberFormat(locale).format(count);
+        root.classList.remove('is-error');
+        root.classList.add('is-ready');
+        setStatus(
+          source === 'same-origin'
+            ? '브라우저별 24시간 중복 방문을 줄여 집계'
+            : '정적 사이트 간편 집계 · 브라우저별 24시간 중복 최소화',
+          source === 'same-origin'
+            ? 'Approximate visits with a 24-hour browser deduplication window'
+            : 'Static-site counter with 24-hour browser deduplication',
+        );
+        if (shouldIncrement) rememberCounted();
+      };
+
+      const showUnavailable = () => {
+        valueNode.textContent = '—';
+        root.classList.remove('is-ready');
+        root.classList.add('is-error');
+        if (window.location.protocol === 'file:') {
+          setStatus('웹에 배포하면 방문자 수가 자동으로 표시됩니다.', 'The count appears automatically after web deployment.');
+        } else {
+          setStatus('방문자 집계를 일시적으로 불러오지 못했습니다.', 'Visitor count is temporarily unavailable.');
+        }
+      };
+
+      (async () => {
+        try {
+          showCount(await trySameOriginCounter(), 'same-origin');
+          return;
+        } catch (_) {
+          /* A static-host fallback keeps the single HTML file usable without a backend. */
+        }
+
+        try {
+          showCount(await tryStaticFallbackCounter(), 'static-fallback');
+        } catch (_) {
+          showUnavailable();
+        }
+      })();
     }());
   </script>
 
